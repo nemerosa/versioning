@@ -8,7 +8,7 @@ class VersioningPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         // Creates a new `versionInfo` extension
-        project.extensions.create('versionInfo', VersioningExtension)
+        project.extensions.create('versionInfo', VersioningExtension, project)
     }
 
 }
