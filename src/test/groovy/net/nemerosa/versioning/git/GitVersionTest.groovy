@@ -127,4 +127,40 @@ class GitVersionTest {
         }
     }
 
+    @Test
+    void 'Git release branch: with previous tag'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'release/2.0'
+                commit 5
+                git 'tag', '2.0.2'
+                commit 6
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+            }
+            def head = repo.commitLookup('Commit 6')
+            def headAbbreviated = repo.commitLookup('Commit 6', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/2.0'
+            assert info.base == '2.0'
+            assert info.branchId == 'release-2.0'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '2.0.3'
+            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
 }
