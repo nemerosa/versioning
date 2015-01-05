@@ -1,14 +1,39 @@
 /**
+ * Plug-in development
+ */
+
+plugins {
+   id 'nu.studer.plugindev' version '1.0.3'
+}
+
+/**
  * Meta information
  */
 
-group = 'net.nemerosa.ontrack'
+group = 'net.nemerosa'
 version = '1.0.0'
+
+/**
+ * Plug-in definition
+ */
+
+plugindev {
+    pluginImplementationClass 'net.nemerosa.versioning.VersioningPkugin'
+    pluginDescription 'Gradle plug-in that computes version information from the SCM'
+    pluginLicenses 'MIT'
+    pluginTags 'gradle', 'plugin', 'scm', 'git', 'svn', 'version'
+    authorId 'dcoraboeuf'
+    authorName 'Damien Coraboeuf'
+    authorEmail 'damien.coraboeuf@gmail.com'
+    projectUrl 'https://github.com/nemerosa/versioning'
+    projectInceptionYear '2015'
+    done()
+}
 
 /**
  * Wrapper definition
  */
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.2.1'
+   gradleVersion = '2.2.1'
 }
