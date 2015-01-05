@@ -18,7 +18,7 @@ version = '1.0.0'
  */
 
 plugindev {
-    pluginImplementationClass 'net.nemerosa.versioning.VersioningPkugin'
+    pluginImplementationClass 'net.nemerosa.versioning.VersioningPlugin'
     pluginDescription 'Gradle plug-in that computes version information from the SCM'
     pluginLicenses 'MIT'
     pluginTags 'gradle', 'plugin', 'scm', 'git', 'svn', 'version'
