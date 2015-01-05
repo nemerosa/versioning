@@ -1,4 +1,18 @@
 /**
+ * Versioning applied to itself
+ */
+buildscript {
+    repositories {
+        maven {
+            url = 'http://dl.bintray.com/dcoraboeuf/nemerosa'
+        }
+    }
+    dependencies {
+        classpath 'net.nemerosa:versioning:0.2.3'
+    }
+}
+
+/**
  * Plug-in development
  */
 
@@ -7,6 +21,7 @@ plugins {
    id 'com.jfrog.bintray' version '1.0'
 }
 
+apply plugin: 'net.nemerosa.versioning'
 apply plugin: 'groovy'
 
 /**
@@ -14,7 +29,7 @@ apply plugin: 'groovy'
  */
 
 group = 'net.nemerosa'
-version = '0.2.3'
+version = '1.0.0'
 
 /**
  * Plug-in definition
