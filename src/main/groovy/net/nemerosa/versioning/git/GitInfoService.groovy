@@ -22,14 +22,12 @@ class GitInfoService implements SCMInfoService {
             // Gets the commit info (full hash)
             String commit = 'git log -1 --format=%H'.execute().text.trim()
             // Gets the current commit (short hash)
-            String shortCommit = 'git log -1 --format=%h'.execute().text.trim()
+            String abbreviated = 'git log -1 --format=%h'.execute().text.trim()
             // Returns the information
             new SCMInfo(
                     branch: branch,
                     commit: commit,
-                    info: [
-                            abbreviated: shortCommit
-                    ]
+                    abbreviated: abbreviated
             )
         }
     }

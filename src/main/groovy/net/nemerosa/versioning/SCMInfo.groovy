@@ -9,6 +9,6 @@ class SCMInfo {
 
     String branch
     String commit
-    Map<String, String> info = [:]
+    String abbreviated
 
 }

@@ -20,6 +20,25 @@ class VersioningExtension {
     String scm = 'git'
 
     /**
+     * Getting the version type from a branch. Default: getting the part before the first "/". If no slash is found,
+     * takes the branch name as whole.
+     *
+     * For example:
+     *
+     * * release/2.0 --> release
+     * * feature/2.0 --> feature
+     * * master --> master
+     */
+    Closure<String> type = { String branch ->
+        int pos = branch.indexOf('/')
+        if (pos > 0) {
+            branch.substring(0, pos)
+        } else {
+            branch
+        }
+    }
+
+    /**
      * Computed version information
      */
     private VersionInfo info
@@ -50,11 +69,27 @@ class VersioningExtension {
      * Computes the version information.
      */
     VersionInfo computeInfo() {
+
         // Gets the SCM info service
         SCMInfoService scmInfoService = getSCMInfoService(scm)
         // Gets the version source
         SCMInfo scmInfo = scmInfoService.getInfo(project, this)
-        // TODO Parses the version source
+
+        // Computes the version information
+
+        // Source type
+        String type = type(scmInfo.branch)
+
+        // Branch info
+//        versionBranch = normalise(versionSource)
+        // Full version
+//        versionFull = "${versionBranch}-${versionBuild}"
+        // Display version
+//        if (versionSourceType == 'release') {
+//            versionDisplay = getDisplayVersion(versionSource.substring(pos + 1))
+//        } else {
+//            versionDisplay = versionBranch
+//        }
     }
 
     private static SCMInfoService getSCMInfoService(String type) {
