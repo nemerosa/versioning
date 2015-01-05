@@ -140,6 +140,8 @@ class VersioningExtension {
                 full: versionFull,
                 base: versionBase,
                 display: versionDisplay,
+                commit: scmInfo.commit,
+                build: scmInfo.abbreviated,
         )
     }
 
