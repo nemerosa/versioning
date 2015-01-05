@@ -4,6 +4,6 @@ import org.gradle.api.Project
 
 interface SCMInfoService {
 
-    SCMInfo getInfo(Project project)
+    SCMInfo getInfo(Project project, VersioningExtension extension)
 
 }

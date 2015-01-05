@@ -53,7 +53,7 @@ class VersioningExtension {
         // Gets the SCM info service
         SCMInfoService scmInfoService = getSCMInfoService(scm)
         // Gets the version source
-        SCMInfo scmInfo = scmInfoService.getInfo(project)
+        SCMInfo scmInfo = scmInfoService.getInfo(project, this)
         // TODO Parses the version source
     }
 
