@@ -78,6 +78,9 @@ branches.each {
                     localBranch "${BRANCH}"
                 }
             }
+            triggers {
+                scm 'H/5 * * * *'
+            }
             steps {
                 gradle 'clean build --info --profile'
             }
