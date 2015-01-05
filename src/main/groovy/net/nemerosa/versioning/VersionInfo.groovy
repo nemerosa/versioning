@@ -9,12 +9,12 @@ import groovy.transform.Canonical
 class VersionInfo {
 
     String scm
+    String branch
+    String branchType
+    String branchId
+    String commit
     String display
     String full
-    String branch
     String build
-    String source
-    String sourcetype
-    String commit
 
 }

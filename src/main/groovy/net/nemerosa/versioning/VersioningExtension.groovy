@@ -29,7 +29,7 @@ class VersioningExtension {
      * * feature/2.0 --> feature
      * * master --> master
      */
-    Closure<String> type = { String branch ->
+    Closure<String> branchType = { String branch ->
         int pos = branch.indexOf('/')
         if (pos > 0) {
             branch.substring(0, pos)
@@ -37,6 +37,11 @@ class VersioningExtension {
             branch
         }
     }
+
+    /**
+     * Computes the full version.
+     */
+    Closure<String> versionFull = { branchId, abbreviated -> "${branchId}-${abbreviated}" }
 
     /**
      * Computed version information
@@ -56,8 +61,8 @@ class VersioningExtension {
         this.project = project
     }
 /**
-     * Gets the computed version information
-     */
+ * Gets the computed version information
+ */
     VersionInfo getInfo() {
         if (!info) {
             info = computeInfo()
@@ -76,15 +81,17 @@ class VersioningExtension {
         SCMInfo scmInfo = scmInfoService.getInfo(project, this)
 
         // Version source
-        String versionSource = scmInfo.branch
+        String versionBranch = scmInfo.branch
 
         // Source type
-        String versionType = type(versionSource)
+        String versionBranchType = branchType(versionBranch)
 
-        // Branch info
-//        versionBranch = normalise(versionSource)
+        // Branch identifier
+        String versionBranchId = normalise(versionBranch)
+
         // Full version
-//        versionFull = "${versionBranch}-${versionBuild}"
+        String versionFull = versionFull(versionBranchId, scmInfo)
+
         // Display version
 //        if (versionSourceType == 'release') {
 //            versionDisplay = getDisplayVersion(versionSource.substring(pos + 1))
@@ -95,9 +102,15 @@ class VersioningExtension {
         // OK
         new VersionInfo(
                 scm: scm,
-                source: versionSource,
-                sourcetype: versionType,
+                branch: versionBranch,
+                branchType: versionBranchType,
+                branchId: versionBranchId,
+                full: versionFull,
         )
+    }
+
+    private static def normalise(String value) {
+        value.replaceAll(/[^A-Za-z0-9\.\-_]/, '-')
     }
 
     private static SCMInfoService getSCMInfoService(String type) {
