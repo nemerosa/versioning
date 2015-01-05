@@ -14,7 +14,7 @@ apply plugin: 'groovy'
  */
 
 group = 'net.nemerosa'
-version = '0.2.2'
+version = '0.2.3'
 
 /**
  * Plug-in definition
