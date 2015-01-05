@@ -104,6 +104,11 @@ class VersioningExtension {
         // Gets the version source
         SCMInfo scmInfo = scmInfoService.getInfo(project, this)
 
+        // No info?
+        if (scmInfo == SCMInfo.NONE) {
+            return VersionInfo.NONE
+        }
+
         // Version source
         String versionBranch = scmInfo.branch
 

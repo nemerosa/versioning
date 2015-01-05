@@ -8,14 +8,16 @@ import groovy.transform.Canonical
 @Canonical
 class VersionInfo {
 
-    String scm
-    String branch
-    String branchType
-    String branchId
-    String commit
-    String display
-    String full
-    String base
-    String build
+    static final VersionInfo NONE = new VersionInfo()
+
+    String scm = 'n/a'
+    String branch = ''
+    String branchType = ''
+    String branchId = ''
+    String commit = ''
+    String display = ''
+    String full = ''
+    String base = ''
+    String build = ''
 
 }

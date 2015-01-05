@@ -24,7 +24,7 @@ class GitVersionTest {
         assert info.commit == ''
         assert info.display == ''
         assert info.full == ''
-        assert info.scm == 'git'
+        assert info.scm == 'n/a'
     }
 
 }
