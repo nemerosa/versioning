@@ -1,12 +1,12 @@
 /**
  * List of global parameters:
  *
- * - JDK8u20
+ * - JDK7
  *
  * List of global passwords:
  *
- * - DOCKER_PASSWORD
- * - GITHUB_TOKEN
+ * - BINTRAY_USER
+ * - BINTRAY_API_KEY
  *
  * List of plug-ins:
  *
@@ -16,8 +16,6 @@
  * - Git
  * - Folders
  * - Set build name
- * - Xvfb
- * - Ontrack
  */
 
 /**
