@@ -1,0 +1,14 @@
+/**
+ * Meta information
+ */
+
+group = 'net.nemerosa.ontrack'
+version = '1.0.0'
+
+/**
+ * Wrapper definition
+ */
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.2.1'
+}
