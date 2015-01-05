@@ -24,7 +24,6 @@
 
 def REPOSITORY = 'nemerosa/versioning'
 def PROJECT = 'versioning'
-def LOCAL_REPOSITORY = '/var/lib/jenkins/repository/versioning'
 
 /**
  * Folder for the project (making sure)
@@ -81,16 +80,6 @@ branches.each {
             }
             steps {
                 gradle 'clean build --info --profile'
-                conditionalSteps {
-                    condition {
-                        status('SUCCESS', 'SUCCESS')
-                    }
-                    runner('Fail')
-                    shell """\
-# Copies the JAR to a local directory
-cp build/libs/*.jar ${LOCAL_REPOSITORY}
-"""
-                }
             }
             publishers {
                 archiveJunit("**/build/test-results/*.xml")
@@ -99,6 +88,48 @@ cp build/libs/*.jar ${LOCAL_REPOSITORY}
                         '**/target/**,**/node_modules/**,**/vendor/**',
                         'FIXME', 'TODO', '@Deprecated', true
                 )
+                if (branchType == 'release') {
+                    buildPipelineTrigger("${PROJECT}/${PROJECT}-${NAME}/${PROJECT}-${NAME}-02-publish") {
+                        parameters {
+                            gitRevision(true)
+                        }
+                    }
+                }
+            }
+        }
+
+        if (branchType == 'release') {
+            // Publication job
+            job {
+                name "${PROJECT}/${PROJECT}-${NAME}/${PROJECT}-${NAME}-02-publish"
+                logRotator(numToKeep = 40)
+                deliveryPipelineConfiguration('Release', 'Publish')
+                jdk 'JDK7'
+                scm {
+                    git {
+                        remote {
+                            url "git@github.com:${REPOSITORY}.git"
+                            branch "origin/${BRANCH}"
+                        }
+                        wipeOutWorkspace()
+                        localBranch "${BRANCH}"
+                    }
+                }
+                steps {
+                    gradle '''\
+clean build publishPluginToBintray --info --profile
+-PBINTRAY_USER=${BINTRAY_USER}
+-PBINTRAY_API_KEY=${BINTRAY_API_KEY}
+'''
+                }
+                publishers {
+                    archiveJunit("**/build/test-results/*.xml")
+                    tasks(
+                            '**/*.java,**/*.groovy,**/*.xml,**/*.html,**/*.js',
+                            '**/target/**,**/node_modules/**,**/vendor/**',
+                            'FIXME', 'TODO', '@Deprecated', true
+                    )
+                }
             }
         }
 
