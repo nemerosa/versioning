@@ -7,4 +7,8 @@ class SCMInfo {
 
     static final SCMInfo NONE = new SCMInfo()
 
+    String branch
+    String commit
+    Map<String, String> info = [:]
+
 }

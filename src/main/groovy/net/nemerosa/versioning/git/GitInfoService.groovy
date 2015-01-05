@@ -13,11 +13,24 @@ class GitInfoService implements SCMInfoService {
         boolean hasGit = project.file('.git').exists()
         // No Git information
         if (!hasGit) {
-            return SCMInfo.NONE
+            SCMInfo.NONE
         }
         // Git information available
         else {
-
+            // Gets the branch info
+            String branch = 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
+            // Gets the commit info (full hash)
+            String commit = 'git log -1 --format=%H'.execute().text.trim()
+            // Gets the current commit (short hash)
+            String shortCommit = 'git log -1 --format=%h'.execute().text.trim()
+            // Returns the information
+            new SCMInfo(
+                    branch: branch,
+                    commit: commit,
+                    info: [
+                            abbreviated: shortCommit
+                    ]
+            )
         }
     }
 
