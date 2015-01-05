@@ -118,6 +118,9 @@ branches.each {
                         localBranch "${BRANCH}"
                     }
                 }
+                wrappers {
+                    injectPasswords()
+                }
                 steps {
                     gradle '''\
 clean build publishPluginToBintray --info --profile
