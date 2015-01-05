@@ -6,6 +6,8 @@ plugins {
    id 'nu.studer.plugindev' version '1.0.3'
 }
 
+apply plugin: 'groovy'
+
 /**
  * Meta information
  */
@@ -28,6 +30,14 @@ plugindev {
     projectUrl 'https://github.com/nemerosa/versioning'
     projectInceptionYear '2015'
     done()
+}
+
+/**
+ * Dependencies
+ */
+
+dependencies {
+    localGroovy()
 }
 
 /**
