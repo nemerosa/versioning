@@ -75,10 +75,11 @@ class VersioningExtension {
         // Gets the version source
         SCMInfo scmInfo = scmInfoService.getInfo(project, this)
 
-        // Computes the version information
+        // Version source
+        String versionSource = scmInfo.branch
 
         // Source type
-        String type = type(scmInfo.branch)
+        String versionType = type(versionSource)
 
         // Branch info
 //        versionBranch = normalise(versionSource)
@@ -90,6 +91,13 @@ class VersioningExtension {
 //        } else {
 //            versionDisplay = versionBranch
 //        }
+
+        // OK
+        new VersionInfo(
+                scm: scm,
+                source: versionSource,
+                sourcetype: versionType,
+        )
     }
 
     private static SCMInfoService getSCMInfoService(String type) {
