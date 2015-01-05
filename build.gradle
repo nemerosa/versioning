@@ -13,7 +13,7 @@ apply plugin: 'groovy'
  */
 
 group = 'net.nemerosa'
-version = '0.2.0'
+version = '0.2.1'
 
 /**
  * Plug-in definition
@@ -40,6 +40,9 @@ bintray {
     user = "${BINTRAY_USER}"
     key = "${BINTRAY_API_KEY}"
     pkg.repo = 'nemerosa'
+    pkg.version.attributes = [
+            'gradle-plugin': 'net.nemerosa.versioning:net.nemerosa:versioning'
+    ]
 }
 
 /**
