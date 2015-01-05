@@ -65,7 +65,7 @@ class VersioningExtension {
     /**
      * Set of eligible branch types for computing a display version from the branch base name
      */
-    Set<String> releases = [ 'release' ] as Set<String>
+    Set<String> releases = ['release'] as Set<String>
 
     /**
      * Computed version information
@@ -128,7 +128,7 @@ class VersioningExtension {
             List<String> baseTags = scmInfoService.getBaseTags(project, this, versionBase)
             versionDisplay = getDisplayVersion(versionBase, baseTags)
         } else {
-            versionDisplay = versionBranchId
+            versionDisplay = versionBase ?: versionBranchId
         }
 
         // OK

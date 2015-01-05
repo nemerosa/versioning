@@ -60,6 +60,40 @@ class GitVersionTest {
     }
 
     @Test
+    void 'Git feature branch'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'feature/123-great'
+                commit 5
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+            }
+            def head = repo.commitLookup('Commit 5')
+            def headAbbreviated = repo.commitLookup('Commit 5', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'feature/123-great'
+            assert info.base == '123-great'
+            assert info.branchId == 'feature-123-great'
+            assert info.branchType == 'feature'
+            assert info.commit == head
+            assert info.display == '123-great'
+            assert info.full == "feature-123-great-${headAbbreviated}"
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
     void 'Git release branch: no previous tag'() {
         GitRepo repo = new GitRepo()
         try {
