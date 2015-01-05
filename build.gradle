@@ -4,6 +4,7 @@
 
 plugins {
    id 'nu.studer.plugindev' version '1.0.3'
+   id 'com.jfrog.bintray' version '1.0'
 }
 
 apply plugin: 'groovy'
@@ -13,7 +14,7 @@ apply plugin: 'groovy'
  */
 
 group = 'net.nemerosa'
-version = '0.2.1'
+version = '0.2.2'
 
 /**
  * Plug-in definition
@@ -39,10 +40,14 @@ plugindev {
 bintray {
     user = "${BINTRAY_USER}"
     key = "${BINTRAY_API_KEY}"
-    pkg.repo = 'nemerosa'
-    pkg.version.attributes = [
-            'gradle-plugin': 'net.nemerosa.versioning:net.nemerosa:versioning'
-    ]
+    pkg {
+        repo = 'nemerosa'
+        version {
+            attributes = [
+                    'gradle-plugin': 'net.nemerosa.versioning:net.nemerosa:versioning'
+            ]
+        }
+    }
 }
 
 /**
