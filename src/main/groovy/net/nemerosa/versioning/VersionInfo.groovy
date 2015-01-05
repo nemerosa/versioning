@@ -15,6 +15,7 @@ class VersionInfo {
     String commit
     String display
     String full
+    String base
     String build
 
 }

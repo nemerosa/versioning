@@ -39,9 +39,33 @@ class VersioningExtension {
     }
 
     /**
+     * Getting the version base from a branch. Default: getting the part after the first "/". If no slash is found,
+     * returns empty.
+     *
+     * For example:
+     *
+     * * release/2.0 --> 2.0
+     * * feature/2.0 --> 2.0
+     * * master --> ''
+     */
+    Closure<String> base = { String branch ->
+        int pos = branch.indexOf('/')
+        if (pos > 0) {
+            branch.substring(pos + 1)
+        } else {
+            ''
+        }
+    }
+
+    /**
      * Computes the full version.
      */
-    Closure<String> versionFull = { branchId, abbreviated -> "${branchId}-${abbreviated}" }
+    Closure<String> full = { branchId, abbreviated -> "${branchId}-${abbreviated}" }
+
+    /**
+     * Set of eligible branch types for computing a display version from the branch base name
+     */
+    Set<String> releases = [ 'release' ] as Set<String>
 
     /**
      * Computed version information
@@ -85,19 +109,22 @@ class VersioningExtension {
 
         // Source type
         String versionBranchType = branchType(versionBranch)
+        String versionBase = base(versionBranch)
 
         // Branch identifier
         String versionBranchId = normalise(versionBranch)
 
         // Full version
-        String versionFull = versionFull(versionBranchId, scmInfo)
+        String versionFull = full(versionBranchId, scmInfo)
 
         // Display version
-//        if (versionSourceType == 'release') {
-//            versionDisplay = getDisplayVersion(versionSource.substring(pos + 1))
-//        } else {
-//            versionDisplay = versionBranch
-//        }
+        String versionDisplay
+        if (versionBranchType in releases) {
+            List<String> baseTags = scmInfoService.getBaseTags(project, this, versionBase)
+            versionDisplay = getDisplayVersion(versionBase, baseTags)
+        } else {
+            versionDisplay = versionBranchId
+        }
 
         // OK
         new VersionInfo(
@@ -106,10 +133,23 @@ class VersioningExtension {
                 branchType: versionBranchType,
                 branchId: versionBranchId,
                 full: versionFull,
+                base: versionBase,
+                display: versionDisplay,
         )
     }
 
-    private static def normalise(String value) {
+    private static String getDisplayVersion(String base, List<String> baseTags) {
+        if (baseTags.empty) {
+            return "${base}.0"
+        } else {
+            def lastTag = baseTags[0].trim()
+            def lastNumber = (lastTag =~ /${base}\.([\d+])/)[0][1] as int
+            def newNumber = lastNumber + 1
+            return "${base}.${newNumber}"
+        }
+    }
+
+    private static String normalise(String value) {
         value.replaceAll(/[^A-Za-z0-9\.\-_]/, '-')
     }
 

@@ -32,4 +32,17 @@ class GitInfoService implements SCMInfoService {
         }
     }
 
+    @Override
+    List<String> getBaseTags(Project project, VersioningExtension extension, String base) {
+        def tags = "git log HEAD --pretty=format:%d".execute().text.trim().readLines()
+        def baseTagPattern = /tag: (${base}\.[\d+])/
+        return tags.collect { tag ->
+            def m = tag =~ baseTagPattern
+            if (m.find()) {
+                m.group(1)
+            } else {
+                ''
+            }
+        }.findAll { it != '' }
+    }
 }
