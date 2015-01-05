@@ -50,7 +50,7 @@ public final class Utils {
                 String error = IOUtils.toString(process.getErrorStream());
                 throw new ProcessExitException(exit, error);
             } else {
-                return IOUtils.toString(process.getInputStream());
+                return IOUtils.toString(process.getInputStream()).trim();
             }
         } catch (IOException | InterruptedException ex) {
             throw new ProcessRunException("Error while executing ${cmd} command: ${ex.getMessage()}")

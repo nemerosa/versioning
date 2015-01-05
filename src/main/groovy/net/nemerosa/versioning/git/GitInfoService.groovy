@@ -5,6 +5,8 @@ import net.nemerosa.versioning.SCMInfoService
 import net.nemerosa.versioning.VersioningExtension
 import org.gradle.api.Project
 
+import static net.nemerosa.versioning.support.Utils.run
+
 class GitInfoService implements SCMInfoService {
 
     @Override
@@ -18,11 +20,11 @@ class GitInfoService implements SCMInfoService {
         // Git information available
         else {
             // Gets the branch info
-            String branch = 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
+            String branch = run(project.projectDir, 'git', 'rev-parse', '--abbrev-ref', 'HEAD')
             // Gets the commit info (full hash)
-            String commit = 'git log -1 --format=%H'.execute().text.trim()
+            String commit = run(project.projectDir, 'git', 'log', '-1', '--format=%H')
             // Gets the current commit (short hash)
-            String abbreviated = 'git log -1 --format=%h'.execute().text.trim()
+            String abbreviated = run(project.projectDir, 'git', 'log', '-1', '--format=%h')
             // Returns the information
             new SCMInfo(
                     branch: branch,
@@ -34,7 +36,7 @@ class GitInfoService implements SCMInfoService {
 
     @Override
     List<String> getBaseTags(Project project, VersioningExtension extension, String base) {
-        def tags = "git log HEAD --pretty=format:%d".execute().text.trim().readLines()
+        def tags = run(project.projectDir, 'git', 'log', 'HEAD', '--pretty=format:%d').readLines()
         def baseTagPattern = /tag: (${base}\.[\d+])/
         return tags.collect { tag ->
             def m = tag =~ baseTagPattern

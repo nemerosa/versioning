@@ -120,7 +120,7 @@ class VersioningExtension {
         String versionBranchId = normalise(versionBranch)
 
         // Full version
-        String versionFull = full(versionBranchId, scmInfo)
+        String versionFull = full(versionBranchId, scmInfo.abbreviated)
 
         // Display version
         String versionDisplay
