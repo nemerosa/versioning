@@ -37,7 +37,7 @@ Once the `versioning` plug-in has been applied, a `versioning` extension is avai
 Getting the read-only `ìnfo` provides access to the following information, computed from the SCM information:
 
 Property | Description | Git: `master` | Git: `feature/great` | Git: `release/2.0`
----|---
+---|---|---|---|---
 `scm` | SCM source | `git` | `git` | `git`
 `branch` | Branch name | `master` | `feature/great` | `release/2.0`
 `branchType` | Type of branch | `master` | `feature` | `release`
