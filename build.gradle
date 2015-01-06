@@ -6,7 +6,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'net.nemerosa:versioning:0.3.3'
+        classpath 'net.nemerosa:versioning:0.3.2'
     }
 }
 
