@@ -82,7 +82,7 @@ branches.each {
                 scm 'H/5 * * * *'
             }
             steps {
-                gradle 'clean build --info --profile'
+                gradle 'clean versionDisplay build --info --profile'
             }
             publishers {
                 archiveJunit("**/build/test-results/*.xml")
@@ -123,7 +123,7 @@ branches.each {
                 }
                 steps {
                     gradle '''\
-clean build publishPluginToBintray --info --profile
+clean versionDisplay build publishPluginToBintray --info --profile
 -PBINTRAY_USER=${BINTRAY_USER}
 -PBINTRAY_API_KEY=${BINTRAY_API_KEY}
 '''
