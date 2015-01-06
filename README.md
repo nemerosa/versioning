@@ -97,6 +97,17 @@ VERSION_FULL = release-0.3-da50c50
 VERSION_SCM = git
 ```
 
+The `versionFile` task can be customised with two properties. The defaults are given below:
+
+```groovy
+versionFile {
+   // Path to the file to be written
+   file = new File(project.buildDir, 'version.properties')
+   // Prefix to apply to the properties
+   prefix = 'VERSION_'
+}
+```
+
 ## Release
 
 See http://plugins.gradle.org/submit.
