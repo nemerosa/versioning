@@ -2,6 +2,7 @@ package net.nemerosa.versioning.git
 
 import net.nemerosa.versioning.VersionInfo
 import net.nemerosa.versioning.VersioningPlugin
+import net.nemerosa.versioning.tasks.VersionDisplayTask
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
 
@@ -53,6 +54,25 @@ class GitVersionTest {
             assert info.display == 'master'
             assert info.full == "master-${headAbbreviated}"
             assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git: display version'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+            }
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            def task = project.tasks.getByName('versionDisplay') as VersionDisplayTask
+            task.execute()
 
         } finally {
             repo.close()
