@@ -134,7 +134,7 @@ clean versionDisplay versionFile build publishPluginToBintray --info --profile
                     // Tags and pushes
                     shell '''\
 git tag ${VERSION_DISPLAY}
-git push tag ${VERSION_DISPLAY}
+git push origin ${VERSION_DISPLAY}
 '''
                 }
                 publishers {
