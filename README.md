@@ -132,7 +132,9 @@ versioning {
     branchParser = { String branch ->
         int pos = branch.indexOf('/')
         if (pos > 0) {
-            new BranchInfo(type: branch.substring(0, pos), base: branch.substring(pos + 1))
+            new BranchInfo(
+               type: branch.substring(0, pos),
+               base: branch.substring(pos + 1))
         } else {
             new BranchInfo(type: branch, base: '')
         }
