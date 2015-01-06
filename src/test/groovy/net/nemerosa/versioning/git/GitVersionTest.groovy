@@ -3,6 +3,7 @@ package net.nemerosa.versioning.git
 import net.nemerosa.versioning.VersionInfo
 import net.nemerosa.versioning.VersioningPlugin
 import net.nemerosa.versioning.tasks.VersionDisplayTask
+import org.gradle.api.DefaultTask
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
 
@@ -80,6 +81,120 @@ class GitVersionTest {
     }
 
     @Test
+    void 'Git: version file - defaults'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+            }
+            def head = repo.commitLookup('Commit 4')
+            def headAbbreviated = repo.commitLookup('Commit 4', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            def task = project.tasks.getByName('versionFile') as DefaultTask
+            task.execute()
+
+            // Checks the file
+            def file = new File(project.buildDir, 'version.properties')
+            assert file.exists(): "File ${file} must exist."
+            assert file.text == """\
+VERSION_BUILD = ${headAbbreviated}
+VERSION_BRANCH = master
+VERSION_BASE = \n\
+VERSION_BRANCHID = master
+VERSION_BRANCHTYPE = master
+VERSION_COMMIT = ${head}
+VERSION_DISPLAY = master
+VERSION_FULL = master-${headAbbreviated}
+VERSION_SCM = git
+"""
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git: version file - custom prefix'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+            }
+            def head = repo.commitLookup('Commit 4')
+            def headAbbreviated = repo.commitLookup('Commit 4', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versionFile {
+                prefix = 'CUSTOM_'
+            }
+            def task = project.tasks.getByName('versionFile') as DefaultTask
+            task.execute()
+
+            // Checks the file
+            def file = new File(project.buildDir, 'version.properties')
+            assert file.exists(): "File ${file} must exist."
+            assert file.text == """\
+CUSTOM_BUILD = ${headAbbreviated}
+CUSTOM_BRANCH = master
+CUSTOM_BASE = \n\
+CUSTOM_BRANCHID = master
+CUSTOM_BRANCHTYPE = master
+CUSTOM_COMMIT = ${head}
+CUSTOM_DISPLAY = master
+CUSTOM_FULL = master-${headAbbreviated}
+CUSTOM_SCM = git
+"""
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git: version file - custom file'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+            }
+            def head = repo.commitLookup('Commit 4')
+            def headAbbreviated = repo.commitLookup('Commit 4', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versionFile {
+                file = new File(repo.dir, '.version')
+            }
+            def task = project.tasks.getByName('versionFile') as DefaultTask
+            task.execute()
+
+            // Checks the file
+            def file = new File(project.projectDir, '.version')
+            assert file.exists(): "File ${file} must exist."
+            assert file.text == """\
+VERSION_BUILD = ${headAbbreviated}
+VERSION_BRANCH = master
+VERSION_BASE = \n\
+VERSION_BRANCHID = master
+VERSION_BRANCHTYPE = master
+VERSION_COMMIT = ${head}
+VERSION_DISPLAY = master
+VERSION_FULL = master-${headAbbreviated}
+VERSION_SCM = git
+"""
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
     void 'Git feature branch'() {
         GitRepo repo = new GitRepo()
         try {
@@ -141,7 +256,6 @@ class GitVersionTest {
             assert info.display == '2.0.0'
             assert info.full == "release-2.0-${headAbbreviated}"
             assert info.scm == 'git'
-
         } finally {
             repo.close()
         }
