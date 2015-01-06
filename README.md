@@ -152,4 +152,4 @@ versioning {
 
 ## Release
 
-See http://plugins.gradle.org/submit.
+See http://plugins.gradle.org/submit for the publication on the [Gradle Plug-in Portal](https://plugins.gradle.org/).
