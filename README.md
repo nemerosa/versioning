@@ -3,6 +3,22 @@ versioning
 
 Gradle plug-in to generate version information from the SCM branch.
 
+## Use cases
+
+Given a simple release workflow:
+
+![Release workflow](doc/release-workflow.png)
+
+The computed project's `version` on the `master` and `feature/*` branches is a SNAPSHOT from the base version. For `release/*` branches, the version is computed according the latest tag on the branch, allowing for automatic patch number.
+
+To achieve such a configuration, just configure the `versioning` plug-in the following way and follow strict conventions for your branch names:
+
+```groovy
+versioning {
+   displayMode = 'snapshot'
+}
+```
+
 ## Applying the plug-in
 
 The `versioning` plug-in is hosted in [JCenter](https://bintray.com/bintray/jcenter).
@@ -147,22 +163,6 @@ versioning {
      * Set of eligible branch types for computing a display version from the branch base name
      */
     releases = ['release']
-}
-```
-
-## Use cases
-
-Given a simple release workflow:
-
-![Release workflow](doc/release-workflow.png)
-
-The computed project's `version` on the `master` and `feature/*` branches is a SNAPSHOT from the base version. For `release/*` branches, the version is computed according the latest tag on the branch, allowing for automatic patch number.
-
-To achieve such a configuration, just configure the `versioning` plug-in the following way and follow strict conventions for your branch names:
-
-```groovy
-versioning {
-   displayMode = 'snapshot'
 }
 ```
 
