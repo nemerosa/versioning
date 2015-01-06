@@ -20,7 +20,17 @@ buildscript {
 apply plugin: 'net.nemerosa.versioning'
 ```
 
-## Getting versioning info
+## Using the versioning info
+
+For example, to set the project's version using the SCM:
+
+```groovy
+allprojects {
+   version = versioning.info.display
+}
+```
+
+## Versioning info
 
 Once the `versioning` plug-in has been applied, a `versioning` extension is available for the project.
 
@@ -46,6 +56,28 @@ For branches to type `release`, an additional computation occurs:
 * if a tag is available on the branch which has the `base` as a prefix, the `display` version is this tag, where the last digit is incremented by 1
 
 By using the `display` version when tagging a release, the `display` version will be automatically incremented, patch after patch, using the `release` base at a prefix.
+
+## Tasks
+
+The `versioning` plug-in provides two tasks.
+
+### `versionDisplay`
+
+Displays the version information in the standard output. For example:
+
+```bash
+> ./gradlew versionDisplay
+:versionDisplay
+[version] scm        = git
+[version] branch     = master
+[version] branchType = master
+[version] branchId   = master
+[version] commit     = 9c542df306c3eb840588921237869a14af780fbf
+[version] full       = master-9c542df
+[version] base       =
+[version] build      = 9c542df
+[version] display    = master
+```
 
 ## Release
 
