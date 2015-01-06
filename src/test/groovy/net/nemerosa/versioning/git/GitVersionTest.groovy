@@ -52,7 +52,7 @@ class GitVersionTest {
             assert info.branchId == 'master'
             assert info.branchType == 'master'
             assert info.commit == head
-            assert info.display == 'master'
+            assert info.display == "master-${headAbbreviated}"
             assert info.full == "master-${headAbbreviated}"
             assert info.scm == 'git'
 
@@ -107,7 +107,7 @@ VERSION_BASE = \n\
 VERSION_BRANCHID = master
 VERSION_BRANCHTYPE = master
 VERSION_COMMIT = ${head}
-VERSION_DISPLAY = master
+VERSION_DISPLAY = master-${headAbbreviated}
 VERSION_FULL = master-${headAbbreviated}
 VERSION_SCM = git
 """
@@ -146,7 +146,7 @@ CUSTOM_BASE = \n\
 CUSTOM_BRANCHID = master
 CUSTOM_BRANCHTYPE = master
 CUSTOM_COMMIT = ${head}
-CUSTOM_DISPLAY = master
+CUSTOM_DISPLAY = master-${headAbbreviated}
 CUSTOM_FULL = master-${headAbbreviated}
 CUSTOM_SCM = git
 """
@@ -185,7 +185,7 @@ VERSION_BASE = \n\
 VERSION_BRANCHID = master
 VERSION_BRANCHTYPE = master
 VERSION_COMMIT = ${head}
-VERSION_DISPLAY = master
+VERSION_DISPLAY = master-${headAbbreviated}
 VERSION_FULL = master-${headAbbreviated}
 VERSION_SCM = git
 """
@@ -219,7 +219,7 @@ VERSION_SCM = git
             assert info.branchId == 'feature-123-great'
             assert info.branchType == 'feature'
             assert info.commit == head
-            assert info.display == '123-great'
+            assert info.display == "feature-123-great-${headAbbreviated}"
             assert info.full == "feature-123-great-${headAbbreviated}"
             assert info.scm == 'git'
 

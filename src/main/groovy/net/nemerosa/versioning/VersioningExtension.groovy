@@ -10,8 +10,24 @@ class VersioningExtension {
      * Registry of SCM info services
      */
     private static final Map<String, GitInfoService> INFO_SERVICES = [
-            'git': new GitInfoService(),
+            git: new GitInfoService(),
             // TODO SVN
+    ]
+
+    /**
+     * Registry of display modes
+     */
+    private static final Map<String, Closure<String>> DISPLAY_MODES = [
+            full: { branchType, branchId, base, build, full, extension ->
+                "${branchId}-${build}"
+            },
+            snapshot: { branchType, branchId, base, build, full, extension ->
+                "${base}-${extension.snapshot}"
+            },
+            base: { branchType, branchId, base, build, full, extension ->
+                base
+            },
+
     ]
 
     /**
@@ -47,6 +63,16 @@ class VersioningExtension {
      * Set of eligible branch types for computing a display version from the branch base name
      */
     Set<String> releases = ['release'] as Set<String>
+
+    /**
+     * Display mode
+     */
+    def displayMode = 'full'
+
+    /**
+     * Default Snapshot extension
+     */
+    String snapshot = '-SNAPSHOT'
 
     /**
      * Computed version information
@@ -110,7 +136,22 @@ class VersioningExtension {
             List<String> baseTags = scmInfoService.getBaseTags(project, this, versionBase)
             versionDisplay = getDisplayVersion(versionBase, baseTags)
         } else {
-            versionDisplay = versionBase ?: versionBranchId
+            // Adjusting the base
+            def base = versionBase ?: versionBranchId
+            // Display mode
+            if (displayMode instanceof String) {
+                def mode = DISPLAY_MODES[displayMode as String]
+                if (mode) {
+                    versionDisplay = mode(versionBranchType, versionBranchId, base, scmInfo.abbreviated, versionFull, this)
+                } else {
+                    throw new GradleException("${mode} is not a valid display mode.")
+                }
+            } else if (displayMode instanceof Closure) {
+                def mode = displayMode as Closure
+                versionDisplay = mode(versionBranchType, versionBranchId, base, scmInfo.abbreviated, versionFull, this)
+            } else {
+                throw new GradleException("The `displayMode` must be a registered default mode or a Closure.")
+            }
         }
 
         // OK
