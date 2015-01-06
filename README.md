@@ -69,14 +69,32 @@ Displays the version information in the standard output. For example:
 > ./gradlew versionDisplay
 :versionDisplay
 [version] scm        = git
-[version] branch     = master
-[version] branchType = master
-[version] branchId   = master
-[version] commit     = 9c542df306c3eb840588921237869a14af780fbf
-[version] full       = master-9c542df
-[version] base       =
-[version] build      = 9c542df
-[version] display    = master
+[version] branch     = release/0.3
+[version] branchType = release
+[version] branchId   = release-0.3
+[version] commit     = da50c50567073d3d3a7756829926a9590f2644c6
+[version] full       = release-0.3-da50c50
+[version] base       = 0.3
+[version] build      = da50c50
+[version] display    = 0.3.0
+```
+
+### `versionFile`
+
+Creates a file which contains the version information. By default, the file is created at _build/version.properties_ and contains the following information:
+
+``` bash
+> ./gradlew versionFile
+> cat build/version.properties
+VERSION_BUILD = da50c50
+VERSION_BRANCH = release/0.3
+VERSION_BASE = 0.3
+VERSION_BRANCHID = release-0.3
+VERSION_BRANCHTYPE = release
+VERSION_COMMIT = da50c50567073d3d3a7756829926a9590f2644c6
+VERSION_DISPLAY = 0.3.0
+VERSION_FULL = release-0.3-da50c50
+VERSION_SCM = git
 ```
 
 ## Release
