@@ -25,7 +25,9 @@ allprojects {
 
 ## Applying the plug-in
 
-The `versioning` plug-in is hosted in [JCenter](https://bintray.com/bintray/jcenter).
+The `versioning` plug-in is hosted in [JCenter](https://bintray.com/bintray/jcenter) and is registered in the [Gradle Plug-in Portal](https://plugins.gradle.org/).
+
+### Gradle 1.x and 2.0
 
 ```groovy
 buildscript {
@@ -38,6 +40,15 @@ buildscript {
 }
 
 apply plugin: 'net.nemerosa.versioning'
+```
+
+### Gradle 2.1 and higher
+
+```groovy
+
+plugins {
+   id 'net.nemerosa.versioning' version '1.0.0'
+}
 ```
 
 ## Using the versioning info
