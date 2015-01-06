@@ -110,6 +110,44 @@ versionFile {
 }
 ```
 
+## Customisation
+
+The collection of the versioning info can be customised by setting some properties in the `versioning` extension.
+
+The default properties are shown below:
+
+```groovy
+versioning {
+   /**
+    * Defines the SCM to use in order to collect information.
+    *
+    * At the moment, only Git is supported.
+    */
+   scm = 'git'
+   /**
+    * Computation of the branch type and the base, by parsing the branch name.
+    * By default, we use "/" as a separator between the type and the base. If not
+    * present, the type is the branch and the base is empty.
+    */
+    branchParser = { String branch ->
+        int pos = branch.indexOf('/')
+        if (pos > 0) {
+            new BranchInfo(type: branch.substring(0, pos), base: branch.substring(pos + 1))
+        } else {
+            new BranchInfo(type: branch, base: '')
+        }
+    }
+    /**
+     * Computation of the full version
+     */
+    full = { branchId, abbreviated -> "${branchId}-${abbreviated}" }
+    /**
+     * Set of eligible branch types for computing a display version from the branch base name
+     */
+    releases = ['release']
+}
+```
+
 ## Release
 
 See http://plugins.gradle.org/submit.

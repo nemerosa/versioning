@@ -29,31 +29,12 @@ class VersioningExtension {
      * * feature/2.0 --> feature
      * * master --> master
      */
-    Closure<String> branchType = { String branch ->
+    Closure<BranchInfo> branchParser = { String branch ->
         int pos = branch.indexOf('/')
         if (pos > 0) {
-            branch.substring(0, pos)
+            new BranchInfo(type: branch.substring(0, pos), base: branch.substring(pos + 1))
         } else {
-            branch
-        }
-    }
-
-    /**
-     * Getting the version base from a branch. Default: getting the part after the first "/". If no slash is found,
-     * returns empty.
-     *
-     * For example:
-     *
-     * * release/2.0 --> 2.0
-     * * feature/2.0 --> 2.0
-     * * master --> ''
-     */
-    Closure<String> base = { String branch ->
-        int pos = branch.indexOf('/')
-        if (pos > 0) {
-            branch.substring(pos + 1)
-        } else {
-            ''
+            new BranchInfo(type: branch, base: '')
         }
     }
 
@@ -112,9 +93,10 @@ class VersioningExtension {
         // Version source
         String versionBranch = scmInfo.branch
 
-        // Source type
-        String versionBranchType = branchType(versionBranch)
-        String versionBase = base(versionBranch)
+        // Branch parsing
+        BranchInfo branchInfo = branchParser(versionBranch)
+        String versionBranchType = branchInfo.type
+        String versionBase = branchInfo.base
 
         // Branch identifier
         String versionBranchId = normalise(versionBranch)
