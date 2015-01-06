@@ -17,6 +17,10 @@ To achieve such a configuration, just configure the `versioning` plug-in the fol
 versioning {
    displayMode = 'snapshot'
 }
+
+allprojects {
+   version = versioning.info.display
+}
 ```
 
 ## Applying the plug-in
