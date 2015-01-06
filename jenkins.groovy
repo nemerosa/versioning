@@ -123,9 +123,18 @@ branches.each {
                 }
                 steps {
                     gradle '''\
-clean versionDisplay build publishPluginToBintray --info --profile
+clean versionDisplay versionFile build publishPluginToBintray --info --profile
 -PBINTRAY_USER=${BINTRAY_USER}
 -PBINTRAY_API_KEY=${BINTRAY_API_KEY}
+'''
+                    // Reads the version information
+                    environmentVariables {
+                        propertiesFile 'build/version.properties'
+                    }
+                    // Tags and pushes
+                    shell '''\
+git tag ${VERSION_DISPLAY}
+git push tag ${VERSION_DISPLAY}
 '''
                 }
                 publishers {
