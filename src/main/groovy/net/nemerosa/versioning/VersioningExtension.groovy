@@ -22,7 +22,7 @@ class VersioningExtension {
                 "${branchId}-${build}"
             },
             snapshot: { branchType, branchId, base, build, full, extension ->
-                "${base}-${extension.snapshot}"
+                "${base}${extension.snapshot}"
             },
             base: { branchType, branchId, base, build, full, extension ->
                 base
