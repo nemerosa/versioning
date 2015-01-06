@@ -1,25 +1,16 @@
 /**
- * Versioning applied to itself
- */
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'net.nemerosa:versioning:0.3.3'
-    }
-}
-
-/**
  * Plug-in development
  */
 
 plugins {
    id 'nu.studer.plugindev' version '1.0.3'
    id 'com.jfrog.bintray' version '1.0'
+    /**
+     * Versioning applied to itself
+     */
+    id 'net.nemerosa.versioning' version '1.0.0'
 }
 
-apply plugin: 'net.nemerosa.versioning'
 apply plugin: 'groovy'
 
 /**
