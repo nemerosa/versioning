@@ -48,6 +48,8 @@ Property | Description | Git: `master` | Git: `feature/great` | Git: `release/2.
 `base` | Base version for the display version | `` | `great` | `2.0`
 `display` | Display version | `master` | `great` | `2.0.0`, `2.0.1`, ...
 
+### Display version
+
 The `display` version is equal to the `base` property is available or to the branch identifier.
 
 For branches to type `release`, an additional computation occurs:
