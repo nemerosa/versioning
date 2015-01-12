@@ -63,15 +63,15 @@ class SVNVersionTest {
         // Gets the version info
         VersionInfo info = project.versioning.info as VersionInfo
         assert info != null
-        assert info.build == '4'
+        assert info.build == '3'
         assert info.branch == 'trunk'
         assert info.base == ''
         assert info.branchId == 'trunk'
         assert info.branchType == 'trunk'
-        assert info.commit == '4'
-        assert info.display == "master-4"
-        assert info.full == "master-4"
-        assert info.scm == 'scm'
+        assert info.commit == '3'
+        assert info.display == "trunk-3"
+        assert info.full == "trunk-3"
+        assert info.scm == 'svn'
     }
 
 }

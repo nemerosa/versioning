@@ -5,6 +5,8 @@ import net.nemerosa.versioning.SCMInfoService
 import net.nemerosa.versioning.VersioningExtension
 import org.gradle.api.Project
 
+import static net.nemerosa.versioning.support.Utils.run
+
 class SVNInfoService implements SCMInfoService {
 
     @Override
@@ -15,8 +17,35 @@ class SVNInfoService implements SCMInfoService {
         if (!hasSvn) {
             SCMInfo.NONE
         } else {
-            // FIXME Method net.nemerosa.versioning.SCMInfoService.getInfo
-            return null
+            // Gets the SVN raw info as XML
+            String xmlInfo = run(project.projectDir, 'svn', 'info', '--xml')
+            // Parsing
+            def info = new XmlSlurper().parseText(xmlInfo)
+            // URL
+            String url = info.entry.url as String
+            // Branch parsing
+            String branch = parseBranch(url)
+            // Revision
+            String revision = info.entry.commit.@revision as String
+            // OK
+            new SCMInfo(
+                    branch,
+                    revision,
+                    revision
+            )
+        }
+    }
+
+    static String parseBranch(String url) {
+        if (url ==~ /.*\/trunk$/) {
+            'trunk'
+        } else {
+            def m = url =~ /.*\/branches\/([^\/])$/
+            if (m.matches()) {
+                m.group(1)
+            } else {
+                throw new SVNInfoURLException(url)
+            }
         }
     }
 
