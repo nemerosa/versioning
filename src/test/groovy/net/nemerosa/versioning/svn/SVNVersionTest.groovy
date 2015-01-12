@@ -224,4 +224,157 @@ VERSION_SCM = svn
         assert info.scm == 'svn'
     }
 
+    @Test
+    void 'SVN: feature branch with full display mode'() {
+
+        // SVN
+        repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
+        repo.mkdir 'project/branches/feature-test-1-my-feature/1', 'Commit for TEST-1'
+        repo.mkdir 'project/branches/feature-test-1-my-feature/2', 'Commit for TEST-1'
+
+        // Project
+        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/branches/feature-test-1-my-feature')).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+            displayMode = 'full'
+        }
+
+        // Gets the info and checks it
+        VersionInfo info = project.versioning.info as VersionInfo
+        assert info != null
+        assert info.build == '3'
+        assert info.branch == 'feature-test-1-my-feature'
+        assert info.base == 'test-1-my-feature'
+        assert info.branchId == 'feature-test-1-my-feature'
+        assert info.branchType == 'feature'
+        assert info.commit == '3'
+        assert info.display == "feature-test-1-my-feature-3"
+        assert info.full == "feature-test-1-my-feature-3"
+        assert info.scm == 'svn'
+    }
+
+    @Test
+    void 'SVN: feature branch with snapshot display mode'() {
+
+        // SVN
+        repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
+        repo.mkdir 'project/branches/feature-test-1-my-feature/1', 'Commit for TEST-1'
+        repo.mkdir 'project/branches/feature-test-1-my-feature/2', 'Commit for TEST-1'
+
+        // Project
+        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/branches/feature-test-1-my-feature')).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+            displayMode = 'snapshot'
+        }
+
+        // Gets the info and checks it
+        VersionInfo info = project.versioning.info as VersionInfo
+        assert info != null
+        assert info.build == '3'
+        assert info.branch == 'feature-test-1-my-feature'
+        assert info.base == 'test-1-my-feature'
+        assert info.branchId == 'feature-test-1-my-feature'
+        assert info.branchType == 'feature'
+        assert info.commit == '3'
+        assert info.display == "test-1-my-feature-SNAPSHOT"
+        assert info.full == "feature-test-1-my-feature-3"
+        assert info.scm == 'svn'
+    }
+
+    @Test
+    void 'SVN: feature branch with custom snapshot display mode'() {
+
+        // SVN
+        repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
+        repo.mkdir 'project/branches/feature-test-1-my-feature/1', 'Commit for TEST-1'
+        repo.mkdir 'project/branches/feature-test-1-my-feature/2', 'Commit for TEST-1'
+
+        // Project
+        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/branches/feature-test-1-my-feature')).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+            displayMode = 'snapshot'
+            snapshot = '.DEV'
+        }
+
+        // Gets the info and checks it
+        VersionInfo info = project.versioning.info as VersionInfo
+        assert info != null
+        assert info.build == '3'
+        assert info.branch == 'feature-test-1-my-feature'
+        assert info.base == 'test-1-my-feature'
+        assert info.branchId == 'feature-test-1-my-feature'
+        assert info.branchType == 'feature'
+        assert info.commit == '3'
+        assert info.display == "test-1-my-feature.DEV"
+        assert info.full == "feature-test-1-my-feature-3"
+        assert info.scm == 'svn'
+    }
+
+    @Test
+    void 'SVN: feature branch with custom base display mode'() {
+
+        // SVN
+        repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
+        repo.mkdir 'project/branches/feature-test-1-my-feature/1', 'Commit for TEST-1'
+        repo.mkdir 'project/branches/feature-test-1-my-feature/2', 'Commit for TEST-1'
+
+        // Project
+        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/branches/feature-test-1-my-feature')).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+            displayMode = 'base'
+        }
+
+        // Gets the info and checks it
+        VersionInfo info = project.versioning.info as VersionInfo
+        assert info != null
+        assert info.build == '3'
+        assert info.branch == 'feature-test-1-my-feature'
+        assert info.base == 'test-1-my-feature'
+        assert info.branchId == 'feature-test-1-my-feature'
+        assert info.branchType == 'feature'
+        assert info.commit == '3'
+        assert info.display == "test-1-my-feature"
+        assert info.full == "feature-test-1-my-feature-3"
+        assert info.scm == 'svn'
+    }
+
+    @Test
+    void 'SVN: feature branch with custom display mode'() {
+
+        // SVN
+        repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
+        repo.mkdir 'project/branches/feature-test-1-my-feature/1', 'Commit for TEST-1'
+        repo.mkdir 'project/branches/feature-test-1-my-feature/2', 'Commit for TEST-1'
+
+        // Project
+        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/branches/feature-test-1-my-feature')).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+            displayMode = { branchType, branchId, base, build, full, extension ->
+                "${base}-${build}-SNAPSHOT"
+            }
+        }
+
+        // Gets the info and checks it
+        VersionInfo info = project.versioning.info as VersionInfo
+        assert info != null
+        assert info.build == '3'
+        assert info.branch == 'feature-test-1-my-feature'
+        assert info.base == 'test-1-my-feature'
+        assert info.branchId == 'feature-test-1-my-feature'
+        assert info.branchType == 'feature'
+        assert info.commit == '3'
+        assert info.display == "test-1-my-feature-3-SNAPSHOT"
+        assert info.full == "feature-test-1-my-feature-3"
+        assert info.scm == 'svn'
+    }
+
 }
