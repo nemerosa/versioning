@@ -54,4 +54,9 @@ class SVNInfoService implements SCMInfoService {
         // FIXME Method net.nemerosa.versioning.SCMInfoService.getBaseTags
         return null
     }
+
+    @Override
+    String getBranchTypeSeparator() {
+        '-'
+    }
 }

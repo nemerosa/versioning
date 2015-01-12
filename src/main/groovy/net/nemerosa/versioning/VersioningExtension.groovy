@@ -37,8 +37,8 @@ class VersioningExtension {
     String scm = 'git'
 
     /**
-     * Getting the version type from a branch. Default: getting the part before the first "/". If no slash is found,
-     * takes the branch name as whole.
+     * Getting the version type from a branch. Default: getting the part before the first "/" (or a second
+     * optional 'separator' parameter). If no slash is found, takes the branch name as whole.
      *
      * For example:
      *
@@ -46,8 +46,8 @@ class VersioningExtension {
      * * feature/2.0 --> feature
      * * master --> master
      */
-    Closure<BranchInfo> branchParser = { String branch ->
-        int pos = branch.indexOf('/')
+    Closure<BranchInfo> branchParser = { String branch, String separator = '/' ->
+        int pos = branch.indexOf(separator)
         if (pos > 0) {
             new BranchInfo(type: branch.substring(0, pos), base: branch.substring(pos + 1))
         } else {
@@ -121,7 +121,7 @@ class VersioningExtension {
         String versionBranch = scmInfo.branch
 
         // Branch parsing
-        BranchInfo branchInfo = branchParser(versionBranch)
+        BranchInfo branchInfo = branchParser(versionBranch, scmInfoService.branchTypeSeparator)
         String versionBranchType = branchInfo.type
         String versionBase = branchInfo.base
 

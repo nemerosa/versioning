@@ -47,4 +47,9 @@ class GitInfoService implements SCMInfoService {
             }
         }.findAll { it != '' }
     }
+
+    @Override
+    String getBranchTypeSeparator() {
+        '/'
+    }
 }
