@@ -2,6 +2,8 @@ package net.nemerosa.versioning.svn
 
 import net.nemerosa.versioning.VersionInfo
 import net.nemerosa.versioning.VersioningPlugin
+import net.nemerosa.versioning.tasks.VersionDisplayTask
+import org.gradle.api.DefaultTask
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.After
 import org.junit.Before
@@ -72,6 +74,125 @@ class SVNVersionTest {
         assert info.display == "trunk-3"
         assert info.full == "trunk-3"
         assert info.scm == 'svn'
+    }
+
+    @Test
+    void 'SVN: display version'() {
+        // SVN
+        repo.mkdir 'project/trunk', 'Trunk'
+        repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
+        repo.mkdir 'project/trunk/2', 'Commit for TEST-2'
+        // Project
+        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/trunk')).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+        }
+        // Checks the versionDisplay exists and runs it
+        def task = project.tasks.getByName('versionDisplay') as VersionDisplayTask
+        task.execute()
+    }
+
+    @Test
+    void 'SVN: version file - defaults'() {
+        // SVN
+        repo.mkdir 'project/trunk', 'Trunk'
+        repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
+        repo.mkdir 'project/trunk/2', 'Commit for TEST-2'
+        // Project
+        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/trunk')).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+        }
+        // version file task
+        def task = project.tasks.getByName('versionFile') as DefaultTask
+        task.execute()
+
+        // Checks the file
+        def file = new File(project.buildDir, 'version.properties')
+        assert file.exists(): "File ${file} must exist."
+        assert file.text == """\
+VERSION_BUILD = 3
+VERSION_BRANCH = trunk
+VERSION_BASE = \n\
+VERSION_BRANCHID = trunk
+VERSION_BRANCHTYPE = trunk
+VERSION_COMMIT = 3
+VERSION_DISPLAY = trunk-3
+VERSION_FULL = trunk-3
+VERSION_SCM = svn
+"""
+    }
+
+    @Test
+    void 'SVN: version file - custom prefix'() {
+        // SVN
+        repo.mkdir 'project/trunk', 'Trunk'
+        repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
+        repo.mkdir 'project/trunk/2', 'Commit for TEST-2'
+        // Project
+        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/trunk')).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+        }
+        project.versionFile {
+            prefix = 'CUSTOM_'
+        }
+        // version file task
+        def task = project.tasks.getByName('versionFile') as DefaultTask
+        task.execute()
+
+        // Checks the file
+        def file = new File(project.buildDir, 'version.properties')
+        assert file.exists(): "File ${file} must exist."
+        assert file.text == """\
+CUSTOM_BUILD = 3
+CUSTOM_BRANCH = trunk
+CUSTOM_BASE = \n\
+CUSTOM_BRANCHID = trunk
+CUSTOM_BRANCHTYPE = trunk
+CUSTOM_COMMIT = 3
+CUSTOM_DISPLAY = trunk-3
+CUSTOM_FULL = trunk-3
+CUSTOM_SCM = svn
+"""
+    }
+
+    @Test
+    void 'SVN: version file - custom file'() {
+        // SVN
+        repo.mkdir 'project/trunk', 'Trunk'
+        repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
+        repo.mkdir 'project/trunk/2', 'Commit for TEST-2'
+        // Project
+        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/trunk')).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+        }
+        project.versionFile {
+            file = new File(project.projectDir, '.version')
+        }
+        // version file task
+        def task = project.tasks.getByName('versionFile') as DefaultTask
+        task.execute()
+
+        // Checks the file
+        def file = new File(project.projectDir, '.version')
+        assert file.exists(): "File ${file} must exist."
+        assert file.text == """\
+VERSION_BUILD = 3
+VERSION_BRANCH = trunk
+VERSION_BASE = \n\
+VERSION_BRANCHID = trunk
+VERSION_BRANCHTYPE = trunk
+VERSION_COMMIT = 3
+VERSION_DISPLAY = trunk-3
+VERSION_FULL = trunk-3
+VERSION_SCM = svn
+"""
     }
 
 }
