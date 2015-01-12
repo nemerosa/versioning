@@ -35,7 +35,7 @@ buildscript {
       jcenter()
    }
    dependencies {
-      classpath 'net.nemerosa:versioning:1.0.0'
+      classpath 'net.nemerosa:versioning:1.1.0'
    }
 }
 
@@ -47,7 +47,7 @@ apply plugin: 'net.nemerosa.versioning'
 ```groovy
 
 plugins {
-   id 'net.nemerosa.versioning' version '1.0.0'
+   id 'net.nemerosa.versioning' version '1.1.0'
 }
 ```
 
@@ -152,7 +152,7 @@ versioning {
    /**
     * Defines the SCM to use in order to collect information.
     *
-    * At the moment, only Git is supported.
+    * At the moment, only Git (git) and Subversion (svn) are supported.
     */
    scm = 'git'
    /**
@@ -160,8 +160,8 @@ versioning {
     * By default, we use "/" as a separator between the type and the base. If not
     * present, the type is the branch and the base is empty.
     */
-    branchParser = { String branch ->
-        int pos = branch.indexOf('/')
+    branchParser = { String branch, String separator = '/' ->
+        int pos = branch.indexOf(separator)
         if (pos > 0) {
             new BranchInfo(
                type: branch.substring(0, pos),
@@ -180,6 +180,35 @@ versioning {
     releases = ['release']
 }
 ```
+
+## Subversion support
+
+Subversion is supported starting from version `1.1.0` of the Versioning plug-in. In order to enable your working copy
+to work with Subversion, set `scm` to `svn`:
+
+```groovy
+versioning {
+   scm = 'svn'
+}
+```
+
+The branches are read from under the `branches/` folder and the branch type is parsed
+using '-' as a separator. The table below gives some examples for Subversion based branches:
+
+
+Property | Description | SVN: `trunk` @ rev 12 | SVN: `branches/feature-great` @ rev 12 | SVN: `branches/release-2.0` @ rev 12
+---|---|---|---|---
+`scm` | SCM source | `svn` | `svn` | `svn`
+`branch` | Branch name | `trunk` | `feature-great` | `release-2.0`
+`branchType` | Type of branch | `trunk` | `feature` | `release`
+`branchId` | Branch as an identifier | `trunk` | `feature-great` | `release-2.0`
+`commit` | Revision | `12` | `12` | `12`
+`build` | Revision | `12` | `12` | `12`
+`full` | Branch ID and build | `master-12` | `feature-great-12` | `release-2.0-12`
+`base` | Base version for the display version | `` | `great` | `2.0`
+`display` | Display version | `trunk` | `great` | `2.0.0`, `2.0.1`, ...
+
+The rules for the display mode remain the same ones than for Git.
 
 ## Release
 
