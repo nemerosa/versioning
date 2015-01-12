@@ -3,9 +3,27 @@ package net.nemerosa.versioning.svn
 import net.nemerosa.versioning.VersionInfo
 import net.nemerosa.versioning.VersioningPlugin
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 
+import java.util.concurrent.atomic.AtomicInteger
+
 class SVNVersionTest {
+
+    private static AtomicInteger count = new AtomicInteger()
+    private SVNRepo repo
+
+    @Before
+    void 'SVN start'() {
+        repo = new SVNRepo("test${count.incrementAndGet()}")
+        repo.start()
+    }
+
+    @After
+    void 'SVN stop'() {
+        repo.stop()
+    }
 
     @Test
     void 'SVN not present'() {

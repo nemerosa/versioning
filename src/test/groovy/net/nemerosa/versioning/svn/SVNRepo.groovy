@@ -1,8 +1,8 @@
 package net.nemerosa.versioning.svn
 
-import net.nemerosa.versioning.support.Utils
-import org.apache.commons.io.FileUtils
 import org.junit.Assert
+
+import static net.nemerosa.versioning.support.Utils.run
 
 class SVNRepo {
 
@@ -22,7 +22,7 @@ class SVNRepo {
 
     long start() {
         repo = new File("build/repo/$repoName").absoluteFile
-        FileUtils.deleteQuietly(repo)
+        if (repo.exists()) repo.deleteDir()
         repo.mkdirs()
         println "SVN Test repo at ${repo.absolutePath}"
         // Creates the repository
@@ -33,7 +33,7 @@ class SVNRepo {
         new File(repo, 'conf/svnserve.conf').bytes = SVNRepo.class.getResourceAsStream('/svn/conf/svnserve.conf').bytes
         // Starts serving the repository
         def pidFile = new File(repo, 'pid')
-        Utils.run repo, "svnserve", "--daemon", "--root", repo.absolutePath, "--pid-file", pidFile.absolutePath
+        run repo, "svnserve", "--daemon", "--root", repo.absolutePath, "--pid-file", pidFile.absolutePath
         // Waits until the PID is created
         boolean pidExists = pidFile.exists()
         int tries = 0
@@ -68,7 +68,8 @@ class SVNRepo {
      * Merges {@code from} into {@code to} using the {@code wd} working directory.
      */
     static def merge(File wd, String from, String to, String message) {
-        FileUtils.cleanDirectory wd
+        if (wd.exists()) wd.deleteDir()
+        wd.mkdirs()
         // Checks the from out
         run wd, 'svn', 'checkout', "svn://localhost/${to}", wd.absolutePath
         // Merge the to
