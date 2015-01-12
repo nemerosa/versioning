@@ -28,7 +28,7 @@ class SVNVersionTest {
     }
 
     @Test
-    void 'SVN not present'() {
+    void 'SVN: not present'() {
         def wd = File.createTempDir('git', '')
         def project = ProjectBuilder.builder().withProjectDir(wd).build()
         new VersioningPlugin().apply(project)
@@ -51,7 +51,7 @@ class SVNVersionTest {
     }
 
     @Test
-    void 'SVN trunk'() {
+    void 'SVN: trunk'() {
         // SVN
         repo.mkdir 'project/trunk', 'Trunk'
         repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
@@ -193,6 +193,35 @@ VERSION_DISPLAY = trunk-3
 VERSION_FULL = trunk-3
 VERSION_SCM = svn
 """
+    }
+
+    @Test
+    void 'SVN: feature branch'() {
+
+        // SVN
+        repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
+        repo.mkdir 'project/branches/feature-test-1-my-feature/1', 'Commit for TEST-1'
+        repo.mkdir 'project/branches/feature-test-1-my-feature/2', 'Commit for TEST-1'
+
+        // Project
+        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/branches/feature-test-1-my-feature')).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+        }
+
+        // Gets the info and checks it
+        VersionInfo info = project.versioning.info as VersionInfo
+        assert info != null
+        assert info.build == '3'
+        assert info.branch == 'feature-test-1-my-feature'
+        assert info.base == 'test-1-my-feature'
+        assert info.branchId == 'feature-test-1-my-feature'
+        assert info.branchType == 'feature'
+        assert info.commit == '3'
+        assert info.display == "feature-test-1-my-feature-3"
+        assert info.full == "feature-test-1-my-feature-3"
+        assert info.scm == 'svn'
     }
 
 }
