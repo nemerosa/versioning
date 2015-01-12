@@ -416,7 +416,7 @@ VERSION_SCM = svn
         repo.mkdir 'project/branches/release-2.0/2', 'Commit for TEST-1'
 
         // Tagging
-        repo.copy 'project/branches/release-2.0@2', 'project/tags/2.0.1', 'v2.0.1'
+        repo.copy 'project/branches/release-2.0@2', 'project/tags/2.0.0', 'v2.0.0'
 
         // Project
         def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/branches/release-2.0')).build()

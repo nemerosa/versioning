@@ -5,7 +5,7 @@ public class ProcessExitException extends ProcessException {
     private final int exit;
 
     public ProcessExitException(int exit, String error) {
-        super(error);
+        super("[${exit}] ${error}");
         this.exit = exit;
     }
 
