@@ -1,6 +1,7 @@
 package net.nemerosa.versioning
 
 import net.nemerosa.versioning.git.GitInfoService
+import net.nemerosa.versioning.svn.SVNInfoService
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
@@ -9,22 +10,22 @@ class VersioningExtension {
     /**
      * Registry of SCM info services
      */
-    private static final Map<String, GitInfoService> INFO_SERVICES = [
+    private static final Map<String, SCMInfoService> INFO_SERVICES = [
             git: new GitInfoService(),
-            // TODO SVN
+            svn: new SVNInfoService(),
     ]
 
     /**
      * Registry of display modes
      */
     private static final Map<String, Closure<String>> DISPLAY_MODES = [
-            full: { branchType, branchId, base, build, full, extension ->
+            full    : { branchType, branchId, base, build, full, extension ->
                 "${branchId}-${build}"
             },
             snapshot: { branchType, branchId, base, build, full, extension ->
                 "${base}${extension.snapshot}"
             },
-            base: { branchType, branchId, base, build, full, extension ->
+            base    : { branchType, branchId, base, build, full, extension ->
                 base
             },
 
