@@ -65,6 +65,15 @@ class SVNRepo {
     }
 
     /**
+     * Checks the code into a temporary directory and returns it
+     */
+    static File checkout(String path) {
+        def wc = File.createTempDir('svn', '.wd')
+        run wc, 'svn', 'checkout', "svn://localhost/${path}", wc.absolutePath
+        wc
+    }
+
+    /**
      * Merges {@code from} into {@code to} using the {@code wd} working directory.
      */
     static def merge(File wd, String from, String to, String message) {
