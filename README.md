@@ -9,18 +9,22 @@ Given a simple release workflow:
 
 ![Release workflow](doc/release-workflow.png)
 
-The computed project's `version` on the `master` and `feature/*` branches is a SNAPSHOT from the base version. For `release/*` branches, the version is computed according the latest tag on the branch, allowing for automatic patch number.
+We get the version information from the branch in two flavours:
+
+* the _full_ version, which is normalised branch name, followed by the short commit hash
+* the _display_ version, which can be used to display the version to an end user, and is computed differently on a `feature/*` or `master` branch than on a `release/*` branch.
+
+The computed project's _display_ version on the `feature/*` and `master` branches is the _base_ version (the normalised branch name without the prefix) and the abbreviated commit hash (or _build_ version). For `release/*` branches, the version is computed according the latest tag on the branch, allowing for automatic patch number.
 
 To achieve such a configuration, just configure the `versioning` plug-in the following way and follow strict conventions for your branch names:
 
 ```groovy
-versioning {
-   displayMode = 'snapshot'
-}
 
 allprojects {
-   version = versioning.info.display
+   version = versioning.info.full
 }
+
+// Using versioning.info.display for generating property files for example
 ```
 
 ## Applying the plug-in
@@ -53,11 +57,11 @@ plugins {
 
 ## Using the versioning info
 
-For example, to set the project's version using the SCM:
+For example, to set the project's _full_ version using the SCM:
 
 ```groovy
 allprojects {
-   version = versioning.info.display
+   version = versioning.info.full
 }
 ```
 
