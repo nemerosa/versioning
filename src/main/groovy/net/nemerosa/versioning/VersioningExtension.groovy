@@ -180,6 +180,7 @@ class VersioningExtension {
             if (dirtyFailOnReleases && versionBranchType in releases) {
                 throw new DirtyException()
             } else {
+                println "[versioning] WARNING - the working copy has unstaged or uncommitted changes."
                 versionDisplay = dirty(versionDisplay)
                 versionFull = dirty(versionFull)
             }
