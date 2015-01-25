@@ -185,6 +185,41 @@ versioning {
 }
 ```
 
+### Dirty versions
+
+The behaviour of the version computation is slightly different when the working
+copy is dirty - meaning that the working copy contains some files which are not
+staged or not committed.
+
+When the working copy the version is computed from, the default behaviour is to
+append the `-dirty` suffix to the `display` and `full` version.
+
+This can be customised with the following ettaributes on the `versioning` extension:
+
+```groovy
+versioning {
+
+   /**
+   * Dirty mode.
+   *
+   * Closure that takes a version (display or full) and processes it to produce a <i>dirty</i>
+   * indicator. By default, it appends the dirtySuffix value to the version.
+   */
+   dirty = { version -> "${version}${dirtySuffix}" }
+
+   /**
+   * Default dirty suffix
+   */
+   dirtySuffix = '-dirty'
+
+   /**
+   * If set to true, the build will fail if working copy is dirty and if the branch type is
+   * part of the releases list ("release" only by default).
+   */
+   dirtyFailOnReleases = false
+}
+```
+
 ## Subversion support
 
 Subversion is supported starting from version `1.1.0` of the Versioning plug-in. In order to enable your working copy
