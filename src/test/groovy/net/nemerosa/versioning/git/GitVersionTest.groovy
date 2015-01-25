@@ -613,8 +613,9 @@ VERSION_SCM = git
                 git 'tag', '2.0.2'
                 commit 6
                 git 'log', '--oneline', '--graph', '--decorate', '--all'
-                // Add a file
-                cmd 'touch', 'test.txt'
+                // Nope, got to mod an existing file 
+                //cmd 'touch', 'test.txt'
+		new File(dir, 'file5') << 'Add some content'
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
