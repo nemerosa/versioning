@@ -71,7 +71,7 @@ folder {
          scm {
              git {
                  remote {
-                     url "git@github.com:${REPOSITORY}.git"
+                     url "git@github.com:nemerosa/versioning.git"
                      branch "origin/${BRANCH}"
                  }
                  wipeOutWorkspace()
@@ -111,7 +111,7 @@ folder {
              scm {
                  git {
                      remote {
-                         url "git@github.com:${REPOSITORY}.git"
+                         url "git@github.com:nemerosa/versioning.git"
                          branch "origin/${BRANCH}"
                      }
                      wipeOutWorkspace()
