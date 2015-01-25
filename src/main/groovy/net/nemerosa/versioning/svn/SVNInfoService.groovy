@@ -32,9 +32,33 @@ class SVNInfoService implements SCMInfoService {
             new SCMInfo(
                     branch,
                     revision,
-                    revision
+                    revision,
+                    isWorkingCopyDirty(project.projectDir)
             )
         }
+    }
+
+    static boolean isWorkingCopyDirty(File dir) {
+        // Gets the status as XML
+        String xmlStatus = run(dir, 'svn', 'status', '--xml')
+        // Parsing
+        def status = new XmlSlurper().parseText(xmlStatus)
+        // List of entries
+        def entries = status.target.entry
+        if (entries.size() == 0) return false
+        // Checks every entry
+        def dirtyEntry = entries.find { entry ->
+            def path = entry.@path.text() as String
+            if (path != 'userHome') {
+                def wcStatus = entry['wc-status']
+                def item = wcStatus.@item.text()
+                def props = wcStatus.@props.text()
+                return (item != 'none' && item != 'external') || (props != 'none')
+            } else {
+                return false
+            }
+        }
+        return dirtyEntry.size() > 0
     }
 
     static String parseBranch(String url) {

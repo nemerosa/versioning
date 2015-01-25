@@ -20,6 +20,10 @@ class SVNRepo {
         repo
     }
 
+    File getDir() {
+        repo
+    }
+
     long start() {
         repo = new File("build/repo/$repoName").absoluteFile
         if (repo.exists()) repo.deleteDir()
@@ -62,6 +66,11 @@ class SVNRepo {
 
     def mkdir(String path, String message) {
         run repo, 'svn', 'mkdir', '--message', message, '--parents', '--username', 'user', '--password', 'test', '--no-auth-cache', "svn://localhost/${path}"
+    }
+
+    static def ignore(File dir, String ignore) {
+        run dir, 'svn', 'propset', 'svn:ignore', ignore, '.'
+        run dir, 'svn', 'commit', '-m', 'Ignoring', '--username', 'user', '--password', 'test', '--no-auth-cache'
     }
 
     /**

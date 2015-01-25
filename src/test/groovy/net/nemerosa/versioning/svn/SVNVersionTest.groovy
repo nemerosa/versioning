@@ -2,6 +2,7 @@ package net.nemerosa.versioning.svn
 
 import net.nemerosa.versioning.VersionInfo
 import net.nemerosa.versioning.VersioningPlugin
+import net.nemerosa.versioning.support.DirtyException
 import net.nemerosa.versioning.tasks.VersionDisplayTask
 import org.gradle.api.DefaultTask
 import org.gradle.testfixtures.ProjectBuilder
@@ -10,6 +11,9 @@ import org.junit.Before
 import org.junit.Test
 
 import java.util.concurrent.atomic.AtomicInteger
+
+import static net.nemerosa.versioning.support.Utils.run
+import static net.nemerosa.versioning.svn.SVNRepo.ignore
 
 class SVNVersionTest {
 
@@ -99,8 +103,10 @@ class SVNVersionTest {
         repo.mkdir 'project/trunk', 'Trunk'
         repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
         repo.mkdir 'project/trunk/2', 'Commit for TEST-2'
+        def dir = SVNRepo.checkout('project/trunk')
+        ignore dir, '.gradle'
         // Project
-        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/trunk')).build()
+        def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -113,14 +119,14 @@ class SVNVersionTest {
         def file = new File(project.buildDir, 'version.properties')
         assert file.exists(): "File ${file} must exist."
         assert file.text == """\
-VERSION_BUILD = 3
+VERSION_BUILD = 4
 VERSION_BRANCH = trunk
 VERSION_BASE = \n\
 VERSION_BRANCHID = trunk
 VERSION_BRANCHTYPE = trunk
-VERSION_COMMIT = 3
-VERSION_DISPLAY = trunk-3
-VERSION_FULL = trunk-3
+VERSION_COMMIT = 4
+VERSION_DISPLAY = trunk-4
+VERSION_FULL = trunk-4
 VERSION_SCM = svn
 """
     }
@@ -132,7 +138,9 @@ VERSION_SCM = svn
         repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
         repo.mkdir 'project/trunk/2', 'Commit for TEST-2'
         // Project
-        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/trunk')).build()
+        def dir = SVNRepo.checkout('project/trunk')
+        ignore dir, '.gradle'
+        def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -148,14 +156,14 @@ VERSION_SCM = svn
         def file = new File(project.buildDir, 'version.properties')
         assert file.exists(): "File ${file} must exist."
         assert file.text == """\
-CUSTOM_BUILD = 3
+CUSTOM_BUILD = 4
 CUSTOM_BRANCH = trunk
 CUSTOM_BASE = \n\
 CUSTOM_BRANCHID = trunk
 CUSTOM_BRANCHTYPE = trunk
-CUSTOM_COMMIT = 3
-CUSTOM_DISPLAY = trunk-3
-CUSTOM_FULL = trunk-3
+CUSTOM_COMMIT = 4
+CUSTOM_DISPLAY = trunk-4
+CUSTOM_FULL = trunk-4
 CUSTOM_SCM = svn
 """
     }
@@ -167,7 +175,9 @@ CUSTOM_SCM = svn
         repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
         repo.mkdir 'project/trunk/2', 'Commit for TEST-2'
         // Project
-        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/trunk')).build()
+        def dir = SVNRepo.checkout('project/trunk')
+        ignore dir, '.gradle'
+        def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -183,14 +193,14 @@ CUSTOM_SCM = svn
         def file = new File(project.projectDir, '.version')
         assert file.exists(): "File ${file} must exist."
         assert file.text == """\
-VERSION_BUILD = 3
+VERSION_BUILD = 4
 VERSION_BRANCH = trunk
 VERSION_BASE = \n\
 VERSION_BRANCHID = trunk
 VERSION_BRANCHTYPE = trunk
-VERSION_COMMIT = 3
-VERSION_DISPLAY = trunk-3
-VERSION_FULL = trunk-3
+VERSION_COMMIT = 4
+VERSION_DISPLAY = trunk-4
+VERSION_FULL = trunk-4
 VERSION_SCM = svn
 """
     }
@@ -438,6 +448,192 @@ VERSION_SCM = svn
         assert info.full == "release-2.0-3"
         assert info.scm == 'svn'
 
+    }
+
+    @Test
+    void 'SVN feature branch - dirty working copy - default suffix'() {
+        repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
+        repo.mkdir 'project/branches/feature-test-1-my-feature/1', 'Commit for TEST-1'
+        def dir = repo.checkout('project/branches/feature-test-1-my-feature')
+        run dir, 'touch', 'test.txt'
+
+        def project = ProjectBuilder.builder().withProjectDir(dir).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+        }
+
+        VersionInfo info = project.versioning.info as VersionInfo
+        assert info != null
+        assert info.build == '2'
+        assert info.branch == 'feature-test-1-my-feature'
+        assert info.base == 'test-1-my-feature'
+        assert info.branchId == 'feature-test-1-my-feature'
+        assert info.branchType == 'feature'
+        assert info.commit == '2'
+        assert info.display == "feature-test-1-my-feature-2-dirty"
+        assert info.full == "feature-test-1-my-feature-2-dirty"
+        assert info.scm == 'svn'
+    }
+
+    @Test
+    void 'SVN feature branch - dirty index - default suffix'() {
+
+        repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
+        repo.mkdir 'project/branches/feature-test-1-my-feature/1', 'Commit for TEST-1'
+        def dir = repo.checkout('project/branches/feature-test-1-my-feature')
+        run dir, 'touch', 'test.txt'
+        run dir, 'svn', 'add', 'test.txt'
+
+        def project = ProjectBuilder.builder().withProjectDir(dir).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+        }
+
+        VersionInfo info = project.versioning.info as VersionInfo
+        assert info != null
+        assert info.build == '2'
+        assert info.branch == 'feature-test-1-my-feature'
+        assert info.base == 'test-1-my-feature'
+        assert info.branchId == 'feature-test-1-my-feature'
+        assert info.branchType == 'feature'
+        assert info.commit == '2'
+        assert info.display == "feature-test-1-my-feature-2-dirty"
+        assert info.full == "feature-test-1-my-feature-2-dirty"
+        assert info.scm == 'svn'
+    }
+
+    @Test
+    void 'SVN feature branch - dirty working copy - custom suffix'() {
+        repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
+        repo.mkdir 'project/branches/feature-test-1-my-feature/1', 'Commit for TEST-1'
+        def dir = repo.checkout('project/branches/feature-test-1-my-feature')
+        run dir, 'touch', 'test.txt'
+
+        def project = ProjectBuilder.builder().withProjectDir(dir).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+            dirtySuffix = '-dev'
+        }
+
+        VersionInfo info = project.versioning.info as VersionInfo
+        assert info != null
+        assert info.build == '2'
+        assert info.branch == 'feature-test-1-my-feature'
+        assert info.base == 'test-1-my-feature'
+        assert info.branchId == 'feature-test-1-my-feature'
+        assert info.branchType == 'feature'
+        assert info.commit == '2'
+        assert info.display == "feature-test-1-my-feature-2-dev"
+        assert info.full == "feature-test-1-my-feature-2-dev"
+        assert info.scm == 'svn'
+    }
+
+    @Test
+    void 'SVN release branch - dirty working copy - default'() {
+        // SVN
+        repo.mkdir 'project/branches/release-2.0', 'Feature branch'
+        repo.mkdir 'project/branches/release-2.0/1', 'Commit for TEST-1'
+        repo.mkdir 'project/branches/release-2.0/2', 'Commit for TEST-1'
+        def dir = repo.checkout('project/branches/release-2.0')
+        run dir, 'touch', 'test.txt'
+
+        def project = ProjectBuilder.builder().withProjectDir(dir).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+        }
+
+        VersionInfo info = project.versioning.info as VersionInfo
+        assert info != null
+        assert info.build == '3'
+        assert info.branch == 'release-2.0'
+        assert info.base == '2.0'
+        assert info.branchId == 'release-2.0'
+        assert info.branchType == 'release'
+        assert info.commit == '3'
+        assert info.display == "2.0.0-dirty"
+        assert info.full == "release-2.0-3-dirty"
+        assert info.scm == 'svn'
+    }
+
+    @Test
+    void 'SVN release branch - dirty working copy - custom suffix'() {
+        // SVN
+        repo.mkdir 'project/branches/release-2.0', 'Feature branch'
+        repo.mkdir 'project/branches/release-2.0/1', 'Commit for TEST-1'
+        repo.mkdir 'project/branches/release-2.0/2', 'Commit for TEST-1'
+        def dir = repo.checkout('project/branches/release-2.0')
+        run dir, 'touch', 'test.txt'
+
+        def project = ProjectBuilder.builder().withProjectDir(dir).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+            dirtySuffix = '-DEV'
+        }
+
+        VersionInfo info = project.versioning.info as VersionInfo
+        assert info != null
+        assert info.build == '3'
+        assert info.branch == 'release-2.0'
+        assert info.base == '2.0'
+        assert info.branchId == 'release-2.0'
+        assert info.branchType == 'release'
+        assert info.commit == '3'
+        assert info.display == "2.0.0-DEV"
+        assert info.full == "release-2.0-3-DEV"
+        assert info.scm == 'svn'
+    }
+
+    @Test
+    void 'SVN release branch - dirty working copy - custom code'() {
+        // SVN
+        repo.mkdir 'project/branches/release-2.0', 'Feature branch'
+        repo.mkdir 'project/branches/release-2.0/1', 'Commit for TEST-1'
+        repo.mkdir 'project/branches/release-2.0/2', 'Commit for TEST-1'
+        def dir = repo.checkout('project/branches/release-2.0')
+        run dir, 'touch', 'test.txt'
+
+        def project = ProjectBuilder.builder().withProjectDir(dir).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+            dirty = { version -> "${version}-DONOTUSE" }
+        }
+
+        VersionInfo info = project.versioning.info as VersionInfo
+        assert info != null
+        assert info.build == '3'
+        assert info.branch == 'release-2.0'
+        assert info.base == '2.0'
+        assert info.branchId == 'release-2.0'
+        assert info.branchType == 'release'
+        assert info.commit == '3'
+        assert info.display == "2.0.0-DONOTUSE"
+        assert info.full == "release-2.0-3-DONOTUSE"
+        assert info.scm == 'svn'
+    }
+
+    @Test(expected = DirtyException)
+    void 'SVN release branch - dirty working copy - fail'() {
+        // SVN
+        repo.mkdir 'project/branches/release-2.0', 'Feature branch'
+        repo.mkdir 'project/branches/release-2.0/1', 'Commit for TEST-1'
+        repo.mkdir 'project/branches/release-2.0/2', 'Commit for TEST-1'
+        def dir = repo.checkout('project/branches/release-2.0')
+        run dir, 'touch', 'test.txt'
+
+        def project = ProjectBuilder.builder().withProjectDir(dir).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+            dirtyFailOnReleases = true
+        }
+
+        project.versioning.info as VersionInfo
     }
 
 }
