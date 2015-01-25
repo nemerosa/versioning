@@ -1,6 +1,7 @@
 package net.nemerosa.versioning
 
 import net.nemerosa.versioning.git.GitInfoService
+import net.nemerosa.versioning.support.DirtyException
 import net.nemerosa.versioning.svn.SVNInfoService
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -74,6 +75,25 @@ class VersioningExtension {
      * Default Snapshot extension
      */
     String snapshot = '-SNAPSHOT'
+
+    /**
+     * Dirty mode.
+     *
+     * Closure that takes a version (<i>display</i> or <i>full</i>) and processes it to produce a <i>dirty</i>
+     * indicator. By default, it appends the {@link #dirtySuffix} value to the version.
+     */
+    Closure<String> dirty = { version -> "${version}${dirtySuffix}" }
+
+    /**
+     * Default dirty suffix
+     */
+    String dirtySuffix = '-dirty'
+
+    /**
+     * If set to <code>true</code>, the build will fail if working copy is dirty and if the branch type is
+     * part of the {@link #releases} list ("release" only by default).
+     */
+    boolean dirtyFailOnReleases = false
 
     /**
      * Computed version information
@@ -152,6 +172,16 @@ class VersioningExtension {
                 versionDisplay = mode(versionBranchType, versionBranchId, base, scmInfo.abbreviated, versionFull, this)
             } else {
                 throw new GradleException("The `displayMode` must be a registered default mode or a Closure.")
+            }
+        }
+
+        // Dirty update
+        if (scmInfo.dirty) {
+            if (dirtyFailOnReleases && versionBranchType in releases) {
+                throw new DirtyException()
+            } else {
+                versionDisplay = dirty(versionDisplay)
+                versionFull = dirty(versionFull)
             }
         }
 

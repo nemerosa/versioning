@@ -29,9 +29,17 @@ class GitInfoService implements SCMInfoService {
             new SCMInfo(
                     branch: branch,
                     commit: commit,
-                    abbreviated: abbreviated
+                    abbreviated: abbreviated,
+                    dirty: isGitTreeDirty(project.projectDir)
             )
         }
+    }
+
+    static boolean isGitTreeDirty(File dir) {
+        return run(dir, 'git', 'status', '--porcelain').trim() != ''
+//        return 'git update-index -q --ignore-submodules --refresh'.execute([], dir).waitFor() ||
+//                'git diff-files --quiet --ignore-submodules --'.execute([], dir).waitFor() ||
+//                'git diff-index --cached --quiet HEAD --ignore-submodules --'.execute([], dir).waitFor()
     }
 
     @Override

@@ -2,6 +2,7 @@ package net.nemerosa.versioning.git
 
 import net.nemerosa.versioning.VersionInfo
 import net.nemerosa.versioning.VersioningPlugin
+import net.nemerosa.versioning.support.DirtyException
 import net.nemerosa.versioning.tasks.VersionDisplayTask
 import org.gradle.api.DefaultTask
 import org.gradle.testfixtures.ProjectBuilder
@@ -479,6 +480,269 @@ VERSION_SCM = git
             assert info.display == '2.0.3'
             assert info.full == "release-2.0-${headAbbreviated}"
             assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git feature branch - dirty working copy - default suffix'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'feature/123-great'
+                commit 5
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+                // Add a file
+                cmd 'touch', 'test.txt'
+            }
+            def head = repo.commitLookup('Commit 5')
+            def headAbbreviated = repo.commitLookup('Commit 5', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'feature/123-great'
+            assert info.base == '123-great'
+            assert info.branchId == 'feature-123-great'
+            assert info.branchType == 'feature'
+            assert info.commit == head
+            assert info.display == "feature-123-great-${headAbbreviated}-dirty"
+            assert info.full == "feature-123-great-${headAbbreviated}-dirty"
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git feature branch - dirty index - default suffix'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'feature/123-great'
+                commit 5
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+                // Add a file
+                cmd 'touch', 'test.txt'
+                git 'add', 'test.txt'
+            }
+            def head = repo.commitLookup('Commit 5')
+            def headAbbreviated = repo.commitLookup('Commit 5', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'feature/123-great'
+            assert info.base == '123-great'
+            assert info.branchId == 'feature-123-great'
+            assert info.branchType == 'feature'
+            assert info.commit == head
+            assert info.display == "feature-123-great-${headAbbreviated}-dirty"
+            assert info.full == "feature-123-great-${headAbbreviated}-dirty"
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git feature branch - dirty working copy - custom suffix'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'feature/123-great'
+                commit 5
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+                // Add a file
+                cmd 'touch', 'test.txt'
+            }
+            def head = repo.commitLookup('Commit 5')
+            def headAbbreviated = repo.commitLookup('Commit 5', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versioning {
+                dirtySuffix = '-dev'
+            }
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'feature/123-great'
+            assert info.base == '123-great'
+            assert info.branchId == 'feature-123-great'
+            assert info.branchType == 'feature'
+            assert info.commit == head
+            assert info.display == "feature-123-great-${headAbbreviated}-dev"
+            assert info.full == "feature-123-great-${headAbbreviated}-dev"
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git release branch - dirty working copy - default'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'release/2.0'
+                commit 5
+                git 'tag', '2.0.2'
+                commit 6
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+                // Add a file
+                cmd 'touch', 'test.txt'
+            }
+            def head = repo.commitLookup('Commit 6')
+            def headAbbreviated = repo.commitLookup('Commit 6', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/2.0'
+            assert info.base == '2.0'
+            assert info.branchId == 'release-2.0'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '2.0.3-dirty'
+            assert info.full == "release-2.0-${headAbbreviated}-dirty"
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git release branch - dirty working copy - custom suffix'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'release/2.0'
+                commit 5
+                git 'tag', '2.0.2'
+                commit 6
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+                // Add a file
+                cmd 'touch', 'test.txt'
+            }
+            def head = repo.commitLookup('Commit 6')
+            def headAbbreviated = repo.commitLookup('Commit 6', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versioning {
+                dirtySuffix = '-DIRTY'
+            }
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/2.0'
+            assert info.base == '2.0'
+            assert info.branchId == 'release-2.0'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '2.0.3-DIRTY'
+            assert info.full == "release-2.0-${headAbbreviated}-DIRTY"
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git release branch - dirty working copy - custom code'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'release/2.0'
+                commit 5
+                git 'tag', '2.0.2'
+                commit 6
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+                // Add a file
+                cmd 'touch', 'test.txt'
+            }
+            def head = repo.commitLookup('Commit 6')
+            def headAbbreviated = repo.commitLookup('Commit 6', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versioning {
+                dirty = { version -> "${version}-DONOTUSE" }
+            }
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/2.0'
+            assert info.base == '2.0'
+            assert info.branchId == 'release-2.0'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '2.0.3-DONOTUSE'
+            assert info.full == "release-2.0-${headAbbreviated}-DONOTUSE"
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test(expected = DirtyException)
+    void 'Git release branch - dirty working copy - fail'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'release/2.0'
+                commit 5
+                git 'tag', '2.0.2'
+                commit 6
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+                // Add a file
+                cmd 'touch', 'test.txt'
+            }
+            def head = repo.commitLookup('Commit 6')
+            def headAbbreviated = repo.commitLookup('Commit 6', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versioning {
+                dirtyFailOnReleases = true
+            }
+            project.versioning.info
 
         } finally {
             repo.close()
