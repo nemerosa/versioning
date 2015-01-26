@@ -254,3 +254,13 @@ The rules for the display mode remain the same ones than for Git.
 The CI and release jobs are available in the [Nemerosa Jenkins](https://jenkins.nemerosa.net/job/versioning/).
 
 See http://plugins.gradle.org/submit for the publication on the [Gradle Plug-in Portal](https://plugins.gradle.org/).
+
+## Windows support
+
+As of version 1.2, Windows is not supported for building and testing.
+
+The tests rely on the local creation of Git and Subversion repositories, and such creation rely heavily on
+ shell commands and processes manipulation.
+
+Unless mentioned otherwise, _using_ the Versioning plug-in on Windows should be OK.
+
