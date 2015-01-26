@@ -26,8 +26,9 @@ class GitInfoServiceTest {
             repo.with {
                 git 'init'
                 commit 1
-                // Add a file
-                cmd 'touch', 'test.txt'
+                // Need to modify a tracked file, not just create a new untracked file
+                //cmd 'touch', 'test.txt'
+				new File(dir, 'file1') << 'Add some content'
             }
             assert GitInfoService.isGitTreeDirty(repo.dir): "Unstaged changes"
         } finally {

@@ -497,8 +497,9 @@ VERSION_SCM = git
                 git 'checkout', '-b', 'feature/123-great'
                 commit 5
                 git 'log', '--oneline', '--graph', '--decorate', '--all'
-                // Add a file
-                cmd 'touch', 'test.txt'
+                // Nope, got to mod an existing tracked file
+                //cmd 'touch', 'test.txt'
+				new File(dir, 'file5') << 'Add some content'
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
@@ -570,8 +571,9 @@ VERSION_SCM = git
                 git 'checkout', '-b', 'feature/123-great'
                 commit 5
                 git 'log', '--oneline', '--graph', '--decorate', '--all'
-                // Add a file
-                cmd 'touch', 'test.txt'
+                // Nope, need to mod an existing file to make the tree dirty
+                //cmd 'touch', 'test.txt'
+				new File(dir, 'file5') << 'Add some content'
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
@@ -611,8 +613,9 @@ VERSION_SCM = git
                 git 'tag', '2.0.2'
                 commit 6
                 git 'log', '--oneline', '--graph', '--decorate', '--all'
-                // Add a file
-                cmd 'touch', 'test.txt'
+                // Nope, got to mod an existing file 
+                //cmd 'touch', 'test.txt'
+		new File(dir, 'file5') << 'Add some content'
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
@@ -649,8 +652,9 @@ VERSION_SCM = git
                 git 'tag', '2.0.2'
                 commit 6
                 git 'log', '--oneline', '--graph', '--decorate', '--all'
-                // Add a file
-                cmd 'touch', 'test.txt'
+                // Nope, got to mod an existing file
+                //cmd 'touch', 'test.txt'
+				new File(dir, 'file5') << 'Mod the content'
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
@@ -690,8 +694,9 @@ VERSION_SCM = git
                 git 'tag', '2.0.2'
                 commit 6
                 git 'log', '--oneline', '--graph', '--decorate', '--all'
-                // Add a file
-                cmd 'touch', 'test.txt'
+                // Nope, got to mod an existing file
+                //cmd 'touch', 'test.txt'
+				new File(dir, 'file5') << 'Mod the content'
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
@@ -731,8 +736,9 @@ VERSION_SCM = git
                 git 'tag', '2.0.2'
                 commit 6
                 git 'log', '--oneline', '--graph', '--decorate', '--all'
-                // Add a file
-                cmd 'touch', 'test.txt'
+                // Nope, mod an existing file
+                //cmd 'touch', 'test.txt'
+				new File(dir, 'file5') << 'mod the content'
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
