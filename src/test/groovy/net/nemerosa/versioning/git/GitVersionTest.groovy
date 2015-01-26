@@ -63,7 +63,7 @@ class GitVersionTest {
     }
 
     @Test
-    void 'Git: display version'() {
+    void 'Git display version'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -82,7 +82,7 @@ class GitVersionTest {
     }
 
     @Test
-    void 'Git: version file - defaults'() {
+    void 'Git version file - defaults'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -118,7 +118,7 @@ VERSION_SCM = git
     }
 
     @Test
-    void 'Git: version file - custom prefix'() {
+    void 'Git version file - custom prefix'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -157,7 +157,7 @@ CUSTOM_SCM = git
     }
 
     @Test
-    void 'Git: version file - custom file'() {
+    void 'Git version file - custom file'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation

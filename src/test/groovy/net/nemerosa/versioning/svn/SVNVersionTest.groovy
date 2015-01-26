@@ -32,7 +32,7 @@ class SVNVersionTest {
     }
 
     @Test
-    void 'SVN: not present'() {
+    void 'SVN not present'() {
         def wd = File.createTempDir('git', '')
         def project = ProjectBuilder.builder().withProjectDir(wd).build()
         new VersioningPlugin().apply(project)
@@ -55,7 +55,7 @@ class SVNVersionTest {
     }
 
     @Test
-    void 'SVN: trunk'() {
+    void 'SVN trunk'() {
         // SVN
         repo.mkdir 'project/trunk', 'Trunk'
         repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
@@ -81,7 +81,7 @@ class SVNVersionTest {
     }
 
     @Test
-    void 'SVN: display version'() {
+    void 'SVN display version'() {
         // SVN
         repo.mkdir 'project/trunk', 'Trunk'
         repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
@@ -98,7 +98,7 @@ class SVNVersionTest {
     }
 
     @Test
-    void 'SVN: version file - defaults'() {
+    void 'SVN version file - defaults'() {
         // SVN
         repo.mkdir 'project/trunk', 'Trunk'
         repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
@@ -132,7 +132,7 @@ VERSION_SCM = svn
     }
 
     @Test
-    void 'SVN: version file - custom prefix'() {
+    void 'SVN version file - custom prefix'() {
         // SVN
         repo.mkdir 'project/trunk', 'Trunk'
         repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
@@ -169,7 +169,7 @@ CUSTOM_SCM = svn
     }
 
     @Test
-    void 'SVN: version file - custom file'() {
+    void 'SVN version file - custom file'() {
         // SVN
         repo.mkdir 'project/trunk', 'Trunk'
         repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
@@ -206,7 +206,7 @@ VERSION_SCM = svn
     }
 
     @Test
-    void 'SVN: feature branch'() {
+    void 'SVN feature branch'() {
 
         // SVN
         repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
@@ -235,7 +235,7 @@ VERSION_SCM = svn
     }
 
     @Test
-    void 'SVN: feature branch with full display mode'() {
+    void 'SVN feature branch with full display mode'() {
 
         // SVN
         repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
@@ -265,7 +265,7 @@ VERSION_SCM = svn
     }
 
     @Test
-    void 'SVN: feature branch with snapshot display mode'() {
+    void 'SVN feature branch with snapshot display mode'() {
 
         // SVN
         repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
@@ -295,7 +295,7 @@ VERSION_SCM = svn
     }
 
     @Test
-    void 'SVN: feature branch with custom snapshot display mode'() {
+    void 'SVN feature branch with custom snapshot display mode'() {
 
         // SVN
         repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
@@ -326,7 +326,7 @@ VERSION_SCM = svn
     }
 
     @Test
-    void 'SVN: feature branch with custom base display mode'() {
+    void 'SVN feature branch with custom base display mode'() {
 
         // SVN
         repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
@@ -356,7 +356,7 @@ VERSION_SCM = svn
     }
 
     @Test
-    void 'SVN: feature branch with custom display mode'() {
+    void 'SVN feature branch with custom display mode'() {
 
         // SVN
         repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
@@ -388,7 +388,7 @@ VERSION_SCM = svn
     }
 
     @Test
-    void 'SVN: release branch: no previous tag'() {
+    void 'SVN release branch no previous tag'() {
 
         // SVN
         repo.mkdir 'project/branches/release-2.0', 'Feature branch'
@@ -418,7 +418,7 @@ VERSION_SCM = svn
     }
 
     @Test
-    void 'SVN: release branch: with previous tag'() {
+    void 'SVN release branch with previous tag'() {
 
         // SVN
         repo.mkdir 'project/branches/release-2.0', 'Feature branch'
