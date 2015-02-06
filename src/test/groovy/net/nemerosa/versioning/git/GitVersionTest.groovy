@@ -62,6 +62,45 @@ class GitVersionTest {
         }
     }
 
+    /**
+     * The Git information is accessible from a sub project.
+     * @issue #20
+     */
+    @Test
+    void 'Git sub project'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+            }
+            def head = repo.commitLookup('Commit 4')
+            def headAbbreviated = repo.commitLookup('Commit 4', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            def subdir = new File(repo.dir, 'sub')
+            subdir.mkdirs()
+            def subproject = ProjectBuilder.builder().withParent(project).withProjectDir(subdir).build()
+            new VersioningPlugin().apply(subproject)
+            VersionInfo info = subproject.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'master'
+            assert info.base == ''
+            assert info.branchId == 'master'
+            assert info.branchType == 'master'
+            assert info.commit == head
+            assert info.display == "master-${headAbbreviated}"
+            assert info.full == "master-${headAbbreviated}"
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
     @Test
     void 'Git display version'() {
         GitRepo repo = new GitRepo()
@@ -740,8 +779,6 @@ VERSION_SCM = git
                 //cmd 'touch', 'test.txt'
 				new File(dir, 'file5') << 'mod the content'
             }
-            def head = repo.commitLookup('Commit 6')
-            def headAbbreviated = repo.commitLookup('Commit 6', true)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
