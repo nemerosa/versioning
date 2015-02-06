@@ -321,3 +321,7 @@ The tests rely on the local creation of Git and Subversion repositories, and suc
  shell commands and processes manipulation.
 
 Unless mentioned otherwise, _using_ the Versioning plug-in on Windows should be OK.
+
+## Contributions
+
+Contributions are welcome - just create issues or submit pull requests.
