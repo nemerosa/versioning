@@ -526,6 +526,351 @@ VERSION_SCM = git
     }
 
     @Test
+    void 'Git release branch with snapshot: no previous tag'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'release/2.0'
+                commit 5
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+            }
+            def head = repo.commitLookup('Commit 5')
+            def headAbbreviated = repo.commitLookup('Commit 5', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versioning {
+                releaseMode = 'snapshot'
+            }
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/2.0'
+            assert info.base == '2.0'
+            assert info.branchId == 'release-2.0'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '2.0.0-SNAPSHOT'
+            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.scm == 'git'
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git release branch with custom snapshot: no previous tag'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'release/2.0'
+                commit 5
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+            }
+            def head = repo.commitLookup('Commit 5')
+            def headAbbreviated = repo.commitLookup('Commit 5', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versioning {
+                releaseMode = 'snapshot'
+                snapshot = '-DEV'
+            }
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/2.0'
+            assert info.base == '2.0'
+            assert info.branchId == 'release-2.0'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '2.0.0-DEV'
+            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.scm == 'git'
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git release branch with custom display: no previous tag'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'release/2.0'
+                commit 5
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+            }
+            def head = repo.commitLookup('Commit 5')
+            def headAbbreviated = repo.commitLookup('Commit 5', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versioning {
+                releaseMode = { nextTag, lastTag, currentTag, extension -> "${nextTag}-PREVIEW"}
+            }
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/2.0'
+            assert info.base == '2.0'
+            assert info.branchId == 'release-2.0'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '2.0.0-PREVIEW'
+            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.scm == 'git'
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git release branch with snapshot: with previous tag'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'release/2.0'
+                commit 5
+                git 'tag', '2.0.2'
+                commit 6
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+            }
+            def head = repo.commitLookup('Commit 6')
+            def headAbbreviated = repo.commitLookup('Commit 6', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versioning {
+                releaseMode = 'snapshot'
+            }
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/2.0'
+            assert info.base == '2.0'
+            assert info.branchId == 'release-2.0'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '2.0.3-SNAPSHOT'
+            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git release branch with custom snapshot: with previous tag'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'release/2.0'
+                commit 5
+                git 'tag', '2.0.2'
+                commit 6
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+            }
+            def head = repo.commitLookup('Commit 6')
+            def headAbbreviated = repo.commitLookup('Commit 6', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versioning {
+                releaseMode = 'snapshot'
+                snapshot = '-DEV'
+            }
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/2.0'
+            assert info.base == '2.0'
+            assert info.branchId == 'release-2.0'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '2.0.3-DEV'
+            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git release branch with custom display: with previous tag'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'release/2.0'
+                commit 5
+                git 'tag', '2.0.2'
+                commit 6
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+            }
+            def head = repo.commitLookup('Commit 6')
+            def headAbbreviated = repo.commitLookup('Commit 6', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versioning {
+                releaseMode = { nextTag, lastTag, currentTag, extension -> "${nextTag}-PREVIEW"}
+            }
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/2.0'
+            assert info.base == '2.0'
+            assert info.branchId == 'release-2.0'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '2.0.3-PREVIEW'
+            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git release branch with snapshot: on tag'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'release/2.0'
+                commit 5
+                commit 6
+                git 'tag', '2.0.2'
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+            }
+            def head = repo.commitLookup('Commit 6')
+            def headAbbreviated = repo.commitLookup('Commit 6', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versioning {
+                releaseMode = 'snapshot'
+            }
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/2.0'
+            assert info.base == '2.0'
+            assert info.branchId == 'release-2.0'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '2.0.2'
+            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git release branch with custom snapshot: on tag'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'release/2.0'
+                commit 5
+                commit 6
+                git 'tag', '2.0.2'
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+            }
+            def head = repo.commitLookup('Commit 6')
+            def headAbbreviated = repo.commitLookup('Commit 6', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versioning {
+                releaseMode = 'snapshot'
+                snapshot = '-DEV'
+            }
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/2.0'
+            assert info.base == '2.0'
+            assert info.branchId == 'release-2.0'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '2.0.2'
+            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git release branch with custom display: on tag'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'release/2.0'
+                commit 5
+                commit 6
+                git 'tag', '2.0.2'
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+            }
+            def head = repo.commitLookup('Commit 6')
+            def headAbbreviated = repo.commitLookup('Commit 6', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versioning {
+                releaseMode = { nextTag, lastTag, currentTag, extension -> "${nextTag}-PREVIEW"}
+            }
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/2.0'
+            assert info.base == '2.0'
+            assert info.branchId == 'release-2.0'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '2.0.3-PREVIEW'
+            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
     void 'Git feature branch - dirty working copy - default suffix'() {
         GitRepo repo = new GitRepo()
         try {

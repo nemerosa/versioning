@@ -10,6 +10,7 @@ class SCMInfo {
     String branch
     String commit
     String abbreviated
+    String tag
     boolean dirty
 
 }

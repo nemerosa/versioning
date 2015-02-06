@@ -3,6 +3,7 @@ package net.nemerosa.versioning.git
 import net.nemerosa.versioning.SCMInfo
 import net.nemerosa.versioning.SCMInfoService
 import net.nemerosa.versioning.VersioningExtension
+import net.nemerosa.versioning.support.ProcessExitException
 import org.gradle.api.Project
 
 import static net.nemerosa.versioning.support.Utils.run
@@ -25,12 +26,24 @@ class GitInfoService implements SCMInfoService {
             String commit = run(project.projectDir, 'git', 'log', '-1', '--format=%H')
             // Gets the current commit (short hash)
             String abbreviated = run(project.projectDir, 'git', 'log', '-1', '--format=%h')
+            // Gets the current tag, if any
+            String tag
+            try {
+                tag = run(project.projectDir, 'git', 'describe', '--tags', '--exact-match', '--always', 'HEAD')
+            } catch (ProcessExitException ex) {
+                if (ex.exit == 128) {
+                    tag = null
+                } else {
+                    throw ex
+                }
+            }
             // Returns the information
             new SCMInfo(
                     branch: branch,
                     commit: commit,
                     abbreviated: abbreviated,
-                    dirty: isGitTreeDirty(project.projectDir)
+                    dirty: isGitTreeDirty(project.projectDir),
+                    tag: tag,
             )
         }
     }

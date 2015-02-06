@@ -29,7 +29,18 @@ class VersioningExtension {
             base    : { branchType, branchId, base, build, full, extension ->
                 base
             },
+    ]
 
+    /**
+     * Registry of release modes
+     */
+    private static final Map<String, Closure<String>> RELEASE_MODES = [
+            tag : { nextTag, lastTag, currentTag, extension ->
+                nextTag
+            },
+            snapshot: { nextTag, lastTag, currentTag, extension ->
+                currentTag ?: "${nextTag}${extension.snapshot}"
+            },
     ]
 
     /**
@@ -70,6 +81,11 @@ class VersioningExtension {
      * Display mode
      */
     def displayMode = 'full'
+
+    /**
+     * Release mode
+     */
+    def releaseMode = 'tag'
 
     /**
      * Default Snapshot extension
@@ -155,7 +171,7 @@ class VersioningExtension {
         String versionDisplay
         if (versionBranchType in releases) {
             List<String> baseTags = scmInfoService.getBaseTags(project, this, versionBase)
-            versionDisplay = getDisplayVersion(versionBase, baseTags)
+            versionDisplay = getDisplayVersion(scmInfo, branchInfo, baseTags)
         } else {
             // Adjusting the base
             def base = versionBase ?: versionBranchId
@@ -200,15 +216,31 @@ class VersioningExtension {
         )
     }
 
-    private static String getDisplayVersion(String base, List<String> baseTags) {
+    private String getDisplayVersion(SCMInfo scmInfo, BranchInfo branchInfo, List<String> baseTags) {
+        String currentTag = scmInfo.tag
+        String lastTag
+        String nextTag
         if (baseTags.empty) {
-            return "${base}.0"
+            lastTag = ''
+            nextTag = "${branchInfo.base}.0"
         } else {
-            def lastTag = baseTags[0].trim()
-            def lastNumber = (lastTag =~ /${base}\.([\d+])/)[0][1] as int
+            lastTag = baseTags[0].trim()
+            def lastNumber = (lastTag =~ /${branchInfo.base}\.([\d+])/)[0][1] as int
             def newNumber = lastNumber + 1
-            return "${base}.${newNumber}"
+            nextTag = "${branchInfo.base}.${newNumber}"
         }
+        Closure<String> mode
+        if (releaseMode instanceof String) {
+            mode = RELEASE_MODES[releaseMode]
+            if (!mode) {
+                throw new GradleException("${releaseMode} is not a valid release mode.")
+            }
+        } else if (releaseMode instanceof Closure) {
+            mode = releaseMode as Closure
+        } else {
+            throw new GradleException("The `releaseMode` must be a registered default mode or a Closure.")
+        }
+        return mode(nextTag, lastTag, currentTag, this)
     }
 
     private static String normalise(String value) {
