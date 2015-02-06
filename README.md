@@ -220,6 +220,61 @@ versioning {
 }
 ```
 
+### Snapshots on release branches
+
+Sometimes, you do not want to have the `display` version for a _release_ branch being the next tag if you are already on a tag.
+
+By default, the `versioning` plug-in will behave correctly if you tag only as the very end of your delivery pipeline,
+when the project is actually delivered. But if you want to tag upfront, you probably need to indicate that your `display` version
+is a _snapshot_ or similar (see issue [#19|https://github.com/nemerosa/versioning/issues/19] for the discussion).
+
+In such a case, you can specify a `snapshot` release mode:
+
+```groovy
+versioning {
+   releaseMode = 'snapshot'
+}
+```
+
+In this case, if the `HEAD` is not _exactly_ associated with a tag, the `-SNAPSHOT` string will be appended to the `display` version. For example, if there is a previous tag `2.1.0`, then the `display` version will be `2.1.1-SNAPSHOT`. But if the `HEAD` is exactly on the `2.1.0` tag, then the `display` version is also `2.1.0`.
+
+You can customise the `-SNAPSHOT` suffix used the `snapshot` property:
+
+```groovy
+versioning {
+   releaseMode = 'snapshot'
+   snapshot = '.DEV'
+}
+```
+
+Note that the default `releaseMode` is `tag`, where the next tag is always used as a `display` version.
+
+You can also customise completely the computation of the `display` version for a release by setting the `releaseMode` to a `Closure`:
+
+```groovy
+versioning {
+   releaseMode = { nextTag, lastTag, currentTag, extension ->
+       "${nextTag}"
+   }
+}
+```
+
+The meaning of the parameters is illustrated by the diagrams below:
+
+![Release tags](doc/release-tags.png)
+
+* `nextTag` = `2.1.2` - computed
+* `lastTag` = `2.1.1` - last tag from the `HEAD`
+* `currentTag` = `2.1.1` - exact tag for the `HEAD`
+
+![Release tags](doc/release-tags-none.png)
+
+* `nextTag` = `2.1.1` - computed
+* `lastTag` = `2.1.0` - last tag from the `HEAD`
+* `currentTag` = none - exact tag for the `HEAD`
+
+The `extension` parameter is the content of the `versioning` configuration object.
+
 ## Subversion support
 
 Subversion is supported starting from version `1.1.0` of the Versioning plug-in. In order to enable your working copy
@@ -263,4 +318,3 @@ The tests rely on the local creation of Git and Subversion repositories, and suc
  shell commands and processes manipulation.
 
 Unless mentioned otherwise, _using_ the Versioning plug-in on Windows should be OK.
-
