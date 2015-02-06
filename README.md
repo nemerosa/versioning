@@ -275,6 +275,9 @@ The meaning of the parameters is illustrated by the diagrams below:
 
 The `extension` parameter is the content of the `versioning` configuration object.
 
+**Note** that the display mode based on the current tag is **not supported in Subversion**. It is kind of tricky
+to get the tag associated to a given revision.
+
 ## Subversion support
 
 Subversion is supported starting from version `1.1.0` of the Versioning plug-in. In order to enable your working copy
