@@ -60,6 +60,12 @@ plugins {
 For example, to set the project's _full_ version using the SCM:
 
 ```groovy
+version = versioning.info.full
+```
+
+For a multi module project, you will probably do:
+
+```groovy
 allprojects {
    version = versioning.info.full
 }
