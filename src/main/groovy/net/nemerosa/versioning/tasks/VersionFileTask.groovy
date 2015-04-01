@@ -27,15 +27,15 @@ class VersionFileTask extends DefaultTask {
         }
         // Writes the info
         file.text = """\
-${prefix}BUILD = ${info.build}
-${prefix}BRANCH = ${info.branch}
-${prefix}BASE = ${info.base}
-${prefix}BRANCHID = ${info.branchId}
-${prefix}BRANCHTYPE = ${info.branchType}
-${prefix}COMMIT = ${info.commit}
-${prefix}DISPLAY = ${info.display}
-${prefix}FULL = ${info.full}
-${prefix}SCM = ${info.scm}
+${prefix}BUILD=${info.build}
+${prefix}BRANCH=${info.branch}
+${prefix}BASE=${info.base}
+${prefix}BRANCHID=${info.branchId}
+${prefix}BRANCHTYPE=${info.branchType}
+${prefix}COMMIT=${info.commit}
+${prefix}DISPLAY=${info.display}
+${prefix}FULL=${info.full}
+${prefix}SCM=${info.scm}
 """
     }
 

@@ -119,15 +119,15 @@ class SVNVersionTest {
         def file = new File(project.buildDir, 'version.properties')
         assert file.exists(): "File ${file} must exist."
         assert file.text == """\
-VERSION_BUILD = 4
-VERSION_BRANCH = trunk
-VERSION_BASE = \n\
-VERSION_BRANCHID = trunk
-VERSION_BRANCHTYPE = trunk
-VERSION_COMMIT = 4
-VERSION_DISPLAY = trunk-4
-VERSION_FULL = trunk-4
-VERSION_SCM = svn
+VERSION_BUILD=4
+VERSION_BRANCH=trunk
+VERSION_BASE=\n\
+VERSION_BRANCHID=trunk
+VERSION_BRANCHTYPE=trunk
+VERSION_COMMIT=4
+VERSION_DISPLAY=trunk-4
+VERSION_FULL=trunk-4
+VERSION_SCM=svn
 """
     }
 
@@ -156,15 +156,15 @@ VERSION_SCM = svn
         def file = new File(project.buildDir, 'version.properties')
         assert file.exists(): "File ${file} must exist."
         assert file.text == """\
-CUSTOM_BUILD = 4
-CUSTOM_BRANCH = trunk
-CUSTOM_BASE = \n\
-CUSTOM_BRANCHID = trunk
-CUSTOM_BRANCHTYPE = trunk
-CUSTOM_COMMIT = 4
-CUSTOM_DISPLAY = trunk-4
-CUSTOM_FULL = trunk-4
-CUSTOM_SCM = svn
+CUSTOM_BUILD=4
+CUSTOM_BRANCH=trunk
+CUSTOM_BASE=\n\
+CUSTOM_BRANCHID=trunk
+CUSTOM_BRANCHTYPE=trunk
+CUSTOM_COMMIT=4
+CUSTOM_DISPLAY=trunk-4
+CUSTOM_FULL=trunk-4
+CUSTOM_SCM=svn
 """
     }
 
@@ -193,15 +193,15 @@ CUSTOM_SCM = svn
         def file = new File(project.projectDir, '.version')
         assert file.exists(): "File ${file} must exist."
         assert file.text == """\
-VERSION_BUILD = 4
-VERSION_BRANCH = trunk
-VERSION_BASE = \n\
-VERSION_BRANCHID = trunk
-VERSION_BRANCHTYPE = trunk
-VERSION_COMMIT = 4
-VERSION_DISPLAY = trunk-4
-VERSION_FULL = trunk-4
-VERSION_SCM = svn
+VERSION_BUILD=4
+VERSION_BRANCH=trunk
+VERSION_BASE=\n\
+VERSION_BRANCHID=trunk
+VERSION_BRANCHTYPE=trunk
+VERSION_COMMIT=4
+VERSION_DISPLAY=trunk-4
+VERSION_FULL=trunk-4
+VERSION_SCM=svn
 """
     }
 

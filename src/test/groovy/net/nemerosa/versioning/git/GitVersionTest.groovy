@@ -141,15 +141,15 @@ class GitVersionTest {
             def file = new File(project.buildDir, 'version.properties')
             assert file.exists(): "File ${file} must exist."
             assert file.text == """\
-VERSION_BUILD = ${headAbbreviated}
-VERSION_BRANCH = master
-VERSION_BASE = \n\
-VERSION_BRANCHID = master
-VERSION_BRANCHTYPE = master
-VERSION_COMMIT = ${head}
-VERSION_DISPLAY = master-${headAbbreviated}
-VERSION_FULL = master-${headAbbreviated}
-VERSION_SCM = git
+VERSION_BUILD=${headAbbreviated}
+VERSION_BRANCH=master
+VERSION_BASE=\n\
+VERSION_BRANCHID=master
+VERSION_BRANCHTYPE=master
+VERSION_COMMIT=${head}
+VERSION_DISPLAY=master-${headAbbreviated}
+VERSION_FULL=master-${headAbbreviated}
+VERSION_SCM=git
 """
         } finally {
             repo.close()
@@ -180,15 +180,15 @@ VERSION_SCM = git
             def file = new File(project.buildDir, 'version.properties')
             assert file.exists(): "File ${file} must exist."
             assert file.text == """\
-CUSTOM_BUILD = ${headAbbreviated}
-CUSTOM_BRANCH = master
-CUSTOM_BASE = \n\
-CUSTOM_BRANCHID = master
-CUSTOM_BRANCHTYPE = master
-CUSTOM_COMMIT = ${head}
-CUSTOM_DISPLAY = master-${headAbbreviated}
-CUSTOM_FULL = master-${headAbbreviated}
-CUSTOM_SCM = git
+CUSTOM_BUILD=${headAbbreviated}
+CUSTOM_BRANCH=master
+CUSTOM_BASE=\n\
+CUSTOM_BRANCHID=master
+CUSTOM_BRANCHTYPE=master
+CUSTOM_COMMIT=${head}
+CUSTOM_DISPLAY=master-${headAbbreviated}
+CUSTOM_FULL=master-${headAbbreviated}
+CUSTOM_SCM=git
 """
         } finally {
             repo.close()
@@ -219,15 +219,15 @@ CUSTOM_SCM = git
             def file = new File(project.projectDir, '.version')
             assert file.exists(): "File ${file} must exist."
             assert file.text == """\
-VERSION_BUILD = ${headAbbreviated}
-VERSION_BRANCH = master
-VERSION_BASE = \n\
-VERSION_BRANCHID = master
-VERSION_BRANCHTYPE = master
-VERSION_COMMIT = ${head}
-VERSION_DISPLAY = master-${headAbbreviated}
-VERSION_FULL = master-${headAbbreviated}
-VERSION_SCM = git
+VERSION_BUILD=${headAbbreviated}
+VERSION_BRANCH=master
+VERSION_BASE=\n\
+VERSION_BRANCHID=master
+VERSION_BRANCHTYPE=master
+VERSION_COMMIT=${head}
+VERSION_DISPLAY=master-${headAbbreviated}
+VERSION_FULL=master-${headAbbreviated}
+VERSION_SCM=git
 """
         } finally {
             repo.close()
