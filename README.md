@@ -39,7 +39,7 @@ buildscript {
       jcenter()
    }
    dependencies {
-      classpath 'net.nemerosa:versioning:1.1.0'
+      classpath 'net.nemerosa:versioning:1.4.0'
    }
 }
 
@@ -51,7 +51,7 @@ apply plugin: 'net.nemerosa.versioning'
 ```groovy
 
 plugins {
-   id 'net.nemerosa.versioning' version '1.1.0'
+   id 'net.nemerosa.versioning' version '1.4.0'
 }
 ```
 
