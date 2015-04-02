@@ -126,18 +126,24 @@ Displays the version information in the standard output. For example:
 
 Creates a file which contains the version information. By default, the file is created at _build/version.properties_ and contains the following information:
 
-``` bash
+```bash
 > ./gradlew versionFile
 > cat build/version.properties
-VERSION_BUILD = da50c50
-VERSION_BRANCH = release/0.3
-VERSION_BASE = 0.3
-VERSION_BRANCHID = release-0.3
-VERSION_BRANCHTYPE = release
-VERSION_COMMIT = da50c50567073d3d3a7756829926a9590f2644c6
-VERSION_DISPLAY = 0.3.0
-VERSION_FULL = release-0.3-da50c50
-VERSION_SCM = git
+VERSION_BUILD=da50c50
+VERSION_BRANCH=release/0.3
+VERSION_BASE=0.3
+VERSION_BRANCHID=release-0.3
+VERSION_BRANCHTYPE=release
+VERSION_COMMIT=da50c50567073d3d3a7756829926a9590f2644c6
+VERSION_DISPLAY=0.3.0
+VERSION_FULL=release-0.3-da50c50
+VERSION_SCM=git
+```
+
+This makes this file easy to integrate in a Bash script:
+
+```bash
+export $(cat build/version.properties | xargs)
 ```
 
 The `versionFile` task can be customised with two properties. The defaults are given below:
