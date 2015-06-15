@@ -22,7 +22,7 @@
 def release = BRANCH.startsWith('release/') as boolean
 
 // Package job
-freeStyleJob("${SEED_PROJECT}-${SEED_BRANCH}-package") {
+freeStyleJob("${SEED_PROJECT}-${SEED_BRANCH}-build") {
     logRotator(numToKeep = 40)
     deliveryPipelineConfiguration('Commit', 'Package')
     jdk 'JDK7'
@@ -110,6 +110,6 @@ deliveryPipelineView("Pipeline") {
     showChangeLog()
     updateInterval(5)
     pipelines {
-        component("Versioning", "${SEED_PROJECT}-${SEED_BRANCH}-package")
+        component("Versioning", "${SEED_PROJECT}-${SEED_BRANCH}-build")
     }
 }
