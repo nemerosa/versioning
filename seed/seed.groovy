@@ -110,6 +110,6 @@ deliveryPipelineView("Pipeline") {
     showChangeLog()
     updateInterval(5)
     pipelines {
-        component("versioning-${NAME}", "${SEED_PROJECT}-${SEED_BRANCH}-package")
+        component("Versioning", "${SEED_PROJECT}-${SEED_BRANCH}-package")
     }
 }
