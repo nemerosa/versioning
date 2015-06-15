@@ -8,10 +8,11 @@ plugins {
     /**
      * Versioning applied to itself
      */
-    id 'net.nemerosa.versioning' version '1.0.0'
+    id 'net.nemerosa.versioning' version '1.4.0'
 }
 
 apply plugin: 'groovy'
+apply plugin: 'maven-publish'
 
 /**
  * Meta information
@@ -26,6 +27,18 @@ version = versioning.info.display
 
 dependencies {
     localGroovy()
+}
+
+/**
+ * Local publishing
+ */
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
 }
 
 /**

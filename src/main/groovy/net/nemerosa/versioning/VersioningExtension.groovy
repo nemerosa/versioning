@@ -112,6 +112,21 @@ class VersioningExtension {
     boolean dirtyFailOnReleases = false
 
     /**
+     * Credentials (for SVN only)
+     */
+    String user = ''
+
+    /**
+     * Credentials (for SVN only)
+     */
+    String password = ''
+
+    /**
+     * Certificate - accept SSL server certificates from unknown certificate authorities (for SVN only)
+     */
+    boolean trustServerCert = false
+
+    /**
      * Computed version information
      */
     private VersionInfo info
