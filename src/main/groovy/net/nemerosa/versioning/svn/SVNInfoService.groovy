@@ -3,6 +3,7 @@ package net.nemerosa.versioning.svn
 import net.nemerosa.versioning.SCMInfo
 import net.nemerosa.versioning.SCMInfoService
 import net.nemerosa.versioning.VersioningExtension
+import net.nemerosa.versioning.support.ProcessExitException
 import org.gradle.api.Project
 
 import static net.nemerosa.versioning.support.Utils.run
@@ -91,39 +92,47 @@ class SVNInfoService implements SCMInfoService {
         } else {
             baseUrl = url - "branches/${branch}"
         }
-        // TODO Checks if the /tags directory exists
-        String tagsUrl = "${baseUrl}/tags"
         // Gets the list of tags
-        println "[version] Getting list of tags from ${tagsUrl}..."
-        // Command arguments
-        List<String> args = ['list', '--non-interactive']
-        // Credentials
-        if (extension.user) {
-            println "[version] Authenticating with ${extension.user}"
-            args.addAll([
-                    '--no-auth-cache',
-                    '--username', extension.user,
-                    '--password', extension.password,
-            ])
-        }
-        // Certificate
-        if (extension.trustServerCert) {
-            println "[version] Trusting certificate by default"
-            args << '--trust-server-cert'
-        }
-        // Tags folder
-        args << tagsUrl
-        // Command
-        def tags = run(project.projectDir, 'svn', args as String[]).readLines()
-        def baseTagPattern = /(${base}\.[\d+])/
-        return tags.collect { tag ->
-            def m = tag =~ baseTagPattern
-            if (m.find()) {
-                m.group(1)
-            } else {
-                ''
+        try {
+            String tagsUrl = "${baseUrl}/tags"
+            println "[version] Getting list of tags from ${tagsUrl}..."
+            // Command arguments
+            List<String> args = ['list', '--non-interactive']
+            // Credentials
+            if (extension.user) {
+                println "[version] Authenticating with ${extension.user}"
+                args.addAll([
+                        '--no-auth-cache',
+                        '--username', extension.user,
+                        '--password', extension.password,
+                ])
             }
-        }.findAll { it != '' }
+            // Certificate
+            if (extension.trustServerCert) {
+                println "[version] Trusting certificate by default"
+                args << '--trust-server-cert'
+            }
+            // Tags folder
+            args << tagsUrl
+            // Command
+            def tags = run(project.projectDir, 'svn', args as String[]).readLines()
+            def baseTagPattern = /(${base}\.[\d+])/
+            return tags.collect { tag ->
+                def m = tag =~ baseTagPattern
+                if (m.find()) {
+                    m.group(1)
+                } else {
+                    ''
+                }
+            }.findAll { it != '' }
+        } catch (ProcessExitException ex) {
+            if (ex.exit == 1 && ex.message.contains('E200009')) {
+                println "[version] The tags/ folder does not exist yet"
+                return []
+            } else {
+                throw ex
+            }
+        }
     }
 
     @Override
