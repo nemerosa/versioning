@@ -47,7 +47,7 @@ freeStyleJob("${SEED_PROJECT}-${SEED_BRANCH}-build") {
                 'FIXME', 'TODO', '@Deprecated', true
         )
         if (release) {
-            buildPipelineTrigger("${SEED_PROJECT}-${SEED_BRANCH}-publish") {
+            buildPipelineTrigger("${SEED_PROJECT}/${SEED_PROJECT}-${SEED_BRANCH}/${SEED_PROJECT}-${SEED_BRANCH}-publish") {
                 parameters {
                     gitRevision(true)
                 }
