@@ -45,7 +45,7 @@ freeStyleJob("${SEED_PROJECT}-${SEED_BRANCH}-package") {
                 'FIXME', 'TODO', '@Deprecated', true
         )
         if (branchType == 'release') {
-            buildPipelineTrigger("${SEED_PROJECT}/${SEED_PROJECT}-${SEED_BRANCH}/${SEED_PROJECT}-${SEED_BRANCH}-publish") {
+            buildPipelineTrigger("${SEED_PROJECT}-${SEED_BRANCH}-publish") {
                 parameters {
                     gitRevision(true)
                 }
@@ -108,6 +108,6 @@ deliveryPipelineView("Pipeline") {
     showChangeLog()
     updateInterval(5)
     pipelines {
-        component("versioning-${NAME}", "${SEED_PROJECT}/${SEED_PROJECT}-${SEED_BRANCH}/${SEED_PROJECT}-${SEED_BRANCH}-package")
+        component("versioning-${NAME}", "${SEED_PROJECT}-${SEED_BRANCH}-package")
     }
 }
