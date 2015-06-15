@@ -19,6 +19,8 @@
  * branch itself.
  */
 
+def release = BRANCH.startsWith('release/') as boolean
+
 // Package job
 freeStyleJob("${SEED_PROJECT}-${SEED_BRANCH}-package") {
     logRotator(numToKeep = 40)
@@ -44,7 +46,7 @@ freeStyleJob("${SEED_PROJECT}-${SEED_BRANCH}-package") {
                 '**/target/**,**/node_modules/**,**/vendor/**',
                 'FIXME', 'TODO', '@Deprecated', true
         )
-        if (branchType == 'release') {
+        if (release) {
             buildPipelineTrigger("${SEED_PROJECT}-${SEED_BRANCH}-publish") {
                 parameters {
                     gitRevision(true)
@@ -54,7 +56,7 @@ freeStyleJob("${SEED_PROJECT}-${SEED_BRANCH}-package") {
     }
 }
 
-if (BRANCH.startsWith('release/')) {
+if (release) {
     // Publication job
     freeStyleJob("${SEED_PROJECT}-${SEED_BRANCH}-publish") {
         logRotator(numToKeep = 40)
