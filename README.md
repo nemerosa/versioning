@@ -319,6 +319,19 @@ Property | Description | SVN: `trunk` @ rev 12 | SVN: `branches/feature-great` @
 
 The rules for the display mode remain the same ones than for Git.
 
+Collecting the version information using Subversion will needs one remote access to the repository. Credentials and trust of certificate can be configured using following configuration parameters:
+
+```groovy
+versioning {
+   scm = 'svn'
+   // Optional credentials
+   user = 'xxx'
+   password = 'xxx'
+   // Optionally trusting the remote certificate
+   trustServerCert = true
+}
+```
+
 ## Release
 
 The CI and release jobs are available in the [Nemerosa Jenkins](https://jenkins.nemerosa.net/job/versioning/).
