@@ -78,6 +78,7 @@ if (release) {
         steps {
             gradle '''\
 clean versionDisplay versionFile build publishPluginToBintray --info --profile
+-x test
 -PBINTRAY_USER=${BINTRAY_USER}
 -PBINTRAY_API_KEY=${BINTRAY_API_KEY}
 '''
