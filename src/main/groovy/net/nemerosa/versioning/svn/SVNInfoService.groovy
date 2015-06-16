@@ -97,7 +97,7 @@ class SVNInfoService implements SCMInfoService {
             String tagsUrl = "${baseUrl}/tags"
             println "[version] Getting list of tags from ${tagsUrl}..."
             // Command arguments
-            List<String> args = ['list', '--non-interactive']
+            List<String> args = ['list', '--xml', '--non-interactive']
             // Credentials
             if (extension.user) {
                 println "[version] Authenticating with ${extension.user}"
@@ -115,7 +115,12 @@ class SVNInfoService implements SCMInfoService {
             // Tags folder
             args << tagsUrl
             // Command
-            def tags = run(project.projectDir, 'svn', args as String[]).readLines()
+            def xmlTags = run(project.projectDir, 'svn', args as String[])
+            // Parsing
+            def lists = new XmlSlurper().parseText(xmlTags)
+            // Lists of tags, order from the most recent to the oldest
+            List<String> tags = lists.list.entry.sort { -(it.commit.@revision.text() as long) }.collect { it.name }
+            // Keeping only tags which fit the release pattern
             def baseTagPattern = /(${base}\.[\d+])/
             return tags.collect { tag ->
                 def m = tag =~ baseTagPattern
