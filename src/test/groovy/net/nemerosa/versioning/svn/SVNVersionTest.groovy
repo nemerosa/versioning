@@ -451,6 +451,41 @@ VERSION_SCM=svn
     }
 
     @Test
+    void 'SVN release branch with two previous tags'() {
+
+        // SVN
+        repo.mkdir 'project/branches/release-2.0', 'Feature branch'
+        repo.mkdir 'project/branches/release-2.0/1', 'Commit for TEST-1' // Tag
+        repo.mkdir 'project/branches/release-2.0/2', 'Commit for TEST-1' // Tag
+        repo.mkdir 'project/branches/release-2.0/3', 'Commit for TEST-1'
+
+        // Tagging
+        repo.copy 'project/branches/release-2.0@2', 'project/tags/2.0.0', 'v2.0.0'
+        repo.copy 'project/branches/release-2.0@3', 'project/tags/2.0.1', 'v2.0.1'
+
+        // Project
+        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/branches/release-2.0')).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+        }
+
+        // Gets the info and checks it
+        VersionInfo info = project.versioning.info as VersionInfo
+        assert info != null
+        assert info.build == '4'
+        assert info.branch == 'release-2.0'
+        assert info.base == '2.0'
+        assert info.branchId == 'release-2.0'
+        assert info.branchType == 'release'
+        assert info.commit == '4'
+        assert info.display == "2.0.2"
+        assert info.full == "release-2.0-4"
+        assert info.scm == 'svn'
+
+    }
+
+    @Test
     void 'SVN feature branch - dirty working copy - default suffix'() {
         repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
         repo.mkdir 'project/branches/feature-test-1-my-feature/1', 'Commit for TEST-1'
