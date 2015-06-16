@@ -55,6 +55,10 @@ plugins {
 }
 ```
 
+## Change log
+
+Change log is available in the [Wiki](https://github.com/nemerosa/versioning/wiki).
+
 ## Using the versioning info
 
 For example, to set the project's _full_ version using the SCM:
