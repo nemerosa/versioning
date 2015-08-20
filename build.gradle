@@ -4,11 +4,11 @@
 
 plugins {
    id 'nu.studer.plugindev' version '1.0.3'
-   id 'com.jfrog.bintray' version '1.0'
+   id 'com.jfrog.bintray' version '1.3.1'
     /**
      * Versioning applied to itself
      */
-    id 'net.nemerosa.versioning' version '1.4.0'
+    id 'net.nemerosa.versioning' version '1.5.1'
 }
 
 apply plugin: 'groovy'
@@ -50,8 +50,8 @@ plugindev {
  */
 
 bintray {
-    user = "${BINTRAY_USER}"
-    key = "${BINTRAY_API_KEY}"
+    user = bintrayUser
+    key = bintrayApiKey
     pkg {
         repo = 'nemerosa'
         version {
@@ -67,5 +67,5 @@ bintray {
  */
 
 task wrapper(type: Wrapper) {
-   gradleVersion = '2.2.1'
+   gradleVersion = '2.4'
 }
