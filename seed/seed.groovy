@@ -93,7 +93,6 @@ git push origin ${VERSION_DISPLAY}
 '''
         }
         publishers {
-            archiveJunit("**/build/test-results/*.xml")
             tasks(
                     '**/*.java,**/*.groovy,**/*.xml,**/*.html,**/*.js',
                     '**/target/**,**/node_modules/**,**/vendor/**',
