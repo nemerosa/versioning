@@ -240,7 +240,7 @@ class VersioningExtension {
             nextTag = "${branchInfo.base}.0"
         } else {
             lastTag = baseTags[0].trim()
-            def lastNumber = (lastTag =~ /${branchInfo.base}\.([\d+])/)[0][1] as int
+            def lastNumber = (lastTag =~ /${branchInfo.base}\.(\d+)/)[0][1] as int
             def newNumber = lastNumber + 1
             nextTag = "${branchInfo.base}.${newNumber}"
         }
