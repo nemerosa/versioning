@@ -121,7 +121,7 @@ class SVNInfoService implements SCMInfoService {
             // Lists of tags, order from the most recent to the oldest
             List<String> tags = lists.list.entry.sort { -(it.commit.@revision.text() as long) }.collect { it.name }
             // Keeping only tags which fit the release pattern
-            def baseTagPattern = /(${base}\.[\d+])/
+            def baseTagPattern = /(${base}\.(\d+))/
             return tags.collect { tag ->
                 def m = tag =~ baseTagPattern
                 if (m.find()) {
