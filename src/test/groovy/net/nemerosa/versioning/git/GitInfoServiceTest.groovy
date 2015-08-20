@@ -5,6 +5,19 @@ import org.junit.Test
 class GitInfoServiceTest {
 
     @Test
+    void 'Selection of base tags'() {
+        assert GitInfoService.selectBaseTags(
+                '2.0',
+                [
+                        '(tag: 2.0.9)',
+                        '(tag: 2.0.10)',
+                        '(tag: 2.0.11)',
+                        '(tag: 2.1.0)'
+                ]
+        ) == ['2.0.9', '2.0.10', '2.0.11']
+    }
+
+    @Test
     void 'Git - clean'() {
         GitRepo repo = new GitRepo()
         try {
@@ -28,7 +41,7 @@ class GitInfoServiceTest {
                 commit 1
                 // Need to modify a tracked file, not just create a new untracked file
                 //cmd 'touch', 'test.txt'
-				new File(dir, 'file1') << 'Add some content'
+                new File(dir, 'file1') << 'Add some content'
             }
             assert GitInfoService.isGitTreeDirty(repo.dir): "Unstaged changes"
         } finally {
