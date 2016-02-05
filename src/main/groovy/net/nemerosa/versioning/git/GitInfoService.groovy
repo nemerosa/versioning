@@ -57,7 +57,7 @@ class GitInfoService implements SCMInfoService {
 
     @Override
     List<String> getBaseTags(Project project, VersioningExtension extension, String base) {
-        def tags = run(project.projectDir, 'git', 'log', 'HEAD', '--pretty=format:%d').readLines()
+        def tags = run(project.projectDir, 'git', 'log', 'HEAD', '--pretty=oneline', '--decorate').readLines()
         return selectBaseTags(base, tags)
     }
 
