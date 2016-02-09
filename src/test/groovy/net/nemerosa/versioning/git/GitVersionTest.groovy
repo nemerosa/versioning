@@ -1002,6 +1002,7 @@ VERSION_SCM=git
             new VersioningPlugin().apply(project)
             project.versioning {
                 dirtySuffix = '-dev'
+                noWarningOnDirty = true
             }
             VersionInfo info = project.versioning.info as VersionInfo
             assert info != null

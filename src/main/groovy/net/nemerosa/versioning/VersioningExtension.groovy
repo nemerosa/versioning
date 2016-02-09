@@ -112,6 +112,11 @@ class VersioningExtension {
     boolean dirtyFailOnReleases = false
 
     /**
+     * If set to <code>true</code>, no warning will be printed in case the workspace is dirty.
+     */
+    boolean noWarningOnDirty = false;
+
+    /**
      * Credentials (for SVN only)
      */
     String user = ''
@@ -211,7 +216,9 @@ class VersioningExtension {
             if (dirtyFailOnReleases && versionBranchType in releases) {
                 throw new DirtyException()
             } else {
-                println "[versioning] WARNING - the working copy has unstaged or uncommitted changes."
+                if (!noWarningOnDirty) {
+                    println "[versioning] WARNING - the working copy has unstaged or uncommitted changes."
+                }
                 versionDisplay = dirty(versionDisplay)
                 versionFull = dirty(versionFull)
             }

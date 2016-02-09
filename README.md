@@ -233,6 +233,12 @@ versioning {
    * part of the releases list ("release" only by default).
    */
    dirtyFailOnReleases = false
+   
+   /**
+    * If set to true, no warning will be printed in case the workspace is dirty. Default is
+    * to print a warning.
+    */
+   noWarningOnDirty = false
 }
 ```
 
