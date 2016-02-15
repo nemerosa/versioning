@@ -1,4 +1,4 @@
-package net.nemerosa.versioning.support;
+package net.nemerosa.versioning.core.support;
 
 public class ProcessRunException extends ProcessException {
 

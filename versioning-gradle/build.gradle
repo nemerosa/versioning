@@ -1,0 +1,57 @@
+/**
+ * Plug-in development
+ */
+
+plugins {
+    id 'nu.studer.plugindev' version '1.0.3'
+    id 'com.jfrog.bintray' version '1.3.1'
+}
+
+/**
+ * Groovy code
+ */
+
+apply plugin: 'groovy'
+
+/**
+ * Dependencies
+ */
+
+dependencies {
+    localGroovy()
+    compile project(':versioning-core')
+}
+
+/**
+ * Plug-in definition
+ */
+
+plugindev {
+    pluginImplementationClass 'net.nemerosa.versioning.VersioningPlugin'
+    pluginDescription 'Gradle plug-in that computes version information from the SCM'
+    pluginLicenses 'MIT'
+    pluginTags 'gradle', 'plugin', 'scm', 'git', 'svn', 'version'
+    authorId 'dcoraboeuf'
+    authorName 'Damien Coraboeuf'
+    authorEmail 'damien.coraboeuf@gmail.com'
+    projectUrl 'https://github.com/nemerosa/versioning'
+    projectInceptionYear '2015'
+    done()
+}
+
+/**
+ * Plug-in publication
+ */
+
+bintray {
+    user = bintrayUser
+    key = bintrayApiKey
+    pkg {
+        repo = 'nemerosa'
+        version {
+            attributes = [
+                    'gradle-plugin': 'net.nemerosa.versioning:net.nemerosa:versioning'
+            ]
+        }
+    }
+}

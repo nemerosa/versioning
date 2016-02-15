@@ -1,4 +1,13 @@
-package net.nemerosa.versioning.support
+package net.nemerosa.versioning.core.support;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public final class Utils {
 
@@ -9,8 +18,8 @@ public final class Utils {
      * Runs a command in the <code>wd</code> directory and returns its output. In case of error (exit
      * code different than 0), an exception is thrown.
      *
-     * @param wd Directory where to execute the command
-     * @param cmd Command to execute
+     * @param wd   Directory where to execute the command
+     * @param cmd  Command to execute
      * @param args Command parameters
      * @return Output of the command
      */
@@ -26,13 +35,23 @@ public final class Utils {
             int exit = process.waitFor();
             // In case of error
             if (exit != 0) {
-                String error = process.errorStream.text.trim()
+                String error = StringUtils.trim(
+                        IOUtils.toString(process.getErrorStream())
+                );
                 throw new ProcessExitException(exit, error);
             } else {
-                return process.inputStream.text.trim()
+                return StringUtils.trim(
+                        IOUtils.toString(process.getInputStream())
+                );
             }
         } catch (IOException | InterruptedException ex) {
-            throw new ProcessRunException("Error while executing ${cmd} command: ${ex.getMessage()}")
+            throw new ProcessRunException(
+                    String.format(
+                            "Error while executing %s command: %s",
+                            cmd,
+                            ex.getMessage()
+                    )
+            );
         }
     }
 
