@@ -23,6 +23,19 @@ public final class Utils {
      * @param args Command parameters
      * @return Output of the command
      */
+    public static String run(File wd, String cmd, List<String> args) {
+        return run(wd, cmd, args.toArray(new String[args.size()]));
+    }
+
+    /**
+     * Runs a command in the <code>wd</code> directory and returns its output. In case of error (exit
+     * code different than 0), an exception is thrown.
+     *
+     * @param wd   Directory where to execute the command
+     * @param cmd  Command to execute
+     * @param args Command parameters
+     * @return Output of the command
+     */
     public static String run(File wd, String cmd, String... args) {
         try {
             // Builds a process

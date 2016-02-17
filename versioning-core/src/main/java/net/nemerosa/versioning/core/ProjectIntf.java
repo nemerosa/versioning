@@ -17,4 +17,8 @@ public interface ProjectIntf {
      */
     File getFile(String relativePath);
 
+    /**
+     * Logging a message
+     */
+    void log(String pattern, Object... parameters);
 }

@@ -2,6 +2,7 @@ package net.nemerosa.versioning.core;
 
 import com.google.common.collect.ImmutableMap;
 import net.nemerosa.versioning.core.git.GitInfoService;
+import net.nemerosa.versioning.core.svn.SVNInfoService;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class DefaultVersionService implements VersionService {
      */
     private static final Map<String, SCMInfoService> scmInfoServices = ImmutableMap.<String, SCMInfoService>builder()
             .put("git", new GitInfoService())
-            // TODO Subversion
+            .put("svn", new SVNInfoService())
             .build();
 
     @Override
