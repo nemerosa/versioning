@@ -5,88 +5,73 @@ package net.nemerosa.versioning.core;
  */
 public class VersionInfo {
 
-    public static final VersionInfo NONE = new VersionInfo();
+    public static final VersionInfo NONE = new VersionInfo(
+            "n/a",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+    );
 
-    private String scm = "n/a";
-    private String branch = "";
-    private String branchType = "";
-    private String branchId = "";
-    private String commit = "";
-    private String display = "";
-    private String full = "";
-    private String base = "";
-    private String build = "";
+    private final String scm;
+    private final String branch;
+    private final String branchType;
+    private final String branchId;
+    private final String commit;
+    private final String display;
+    private final String full;
+    private final String base;
+    private final String build;
+
+    public VersionInfo(String scm, String branch, String branchType, String branchId, String commit, String display, String full, String base, String build) {
+        this.scm = scm;
+        this.branch = branch;
+        this.branchType = branchType;
+        this.branchId = branchId;
+        this.commit = commit;
+        this.display = display;
+        this.full = full;
+        this.base = base;
+        this.build = build;
+    }
 
     public String getScm() {
         return scm;
-    }
-
-    public void setScm(String scm) {
-        this.scm = scm;
     }
 
     public String getBranch() {
         return branch;
     }
 
-    public void setBranch(String branch) {
-        this.branch = branch;
-    }
-
     public String getBranchType() {
         return branchType;
-    }
-
-    public void setBranchType(String branchType) {
-        this.branchType = branchType;
     }
 
     public String getBranchId() {
         return branchId;
     }
 
-    public void setBranchId(String branchId) {
-        this.branchId = branchId;
-    }
-
     public String getCommit() {
         return commit;
-    }
-
-    public void setCommit(String commit) {
-        this.commit = commit;
     }
 
     public String getDisplay() {
         return display;
     }
 
-    public void setDisplay(String display) {
-        this.display = display;
-    }
-
     public String getFull() {
         return full;
-    }
-
-    public void setFull(String full) {
-        this.full = full;
     }
 
     public String getBase() {
         return base;
     }
 
-    public void setBase(String base) {
-        this.base = base;
-    }
-
     public String getBuild() {
         return build;
     }
-
-    public void setBuild(String build) {
-        this.build = build;
-    }
-
 }

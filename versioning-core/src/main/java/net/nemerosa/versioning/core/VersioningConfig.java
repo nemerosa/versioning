@@ -34,10 +34,8 @@ public class VersioningConfig {
 
     /**
      * Display mode
-     * <p/>
-     * TODO Accept closure
      */
-    private String displayMode = "full";
+    private DisplayMode displayMode = FullDisplayMode.INSTANCE;
 
     /**
      * Release mode
@@ -231,11 +229,11 @@ public class VersioningConfig {
         this.releases = releases;
     }
 
-    public String getDisplayMode() {
+    public DisplayMode getDisplayMode() {
         return displayMode;
     }
 
-    public void setDisplayMode(String displayMode) {
+    public void setDisplayMode(DisplayMode displayMode) {
         this.displayMode = displayMode;
     }
 
