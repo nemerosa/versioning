@@ -20,4 +20,9 @@ class GradleProjectIntf implements ProjectIntf {
     File getFile(String relativePath) {
         return project.file(relativePath)
     }
+
+    @Override
+    void log(String pattern, Object... parameters) {
+        project.logger.info("[versioning] ${String.format(pattern, parameters)}")
+    }
 }
