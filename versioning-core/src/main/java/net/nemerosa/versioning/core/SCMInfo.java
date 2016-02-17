@@ -1,5 +1,7 @@
 package net.nemerosa.versioning.core;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class SCMInfo {
 
     public static final SCMInfo NONE = new SCMInfo();
@@ -48,5 +50,9 @@ public class SCMInfo {
 
     public void setDirty(boolean dirty) {
         this.dirty = dirty;
+    }
+
+    public boolean isEmpty() {
+        return StringUtils.isBlank(branch);
     }
 }

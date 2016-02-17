@@ -126,7 +126,7 @@ public class VersioningConfig {
          * Parses the name of the SCM branch in order to
          * get its type.
          */
-        BranchInfo parse(String branch);
+        BranchInfo parse(String branch, String branchTypeSeparator);
 
     }
 
@@ -145,21 +145,10 @@ public class VersioningConfig {
     public static class DefaultBranchParser implements BranchParser {
 
         public static final BranchParser INSTANCE = new DefaultBranchParser();
-        public static final String SEPARATOR = "/";
-
-        private final String separator;
-
-        public DefaultBranchParser() {
-            this(SEPARATOR);
-        }
-
-        public DefaultBranchParser(String separator) {
-            this.separator = separator;
-        }
 
         @Override
-        public BranchInfo parse(String branch) {
-            int pos = branch.indexOf(separator);
+        public BranchInfo parse(String branch, String branchTypeSeparator) {
+            int pos = branch.indexOf(branchTypeSeparator);
             if (pos > 0) {
                 return new BranchInfo(
                         branch.substring(0, pos),
