@@ -1,5 +1,7 @@
 package net.nemerosa.versioning.core;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Collections;
 import java.util.Set;
 
@@ -39,10 +41,8 @@ public class VersioningConfig {
 
     /**
      * Release mode
-     * <p/>
-     * TODO Accept closure
      */
-    private String releaseMode = "tag";
+    private ReleaseMode releaseMode = TagReleaseMode.INSTANCE;
 
     /**
      * Default Snapshot extension
@@ -160,6 +160,45 @@ public class VersioningConfig {
         }
     }
 
+    /**
+     * Release mode
+     */
+    public interface ReleaseMode {
+
+        String getDisplayVersion(String nextTag, String lastTag, String currentTag, VersioningConfig config);
+
+    }
+
+    /**
+     * Tag release mode
+     */
+    public static class TagReleaseMode implements ReleaseMode {
+
+        public static final ReleaseMode INSTANCE = new TagReleaseMode();
+
+        @Override
+        public String getDisplayVersion(String nextTag, String lastTag, String currentTag, VersioningConfig config) {
+            return nextTag;
+        }
+
+    }
+
+    /**
+     * Snapshot release mode
+     */
+    public static class SnapshotReleaseMode implements ReleaseMode {
+
+        public static final ReleaseMode INSTANCE = new SnapshotReleaseMode();
+
+        @Override
+        public String getDisplayVersion(String nextTag, String lastTag, String currentTag, VersioningConfig config) {
+            return StringUtils.isNotBlank(currentTag) ? String.format("%s%s", nextTag, config.getSnapshot()) : currentTag;
+        }
+
+    }
+
+    // Accessors
+
     public String getScm() {
         return scm;
     }
@@ -200,11 +239,11 @@ public class VersioningConfig {
         this.displayMode = displayMode;
     }
 
-    public String getReleaseMode() {
+    public ReleaseMode getReleaseMode() {
         return releaseMode;
     }
 
-    public void setReleaseMode(String releaseMode) {
+    public void setReleaseMode(ReleaseMode releaseMode) {
         this.releaseMode = releaseMode;
     }
 

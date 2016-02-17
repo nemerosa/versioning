@@ -2,7 +2,10 @@ package net.nemerosa.versioning.core;
 
 import com.google.common.collect.ImmutableMap;
 
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DefaultVersionService implements VersionService {
 
@@ -41,8 +44,59 @@ public class DefaultVersionService implements VersionService {
         // Full version
         String versionFull = config.getFullVersionBuilder().build(versionBranchId, scmInfo.getAbbreviated());
 
+        // Display version
+        String versionDisplay;
+        if (config.getReleases().contains(versionBranchType)) {
+            List<String> baseTags = scmInfoService.getBaseTags(project, config, versionBase);
+            versionDisplay = getDisplayVersion(config, scmInfo, branchInfo, baseTags);
+        } else {
+//            // Adjusting the base
+//            def base = versionBase ?: versionBranchId
+//            // Display mode
+//            if (displayMode instanceof String) {
+//                def mode = DISPLAY_MODES[displayMode as String]
+//                if (mode) {
+//                    versionDisplay = mode(versionBranchType, versionBranchId, base, scmInfo.abbreviated, versionFull, this)
+//                } else {
+//                    throw new GradleException("${mode} is not a valid display mode.")
+//                }
+//            } else if (displayMode instanceof Closure) {
+//                def mode = displayMode as Closure
+//                versionDisplay = mode(versionBranchType, versionBranchId, base, scmInfo.abbreviated, versionFull, this)
+//            } else {
+//                throw new GradleException("The `displayMode` must be a registered default mode or a Closure.")
+//            }
+        }
+
         // FIXME Method net.nemerosa.versioning.core.DefaultVersionService.computeVersionInfo
         return null;
+    }
+
+    private String getDisplayVersion(VersioningConfig config, SCMInfo scmInfo, BranchInfo branchInfo, List<String> baseTags) {
+        String currentTag = scmInfo.getTag();
+        String lastTag;
+        String nextTag;
+        if (baseTags.isEmpty()) {
+            lastTag = "";
+            nextTag = branchInfo.getBase() + ".0";
+        } else {
+            lastTag = baseTags.get(0).trim();
+            String regex = branchInfo.getBase() + "\\.(\\d+)";
+            Matcher m = Pattern.compile(regex).matcher(lastTag);
+            if (m.matches()) {
+                int lastNumber = Integer.parseInt(m.group(1), 10);
+                int newNumber = lastNumber + 1;
+                nextTag = branchInfo.getBase() + "." + newNumber;
+            } else {
+                throw new VersioningException("Cannot parse last tag to get last version number: %s", lastTag);
+            }
+        }
+        return config.getReleaseMode().getDisplayVersion(
+                nextTag,
+                lastTag,
+                currentTag,
+                config
+        );
     }
 
     private String normalise(String value) {
