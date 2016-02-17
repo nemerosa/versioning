@@ -2,22 +2,20 @@ package net.nemerosa.versioning.core;
 
 public class BranchInfo {
 
-    private String type;
-    private String base;
+    private final String type;
+    private final String base;
+
+    public BranchInfo(String type, String base) {
+        this.type = type;
+        this.base = base;
+    }
 
     public String getType() {
         return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getBase() {
         return base;
     }
 
-    public void setBase(String base) {
-        this.base = base;
-    }
 }
