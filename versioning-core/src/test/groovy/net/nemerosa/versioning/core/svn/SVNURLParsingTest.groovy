@@ -1,4 +1,4 @@
-package net.nemerosa.versioning.svn
+package net.nemerosa.versioning.core.svn
 
 import org.junit.Test
 
