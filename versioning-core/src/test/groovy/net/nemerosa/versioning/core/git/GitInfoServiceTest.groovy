@@ -1,4 +1,4 @@
-package net.nemerosa.versioning.git
+package net.nemerosa.versioning.core.git
 
 import org.junit.Test
 

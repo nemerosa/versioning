@@ -3,6 +3,7 @@
  */
 
 apply plugin: 'java'
+apply plugin: 'groovy'
 
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
@@ -15,4 +16,7 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'commons-io:commons-io:2.4'
     compile 'com.google.guava:guava:18.0'
+
+    testCompile localGroovy()
+    testCompile 'junit:junit:4.11'
 }

@@ -59,9 +59,9 @@ public class GitInfoService implements SCMInfoService {
     }
 
     public static boolean isGitTreeDirty(File dir) {
-        return processOk(dir, "git", "update-index", "-q", "--ignore-submodules", "--refresh") ||
-                processOk(dir, "git", "diff-files", "--quiet", "--ignore-submodules", "--") ||
-                processOk(dir, "git", "diff-index", "--cached", "--quiet", "HEAD", "--ignore-submodules", "--");
+        return !processOk(dir, "git", "update-index", "-q", "--ignore-submodules", "--refresh") ||
+                !processOk(dir, "git", "diff-files", "--quiet", "--ignore-submodules", "--") ||
+                !processOk(dir, "git", "diff-index", "--cached", "--quiet", "HEAD", "--ignore-submodules", "--");
     }
 
     @Override

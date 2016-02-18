@@ -1,6 +1,6 @@
-package net.nemerosa.versioning.git
+package net.nemerosa.versioning.core.git
 
-import net.nemerosa.versioning.support.Utils
+import net.nemerosa.versioning.core.support.Utils
 
 class GitRepo {
 
