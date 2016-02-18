@@ -1,7 +1,5 @@
 package net.nemerosa.versioning.core;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Collections;
 import java.util.Set;
 
@@ -25,7 +23,7 @@ public class VersioningConfig {
     /**
      * Full version builder
      */
-    private FullVersionBuilder fullVersionBuilder = new DefaultFullVersionBuilder();
+    private FullVersionBuilder fullVersionBuilder = DefaultFullVersionBuilder.INSTANCE;
 
     /**
      * Set of eligible branch types for computing a display version from the branch base name
@@ -79,121 +77,6 @@ public class VersioningConfig {
      * Certificate - accept SSL server certificates from unknown certificate authorities (for SVN only)
      */
     private boolean trustServerCert = false;
-
-    /**
-     * Full version builder
-     */
-    public interface FullVersionBuilder {
-
-        /**
-         * Given the branch ID and an abbreviated form
-         * of revision or commit, returns the full version.
-         */
-        String build(String branchId, String abbreviated);
-
-    }
-
-    /**
-     * Default full version builder
-     */
-    public static class DefaultFullVersionBuilder implements FullVersionBuilder {
-
-        public static final FullVersionBuilder INSTANCE = new DefaultFullVersionBuilder();
-
-        /**
-         * Given the branch ID and an abbreviated form
-         * of revision or commit, returns the full version.
-         */
-        @Override
-        public String build(String branchId, String abbreviated) {
-            return String.format(
-                    "%s-%s",
-                    branchId,
-                    abbreviated
-            );
-        }
-
-    }
-
-    /**
-     * Branch parser. Getting the version type from a branch.
-     */
-    public interface BranchParser {
-
-        /**
-         * Parses the name of the SCM branch in order to
-         * get its type.
-         */
-        BranchInfo parse(String branch, String branchTypeSeparator);
-
-    }
-
-    /**
-     * Default branch parser.
-     * <p/>
-     * Getting the version type from a branch. Default: getting the part before the first "/" (or a second
-     * optional 'separator' parameter). If no slash is found, takes the branch name as whole.
-     * <p/>
-     * For example:
-     * <p/>
-     * * release/2.0 --> release
-     * * feature/2.0 --> feature
-     * * master --> master
-     */
-    public static class DefaultBranchParser implements BranchParser {
-
-        public static final BranchParser INSTANCE = new DefaultBranchParser();
-
-        @Override
-        public BranchInfo parse(String branch, String branchTypeSeparator) {
-            int pos = branch.indexOf(branchTypeSeparator);
-            if (pos > 0) {
-                return new BranchInfo(
-                        branch.substring(0, pos),
-                        branch.substring(pos + 1)
-                );
-            } else {
-                return new BranchInfo(branch, "");
-            }
-        }
-    }
-
-    /**
-     * Release mode
-     */
-    public interface ReleaseMode {
-
-        String getDisplayVersion(String nextTag, String lastTag, String currentTag, VersioningConfig config);
-
-    }
-
-    /**
-     * Tag release mode
-     */
-    public static class TagReleaseMode implements ReleaseMode {
-
-        public static final ReleaseMode INSTANCE = new TagReleaseMode();
-
-        @Override
-        public String getDisplayVersion(String nextTag, String lastTag, String currentTag, VersioningConfig config) {
-            return nextTag;
-        }
-
-    }
-
-    /**
-     * Snapshot release mode
-     */
-    public static class SnapshotReleaseMode implements ReleaseMode {
-
-        public static final ReleaseMode INSTANCE = new SnapshotReleaseMode();
-
-        @Override
-        public String getDisplayVersion(String nextTag, String lastTag, String currentTag, VersioningConfig config) {
-            return StringUtils.isNotBlank(currentTag) ? String.format("%s%s", nextTag, config.getSnapshot()) : currentTag;
-        }
-
-    }
 
     // Accessors
 
