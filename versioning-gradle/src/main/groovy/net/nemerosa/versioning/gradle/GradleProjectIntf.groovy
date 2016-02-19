@@ -18,7 +18,7 @@ class GradleProjectIntf implements ProjectIntf {
 
     @Override
     File getFile(String relativePath) {
-        return project.file(relativePath)
+        return project.rootProject.file(relativePath)
     }
 
     @Override
