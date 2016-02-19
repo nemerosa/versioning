@@ -1,6 +1,7 @@
 package net.nemerosa.versioning.gradle
 
 import net.nemerosa.versioning.core.*
+import net.nemerosa.versioning.gradle.support.ClosureWrappers
 import org.gradle.api.Project
 
 class VersionExtension {
@@ -125,19 +126,19 @@ class VersionExtension {
         config.scm = scm
 
         // Branch parser
-        config.branchParser = branchParser instanceof Closure ? branchParser as BranchParser : BranchParsers.get(branchParser as String)
+        config.branchParser = branchParser instanceof Closure ? ClosureWrappers.branchParserClosure(branchParser as Closure) : BranchParsers.get(branchParser as String)
 
         // Full version builder
-        config.fullVersionBuilder = full instanceof Closure ? full as FullVersionBuilder : FullVersionBuilders.get(full as String)
+        config.fullVersionBuilder = full instanceof Closure ? ClosureWrappers.fullVersionBuilderClosure(full as Closure) : FullVersionBuilders.get(full as String)
 
         // Releases
         config.releases = releases
 
         // Display mode
-        config.displayMode = displayMode instanceof Closure ? displayMode as DisplayMode : DisplayModes.get(displayMode as String)
+        config.displayMode = displayMode instanceof Closure ? ClosureWrappers.displayModeClosure(displayMode as Closure) : DisplayModes.get(displayMode as String)
 
         // Release mode
-        config.releaseMode = releaseMode instanceof Closure ? releaseMode as ReleaseMode : ReleaseModes.get(releaseMode as String)
+        config.releaseMode = releaseMode instanceof Closure ? ClosureWrappers.releaseModeClosure(releaseMode as Closure) : ReleaseModes.get(releaseMode as String)
 
         // Snapshot suffix
         config.snapshot = snapshot
