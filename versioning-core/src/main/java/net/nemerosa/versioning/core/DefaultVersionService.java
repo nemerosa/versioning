@@ -2,6 +2,7 @@ package net.nemerosa.versioning.core;
 
 import com.google.common.collect.ImmutableMap;
 import net.nemerosa.versioning.core.git.GitInfoService;
+import net.nemerosa.versioning.core.support.DirtyException;
 import net.nemerosa.versioning.core.svn.SVNInfoService;
 import org.apache.commons.lang3.StringUtils;
 
@@ -67,6 +68,19 @@ public class DefaultVersionService implements VersionService {
             );
         }
 
+        // Dirty update
+        if (scmInfo.isDirty()) {
+            if (config.isDirtyFailOnReleases() && config.getReleases().contains(versionBranchType)) {
+                throw new DirtyException();
+            } else {
+                if (!config.isNoWarningOnDirty()) {
+                    project.log("WARNING - the working copy has unstaged or uncommitted changes.");
+                }
+                versionDisplay = dirty(versionDisplay, config);
+                versionFull = dirty(versionFull, config);
+            }
+        }
+
         // OK
         return new VersionInfo(
                 config.getScm(),
@@ -79,6 +93,10 @@ public class DefaultVersionService implements VersionService {
                 versionBase,
                 scmInfo.getAbbreviated()
         );
+    }
+
+    private String dirty(String versionDisplay, VersioningConfig config) {
+        return versionDisplay + config.getDirtySuffix();
     }
 
     private String getDisplayVersion(VersioningConfig config, SCMInfo scmInfo, BranchInfo branchInfo, List<String> baseTags) {
