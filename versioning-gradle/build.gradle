@@ -20,6 +20,8 @@ apply plugin: 'groovy'
 dependencies {
     localGroovy()
     compile project(':versioning-core')
+
+    testCompile 'junit:junit:4.11'
 }
 
 /**
