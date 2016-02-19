@@ -100,10 +100,11 @@ public class SVNInfoService implements SCMInfoService {
         // Gets the base URL by removing the branch
         String baseUrl;
         if (Objects.equals(branch, "trunk")) {
-            baseUrl = StringUtils.difference(url, branch);
+            baseUrl = StringUtils.substringBeforeLast(url, branch);
         } else {
-            baseUrl = StringUtils.difference(url, "branches/" + branch);
+            baseUrl = StringUtils.substringBeforeLast(url, "branches/" + branch);
         }
+        baseUrl = StringUtils.stripEnd(baseUrl, "/");
         // Gets the list of tags
         try {
             String tagsUrl = baseUrl + "/tags";
