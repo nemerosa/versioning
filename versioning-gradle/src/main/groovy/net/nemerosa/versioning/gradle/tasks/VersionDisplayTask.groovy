@@ -1,15 +1,14 @@
-package net.nemerosa.versioning.tasks
+package net.nemerosa.versioning.gradle.tasks
 
-import net.nemerosa.versioning.VersionInfo
-import org.gradle.api.DefaultTask
+import net.nemerosa.versioning.core.VersionInfo
 import org.gradle.api.tasks.TaskAction
 
-class VersionDisplayTask extends DefaultTask {
+class VersionDisplayTask extends AbstractVersionTask {
 
     @TaskAction
     void run() {
         // Gets the version info
-        def info = project.versioning.info as VersionInfo
+        def info = versioning.info
         // Displays the info
         if (info == VersionInfo.NONE) {
             println "[version] No version can be computed from the SCM."
