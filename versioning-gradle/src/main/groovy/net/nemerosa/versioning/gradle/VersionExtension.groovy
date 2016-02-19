@@ -1,42 +1,9 @@
 package net.nemerosa.versioning.gradle
 
+import net.nemerosa.versioning.core.*
+import org.gradle.api.Project
+
 class VersionExtension {
-
-
-    /**
-     * Registry of SCM info services
-     */
-    private static final Map<String, SCMInfoService> INFO_SERVICES = [
-            git: new GitInfoService(),
-            svn: new SVNInfoService(),
-    ]
-
-    /**
-     * Registry of display modes
-     */
-    private static final Map<String, Closure<String>> DISPLAY_MODES = [
-            full    : { branchType, branchId, base, build, full, extension ->
-                "${branchId}-${build}"
-            },
-            snapshot: { branchType, branchId, base, build, full, extension ->
-                "${base}${extension.snapshot}"
-            },
-            base    : { branchType, branchId, base, build, full, extension ->
-                base
-            },
-    ]
-
-    /**
-     * Registry of release modes
-     */
-    private static final Map<String, Closure<String>> RELEASE_MODES = [
-            tag : { nextTag, lastTag, currentTag, extension ->
-                nextTag
-            },
-            snapshot: { nextTag, lastTag, currentTag, extension ->
-                currentTag ?: "${nextTag}${extension.snapshot}"
-            },
-    ]
 
     /**
      * Version SCM - git by default
@@ -53,19 +20,12 @@ class VersionExtension {
      * * feature/2.0 --> feature
      * * master --> master
      */
-    Closure<BranchInfo> branchParser = { String branch, String separator = '/' ->
-        int pos = branch.indexOf(separator)
-        if (pos > 0) {
-            new BranchInfo(type: branch.substring(0, pos), base: branch.substring(pos + 1))
-        } else {
-            new BranchInfo(type: branch, base: '')
-        }
-    }
+    def branchParser = 'default'
 
     /**
      * Computes the full version.
      */
-    Closure<String> full = { branchId, abbreviated -> "${branchId}-${abbreviated}" }
+    def full = 'default'
 
     /**
      * Set of eligible branch types for computing a display version from the branch base name
@@ -86,14 +46,6 @@ class VersionExtension {
      * Default Snapshot extension
      */
     String snapshot = '-SNAPSHOT'
-
-    /**
-     * Dirty mode.
-     *
-     * Closure that takes a version (<i>display</i> or <i>full</i>) and processes it to produce a <i>dirty</i>
-     * indicator. By default, it appends the {@link #dirtySuffix} value to the version.
-     */
-    Closure<String> dirty = { version -> "${version}${dirtySuffix}" }
 
     /**
      * Default dirty suffix
@@ -140,12 +92,13 @@ class VersionExtension {
      * Constructor
      * @param project Linked project
      */
-    VersioningExtension(Project project) {
+    VersionExtension(Project project) {
         this.project = project
     }
-/**
- * Gets the computed version information
- */
+
+    /**
+     * Gets the computed version information
+     */
     VersionInfo getInfo() {
         if (!info) {
             info = computeInfo()
@@ -157,120 +110,49 @@ class VersionExtension {
      * Computes the version information.
      */
     VersionInfo computeInfo() {
+        // Configuration
+        VersioningConfig config = createConfig()
+        // Project interface
+        ProjectIntf projectIntf = new GradleProjectIntf(project)
+        // Calling the service
+        return new DefaultVersionService().computeVersionInfo(projectIntf, config)
+    }
 
-        // Gets the SCM info service
-        SCMInfoService scmInfoService = getSCMInfoService(scm)
-        // Gets the version source
-        SCMInfo scmInfo = scmInfoService.getInfo(project, this)
+    VersioningConfig createConfig() {
+        def config = new VersioningConfig()
 
-        // No info?
-        if (scmInfo == SCMInfo.NONE) {
-            return VersionInfo.NONE
-        }
+        // SCM
+        config.scm = scm
 
-        // Version source
-        String versionBranch = scmInfo.branch
+        // Branch parser
+        config.branchParser = branchParser instanceof Closure ? branchParser as BranchParser : BranchParsers.get(branchParser as String)
 
-        // Branch parsing
-        BranchInfo branchInfo = branchParser(versionBranch, scmInfoService.branchTypeSeparator)
-        String versionBranchType = branchInfo.type
-        String versionBase = branchInfo.base
+        // Full version builder
+        config.fullVersionBuilder = full instanceof Closure ? full as FullVersionBuilder : FullVersionBuilders.get(full as String)
 
-        // Branch identifier
-        String versionBranchId = normalise(versionBranch)
+        // Releases
+        config.releases = releases
 
-        // Full version
-        String versionFull = full(versionBranchId, scmInfo.abbreviated)
+        // Display mode
+        config.displayMode = displayMode instanceof Closure ? displayMode as DisplayMode : DisplayModes.get(displayMode as String)
 
-        // Display version
-        String versionDisplay
-        if (versionBranchType in releases) {
-            List<String> baseTags = scmInfoService.getBaseTags(project, this, versionBase)
-            versionDisplay = getDisplayVersion(scmInfo, branchInfo, baseTags)
-        } else {
-            // Adjusting the base
-            def base = versionBase ?: versionBranchId
-            // Display mode
-            if (displayMode instanceof String) {
-                def mode = DISPLAY_MODES[displayMode as String]
-                if (mode) {
-                    versionDisplay = mode(versionBranchType, versionBranchId, base, scmInfo.abbreviated, versionFull, this)
-                } else {
-                    throw new GradleException("${mode} is not a valid display mode.")
-                }
-            } else if (displayMode instanceof Closure) {
-                def mode = displayMode as Closure
-                versionDisplay = mode(versionBranchType, versionBranchId, base, scmInfo.abbreviated, versionFull, this)
-            } else {
-                throw new GradleException("The `displayMode` must be a registered default mode or a Closure.")
-            }
-        }
+        // Release mode
+        config.releaseMode = releaseMode instanceof Closure ? releaseMode as ReleaseMode : ReleaseModes.get(releaseMode as String)
 
-        // Dirty update
-        if (scmInfo.dirty) {
-            if (dirtyFailOnReleases && versionBranchType in releases) {
-                throw new DirtyException()
-            } else {
-                if (!noWarningOnDirty) {
-                    println "[versioning] WARNING - the working copy has unstaged or uncommitted changes."
-                }
-                versionDisplay = dirty(versionDisplay)
-                versionFull = dirty(versionFull)
-            }
-        }
+        // Snapshot suffix
+        config.snapshot = snapshot
+
+        // Dirty properties
+        config.dirtySuffix = dirtySuffix
+        config.dirtyFailOnReleases = dirtyFailOnReleases
+        config.noWarningOnDirty = noWarningOnDirty
+
+        // SVN properties
+        config.user = user
+        config.password = password
+        config.trustServerCert = trustServerCert
 
         // OK
-        new VersionInfo(
-                scm: scm,
-                branch: versionBranch,
-                branchType: versionBranchType,
-                branchId: versionBranchId,
-                full: versionFull,
-                base: versionBase,
-                display: versionDisplay,
-                commit: scmInfo.commit,
-                build: scmInfo.abbreviated,
-        )
+        return config
     }
-
-    private String getDisplayVersion(SCMInfo scmInfo, BranchInfo branchInfo, List<String> baseTags) {
-        String currentTag = scmInfo.tag
-        String lastTag
-        String nextTag
-        if (baseTags.empty) {
-            lastTag = ''
-            nextTag = "${branchInfo.base}.0"
-        } else {
-            lastTag = baseTags[0].trim()
-            def lastNumber = (lastTag =~ /${branchInfo.base}\.(\d+)/)[0][1] as int
-            def newNumber = lastNumber + 1
-            nextTag = "${branchInfo.base}.${newNumber}"
-        }
-        Closure<String> mode
-        if (releaseMode instanceof String) {
-            mode = RELEASE_MODES[releaseMode]
-            if (!mode) {
-                throw new GradleException("${releaseMode} is not a valid release mode.")
-            }
-        } else if (releaseMode instanceof Closure) {
-            mode = releaseMode as Closure
-        } else {
-            throw new GradleException("The `releaseMode` must be a registered default mode or a Closure.")
-        }
-        return mode(nextTag, lastTag, currentTag, this)
-    }
-
-    private static String normalise(String value) {
-        value.replaceAll(/[^A-Za-z0-9\.\-_]/, '-')
-    }
-
-    private static SCMInfoService getSCMInfoService(String type) {
-        SCMInfoService scmInfoService = INFO_SERVICES[type]
-        if (scmInfoService) {
-            return scmInfoService
-        } else {
-            throw new GradleException("Unknown SCM info service: ${type}")
-        }
-    }
-
 }
