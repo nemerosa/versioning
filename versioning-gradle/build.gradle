@@ -22,6 +22,7 @@ dependencies {
     compile project(':versioning-core')
 
     testCompile 'junit:junit:4.11'
+    testCompile project(path: ':versioning-core', configuration: 'testArtifacts')
 }
 
 /**
@@ -29,7 +30,7 @@ dependencies {
  */
 
 plugindev {
-    pluginImplementationClass 'net.nemerosa.versioning.VersioningPlugin'
+    pluginImplementationClass 'net.nemerosa.versioning.gradle.VersioningPlugin'
     pluginDescription 'Gradle plug-in that computes version information from the SCM'
     pluginLicenses 'MIT'
     pluginTags 'gradle', 'plugin', 'scm', 'git', 'svn', 'version'

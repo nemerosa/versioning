@@ -20,3 +20,19 @@ dependencies {
     testCompile localGroovy()
     testCompile 'junit:junit:4.11'
 }
+
+configurations {
+    testArtifacts
+}
+
+task testJar(type: Jar) {
+    classifier = 'tests'
+    from sourceSets.test.output
+}
+
+assemble.dependsOn testJar
+
+artifacts {
+    archives testJar
+    testArtifacts testJar
+}
