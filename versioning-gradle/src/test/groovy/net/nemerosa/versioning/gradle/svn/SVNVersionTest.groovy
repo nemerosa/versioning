@@ -1,9 +1,10 @@
-package net.nemerosa.versioning.svn
+package net.nemerosa.versioning.gradle.svn
 
-import net.nemerosa.versioning.VersionInfo
-import net.nemerosa.versioning.VersioningPlugin
-import net.nemerosa.versioning.support.DirtyException
-import net.nemerosa.versioning.tasks.VersionDisplayTask
+import net.nemerosa.versioning.core.VersionInfo
+import net.nemerosa.versioning.core.support.DirtyException
+import net.nemerosa.versioning.core.support.Utils
+import net.nemerosa.versioning.gradle.VersioningPlugin
+import net.nemerosa.versioning.gradle.tasks.VersionDisplayTask
 import org.gradle.api.DefaultTask
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.After
@@ -12,8 +13,7 @@ import org.junit.Test
 
 import java.util.concurrent.atomic.AtomicInteger
 
-import static net.nemerosa.versioning.support.Utils.run
-import static net.nemerosa.versioning.svn.SVNRepo.ignore
+import static net.nemerosa.versioning.gradle.svn.SVNRepo.ignore
 
 class SVNVersionTest {
 
@@ -523,7 +523,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
         repo.mkdir 'project/branches/feature-test-1-my-feature/1', 'Commit for TEST-1'
         def dir = repo.checkout('project/branches/feature-test-1-my-feature')
-        run dir, 'touch', 'test.txt'
+        Utils.run dir, 'touch', 'test.txt'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
@@ -550,8 +550,8 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
         repo.mkdir 'project/branches/feature-test-1-my-feature/1', 'Commit for TEST-1'
         def dir = repo.checkout('project/branches/feature-test-1-my-feature')
-        run dir, 'touch', 'test.txt'
-        run dir, 'svn', 'add', 'test.txt'
+        Utils.run dir, 'touch', 'test.txt'
+        Utils.run dir, 'svn', 'add', 'test.txt'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
@@ -577,7 +577,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
         repo.mkdir 'project/branches/feature-test-1-my-feature/1', 'Commit for TEST-1'
         def dir = repo.checkout('project/branches/feature-test-1-my-feature')
-        run dir, 'touch', 'test.txt'
+        Utils.run dir, 'touch', 'test.txt'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
@@ -606,7 +606,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/release-2.0/1', 'Commit for TEST-1'
         repo.mkdir 'project/branches/release-2.0/2', 'Commit for TEST-1'
         def dir = repo.checkout('project/branches/release-2.0')
-        run dir, 'touch', 'test.txt'
+        Utils.run dir, 'touch', 'test.txt'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
@@ -634,7 +634,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/release-2.0/1', 'Commit for TEST-1'
         repo.mkdir 'project/branches/release-2.0/2', 'Commit for TEST-1'
         def dir = repo.checkout('project/branches/release-2.0')
-        run dir, 'touch', 'test.txt'
+        Utils.run dir, 'touch', 'test.txt'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
@@ -656,35 +656,6 @@ VERSION_SCM=svn
         assert info.scm == 'svn'
     }
 
-    @Test
-    void 'SVN release branch - dirty working copy - custom code'() {
-        // SVN
-        repo.mkdir 'project/branches/release-2.0', 'Feature branch'
-        repo.mkdir 'project/branches/release-2.0/1', 'Commit for TEST-1'
-        repo.mkdir 'project/branches/release-2.0/2', 'Commit for TEST-1'
-        def dir = repo.checkout('project/branches/release-2.0')
-        run dir, 'touch', 'test.txt'
-
-        def project = ProjectBuilder.builder().withProjectDir(dir).build()
-        new VersioningPlugin().apply(project)
-        project.versioning {
-            scm = 'svn'
-            dirty = { version -> "${version}-DONOTUSE" }
-        }
-
-        VersionInfo info = project.versioning.info as VersionInfo
-        assert info != null
-        assert info.build == '3'
-        assert info.branch == 'release-2.0'
-        assert info.base == '2.0'
-        assert info.branchId == 'release-2.0'
-        assert info.branchType == 'release'
-        assert info.commit == '3'
-        assert info.display == "2.0.0-DONOTUSE"
-        assert info.full == "release-2.0-3-DONOTUSE"
-        assert info.scm == 'svn'
-    }
-
     @Test(expected = DirtyException)
     void 'SVN release branch - dirty working copy - fail'() {
         // SVN
@@ -692,7 +663,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/release-2.0/1', 'Commit for TEST-1'
         repo.mkdir 'project/branches/release-2.0/2', 'Commit for TEST-1'
         def dir = repo.checkout('project/branches/release-2.0')
-        run dir, 'touch', 'test.txt'
+        Utils.run dir, 'touch', 'test.txt'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)

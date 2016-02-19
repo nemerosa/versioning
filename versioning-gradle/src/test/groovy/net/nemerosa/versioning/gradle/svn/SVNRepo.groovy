@@ -1,8 +1,8 @@
-package net.nemerosa.versioning.svn
+package net.nemerosa.versioning.gradle.svn
 
 import org.junit.Assert
 
-import static net.nemerosa.versioning.support.Utils.run
+import static net.nemerosa.versioning.core.support.Utils.run
 
 class SVNRepo {
 
