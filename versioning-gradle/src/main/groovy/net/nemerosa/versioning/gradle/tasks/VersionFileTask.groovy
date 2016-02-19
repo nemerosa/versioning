@@ -1,10 +1,8 @@
-package net.nemerosa.versioning.tasks
+package net.nemerosa.versioning.gradle.tasks
 
-import net.nemerosa.versioning.VersionInfo
-import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-class VersionFileTask extends DefaultTask {
+class VersionFileTask extends AbstractVersionTask {
 
     /**
      * File to write the information info. Defaults to <code>new File(project.buildDir, 'version.properties')</code>.
@@ -19,7 +17,7 @@ class VersionFileTask extends DefaultTask {
     @TaskAction
     void run() {
         // Gets the version info
-        def info = project.versioning.info as VersionInfo
+        def info = versioning.info
         // Makes sure the parent directory exists
         def parent = file.parentFile
         if (!parent.exists()) {
