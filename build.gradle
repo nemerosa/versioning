@@ -26,6 +26,7 @@ version = versioning.info.display
 
 dependencies {
     localGroovy()
+    compile 'org.ajoberstar:grgit:1.6.0'
 }
 
 /**

@@ -4,6 +4,9 @@ import net.nemerosa.versioning.SCMInfo
 import net.nemerosa.versioning.SCMInfoService
 import net.nemerosa.versioning.VersioningExtension
 import net.nemerosa.versioning.support.ProcessExitException
+import org.ajoberstar.grgit.Commit
+import org.ajoberstar.grgit.Grgit
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 
 import static net.nemerosa.versioning.support.Utils.run
@@ -20,12 +23,19 @@ class GitInfoService implements SCMInfoService {
         }
         // Git information available
         else {
+            // Open the Git repo
+            //noinspection GroovyAssignabilityCheck
+            def grgit = Grgit.open(currentDir: project.projectDir)
             // Gets the branch info
-            String branch = run(project.projectDir, 'git', 'rev-parse', '--abbrev-ref', 'HEAD')
+            String branch = grgit.branch.current.name
             // Gets the commit info (full hash)
-            String commit = run(project.projectDir, 'git', 'log', '-1', '--format=%H')
+            List<Commit> commits = grgit.log(maxCommits: 1)
+            if (commits.empty) {
+                throw new GradleException("No commit available in the repository - cannot compute version")
+            }
+            String commit = commits[0].id
             // Gets the current commit (short hash)
-            String abbreviated = run(project.projectDir, 'git', 'log', '-1', '--format=%h')
+            String abbreviated = commits[0].abbreviatedId
             // Gets the current tag, if any
             String tag
             try {
