@@ -8,8 +8,6 @@ import org.ajoberstar.grgit.Grgit
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
-import static net.nemerosa.versioning.support.Utils.run
-
 class GitInfoService implements SCMInfoService {
 
     @Override
@@ -79,20 +77,17 @@ class GitInfoService implements SCMInfoService {
 
     @Override
     List<String> getBaseTags(Project project, VersioningExtension extension, String base) {
-        def tags = run(project.projectDir, 'git', 'log', 'HEAD', '--pretty=oneline', '--decorate').readLines()
-        return selectBaseTags(base, tags)
-    }
-
-    protected static ArrayList<String> selectBaseTags(String base, List<String> tags) {
-        def baseTagPattern = /tag: (${base}\.(\d+))/
-        return tags.collect { tag ->
-            def m = tag =~ baseTagPattern
-            if (m.find()) {
-                m.group(1)
-            } else {
-                ''
-            }
-        }.findAll { it != '' }
+        // Filtering on patterns
+        def baseTagPattern = /^${base}\.(\d+)$/
+        // Git access
+        //noinspection GroovyAssignabilityCheck
+        def grgit = Grgit.open(currentDir: project.projectDir)
+        // List all tags
+        return grgit.tag.list()
+        // ... gets their name only
+                .collect { it.name }
+        // ... filters using the pattern
+                .findAll { it ==~ baseTagPattern }
     }
 
     @Override
