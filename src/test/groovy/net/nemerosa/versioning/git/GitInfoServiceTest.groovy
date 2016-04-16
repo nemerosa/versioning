@@ -5,19 +5,6 @@ import org.junit.Test
 class GitInfoServiceTest {
 
     @Test
-    void 'Selection of base tags'() {
-        assert GitInfoService.selectBaseTags(
-                '2.0',
-                [
-                        '(tag: 2.0.9)',
-                        '(tag: 2.0.10)',
-                        '(tag: 2.0.11)',
-                        '(tag: 2.1.0)'
-                ]
-        ) == ['2.0.9', '2.0.10', '2.0.11']
-    }
-
-    @Test
     void 'Git - clean'() {
         GitRepo repo = new GitRepo()
         try {
