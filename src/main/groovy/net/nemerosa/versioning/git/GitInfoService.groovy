@@ -52,7 +52,7 @@ class GitInfoService implements SCMInfoService {
                         tag = null
                     }
                 } else {
-                    throw new GradleException("Cannot get description of current commit")
+                    throw new GradleException("Cannot get parse description of current commit: ${described}")
                 }
             } else {
                 // Nothing returned - it means there is no previous tag
