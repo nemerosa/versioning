@@ -4,6 +4,7 @@ import net.nemerosa.versioning.VersionInfo
 import net.nemerosa.versioning.VersioningPlugin
 import net.nemerosa.versioning.support.DirtyException
 import net.nemerosa.versioning.tasks.VersionDisplayTask
+import org.apache.commons.io.FileUtils
 import org.gradle.api.DefaultTask
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
@@ -621,6 +622,7 @@ VERSION_SCM=git
             project.versioning {
                 releaseMode = 'snapshot'
             }
+            FileUtils.forceDelete(project.file('userHome')) // A user home directory is created by Gradle on MacOS
             VersionInfo info = project.versioning.info as VersionInfo
             assert info != null
             assert info.build == headAbbreviated

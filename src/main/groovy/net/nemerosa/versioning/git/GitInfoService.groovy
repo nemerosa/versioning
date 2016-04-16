@@ -68,11 +68,9 @@ class GitInfoService implements SCMInfoService {
         }
     }
 
-    static boolean isGitTreeDirty(File dir) {
-//        return run(dir, 'git', 'status', '--porcelain').trim() != ''
-        return 'git update-index -q --ignore-submodules --refresh'.execute([], dir).waitFor() ||
-                'git diff-files --quiet --ignore-submodules --'.execute([], dir).waitFor() ||
-                'git diff-index --cached --quiet HEAD --ignore-submodules --'.execute([], dir).waitFor()
+    static boolean isGitTreeDirty(File dir) {// Open the Git repo
+        //noinspection GroovyAssignabilityCheck
+        return !Grgit.open(currentDir: dir).status().clean
     }
 
     @Override
