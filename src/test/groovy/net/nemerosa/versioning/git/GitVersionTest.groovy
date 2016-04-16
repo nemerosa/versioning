@@ -622,7 +622,13 @@ VERSION_SCM=git
             project.versioning {
                 releaseMode = 'snapshot'
             }
-            FileUtils.forceDelete(project.file('userHome')) // A user home directory is created by Gradle on MacOS
+
+            def userHome = project.file('userHome')
+            if (userHome.exists()) {
+                // A user home directory is created by Gradle on MacOS
+                FileUtils.forceDelete(userHome)
+            }
+
             VersionInfo info = project.versioning.info as VersionInfo
             assert info != null
             assert info.build == headAbbreviated
