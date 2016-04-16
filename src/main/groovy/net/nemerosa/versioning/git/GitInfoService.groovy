@@ -3,7 +3,6 @@ package net.nemerosa.versioning.git
 import net.nemerosa.versioning.SCMInfo
 import net.nemerosa.versioning.SCMInfoService
 import net.nemerosa.versioning.VersioningExtension
-import net.nemerosa.versioning.support.ProcessExitException
 import org.ajoberstar.grgit.Commit
 import org.ajoberstar.grgit.Grgit
 import org.gradle.api.GradleException
@@ -36,17 +35,30 @@ class GitInfoService implements SCMInfoService {
             String commit = commits[0].id
             // Gets the current commit (short hash)
             String abbreviated = commits[0].abbreviatedId
+
             // Gets the current tag, if any
             String tag
-            try {
-                tag = run(project.projectDir, 'git', 'describe', '--tags', '--exact-match', '--always', 'HEAD')
-            } catch (ProcessExitException ex) {
-                if (ex.exit == 128) {
-                    tag = null
+            String described = grgit.repository.jgit.describe().setLong(true).call()
+            if (described) {
+                // The format returned by the long version of the `describe` command is: <tag>-<number>-<commit>
+                def m = described =~ /^(.*)-(\d+)-g([0-9a-f]+)$/
+                if (m.matches()) {
+                    def count = m.group(2) as int
+                    if (count == 0) {
+                        // We're on a tag
+                        tag = m.group(1)
+                    } else {
+                        // No tag
+                        tag = null
+                    }
                 } else {
-                    throw ex
+                    throw new GradleException("Cannot get description of current commit")
                 }
+            } else {
+                // Nothing returned - it means there is no previous tag
+                tag = null
             }
+
             // Returns the information
             new SCMInfo(
                     branch: branch,
