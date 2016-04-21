@@ -574,6 +574,7 @@ VERSION_SCM=git
                 git 'checkout', '-b', 'release/3.0-alpha'
                 commit 5
                 git 'tag', '3.0-alpha.0'
+                sleep 1000
                 commit 6
                 git 'tag', '3.0-alpha.1'
                 commit 7
@@ -614,6 +615,7 @@ VERSION_SCM=git
                 git 'checkout', '-b', 'release/3.0-alpha'
                 commit 5
                 git 'tag', '3.0-alpha.9'
+                sleep 1000
                 commit 6
                 git 'tag', '3.0-alpha.10'
                 commit 7
@@ -654,6 +656,7 @@ VERSION_SCM=git
                 git 'checkout', '-b', 'release/3.0-alpha'
                 commit 5
                 git 'tag', '3.0-alpha.19'
+                sleep 1000
                 commit 6
                 git 'tag', '3.0-alpha.20'
                 commit 7

@@ -82,10 +82,12 @@ class GitInfoService implements SCMInfoService {
         def grgit = Grgit.open(currentDir: project.projectDir)
         // List all tags
         return grgit.tag.list()
+        // ... filters using the pattern
+                .findAll { it.name ==~ baseTagPattern }
+        // ... sort by desc time
+                .sort { -it.commit.time }
         // ... gets their name only
                 .collect { it.name }
-        // ... filters using the pattern
-                .findAll { it ==~ baseTagPattern }
     }
 
     @Override
