@@ -6,6 +6,7 @@ import net.nemerosa.versioning.support.DirtyException
 import net.nemerosa.versioning.tasks.VersionDisplayTask
 import org.apache.commons.io.FileUtils
 import org.gradle.api.DefaultTask
+import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
 
@@ -563,6 +564,126 @@ VERSION_SCM=git
     }
 
     @Test
+    void 'Git release branch: with previous tags alpha, older tag must be taken into account'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'release/3.0-alpha'
+                commit 5
+                git 'tag', '3.0-alpha.0'
+                commit 6
+                git 'tag', '3.0-alpha.1'
+                commit 7
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+            }
+            def head = repo.commitLookup('Commit 7')
+            def headAbbreviated = repo.commitLookup('Commit 7', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            check(project)
+            VersionInfo info = project.versioning.info as VersionInfo
+
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/3.0-alpha'
+            assert info.base == '3.0-alpha'
+            assert info.branchId == 'release-3.0-alpha'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '3.0-alpha.2'
+            assert info.full == "release-3.0-alpha-${headAbbreviated}"
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git release branch: with previous tags alpha, chronological order of tags must be taken into account'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'release/3.0-alpha'
+                commit 5
+                git 'tag', '3.0-alpha.9'
+                commit 6
+                git 'tag', '3.0-alpha.10'
+                commit 7
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+            }
+            def head = repo.commitLookup('Commit 7')
+            def headAbbreviated = repo.commitLookup('Commit 7', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            check(project)
+            VersionInfo info = project.versioning.info as VersionInfo
+
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/3.0-alpha'
+            assert info.base == '3.0-alpha'
+            assert info.branchId == 'release-3.0-alpha'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '3.0-alpha.11'
+            assert info.full == "release-3.0-alpha-${headAbbreviated}"
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git release branch: with previous tags alpha, chronological order of tags must be taken into account - 2'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                git 'init'
+                (1..4).each { commit it }
+                git 'checkout', '-b', 'release/3.0-alpha'
+                commit 5
+                git 'tag', '3.0-alpha.19'
+                commit 6
+                git 'tag', '3.0-alpha.20'
+                commit 7
+                git 'log', '--oneline', '--graph', '--decorate', '--all'
+            }
+            def head = repo.commitLookup('Commit 7')
+            def headAbbreviated = repo.commitLookup('Commit 7', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            check(project)
+            VersionInfo info = project.versioning.info as VersionInfo
+
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/3.0-alpha'
+            assert info.base == '3.0-alpha'
+            assert info.branchId == 'release-3.0-alpha'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '3.0-alpha.21'
+            assert info.full == "release-3.0-alpha-${headAbbreviated}"
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
     void 'Git release branch: with previous tag on different branches'() {
         GitRepo repo = new GitRepo()
         try {
@@ -659,11 +780,7 @@ VERSION_SCM=git
                 releaseMode = 'snapshot'
             }
 
-            def userHome = project.file('userHome')
-            if (userHome.exists()) {
-                // A user home directory is created by Gradle on MacOS
-                FileUtils.forceDelete(userHome)
-            }
+            check(project)
 
             VersionInfo info = project.versioning.info as VersionInfo
             assert info != null
@@ -678,6 +795,14 @@ VERSION_SCM=git
             assert info.scm == 'git'
         } finally {
             repo.close()
+        }
+    }
+
+    public void check(Project project) {
+        def userHome = project.file('userHome')
+        if (userHome.exists()) {
+            // A user home directory is created by Gradle on MacOS
+            FileUtils.forceDelete(userHome)
         }
     }
 
