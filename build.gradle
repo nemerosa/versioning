@@ -8,7 +8,7 @@ plugins {
     /**
      * Versioning applied to itself
      */
-    id 'net.nemerosa.versioning' version '1.7.0'
+    id 'net.nemerosa.versioning' version '1.7.1'
 }
 
 apply plugin: 'groovy'
