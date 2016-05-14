@@ -27,6 +27,7 @@ version = versioning.info.display
 dependencies {
     localGroovy()
     compile 'org.ajoberstar:grgit:1.6.0'
+    compile 'org.tmatesoft.svnkit:svnkit:1.8.12'
 }
 
 /**
