@@ -62,8 +62,8 @@ class SVNInfoService implements SCMInfoService {
         if (statuses.empty) return false
         // Checks every entry
         def dirtyEntry = statuses.find { entry ->
-            def path = entry.repositoryRelativePath
-            if (path && !path.startsWith('userHome')) {
+            def path = (entry.file.absolutePath - dir.absolutePath)
+            if (path && !path.startsWith('/userHome')) {
                 return (entry.nodeStatus != SVNStatusType.UNCHANGED && entry.nodeStatus != SVNStatusType.STATUS_EXTERNAL) || (entry.propertiesStatus != SVNStatusType.UNCHANGED)
             } else {
                 return false

@@ -523,7 +523,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
         repo.mkdir 'project/branches/feature-test-1-my-feature/1', 'Commit for TEST-1'
         def dir = repo.checkout('project/branches/feature-test-1-my-feature')
-        run dir, 'touch', 'test.txt'
+        new File(dir, 'test.txt').text = 'Test'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
