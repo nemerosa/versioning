@@ -5,6 +5,8 @@ import net.nemerosa.versioning.SCMInfoService
 import net.nemerosa.versioning.VersioningExtension
 import net.nemerosa.versioning.support.ProcessExitException
 import org.gradle.api.Project
+import org.tmatesoft.svn.core.SVNDepth
+import org.tmatesoft.svn.core.wc.*
 
 import static net.nemerosa.versioning.support.Utils.run
 
@@ -18,48 +20,56 @@ class SVNInfoService implements SCMInfoService {
         if (!hasSvn) {
             SCMInfo.NONE
         } else {
-            // Gets the SVN raw info as XML
-            String xmlInfo = run(project.projectDir, 'svn', 'info', '--xml')
-            // Parsing
-            def info = new XmlSlurper().parseText(xmlInfo)
+            // Gets the client manager
+            def clientManager = getClientManager(extension)
+            // Gets the SVN information
+            SVNInfo info = clientManager.getWCClient().doInfo(
+                    project.projectDir,
+                    SVNRevision.HEAD
+            )
             // URL
-            String url = info.entry.url as String
+            String url = info.URL as String
             // Branch parsing
             String branch = parseBranch(url)
             // Revision
-            String revision = info.entry.commit.@revision as String
+            String revision = info.committedRevision.number as String
             // OK
             new SCMInfo(
                     branch,
                     revision,
                     revision,
                     '',
-                    isWorkingCopyDirty(project.projectDir)
+                    isWorkingCopyDirty(project.projectDir, clientManager)
             )
         }
     }
 
-    static boolean isWorkingCopyDirty(File dir) {
-        // Gets the status as XML
-        String xmlStatus = run(dir, 'svn', 'status', '--xml')
-        // Parsing
-        def status = new XmlSlurper().parseText(xmlStatus)
+    static boolean isWorkingCopyDirty(File dir, SVNClientManager clientManager) {
+        // Gets the status
+        List<SVNStatus> statuses = []
+        clientManager.statusClient.doStatus(
+                dir,
+                SVNRevision.WORKING,
+                SVNDepth.INFINITY,
+                false,
+                false,
+                false,
+                false,
+                { SVNStatus status -> statuses.add(status) },
+                null
+        )
         // List of entries
-        def entries = status.target.entry
-        if (entries.size() == 0) return false
+        if (statuses.empty) return false
         // Checks every entry
-        def dirtyEntry = entries.find { entry ->
-            def path = entry.@path.text() as String
-            if (path != 'userHome') {
-                def wcStatus = entry['wc-status']
-                def item = wcStatus.@item.text()
-                def props = wcStatus.@props.text()
-                return (item != 'none' && item != 'external') || (props != 'none')
+        def dirtyEntry = statuses.find { entry ->
+            def path = entry.repositoryRelativePath
+            if (path && !path.startsWith('userHome')) {
+                return (entry.nodeStatus != SVNStatusType.UNCHANGED && entry.nodeStatus != SVNStatusType.STATUS_EXTERNAL) || (entry.propertiesStatus != SVNStatusType.UNCHANGED)
             } else {
                 return false
             }
         }
-        return dirtyEntry.size() > 0
+        return dirtyEntry != null
     }
 
     static String parseBranch(String url) {
@@ -143,6 +153,14 @@ class SVNInfoService implements SCMInfoService {
     @Override
     String getBranchTypeSeparator() {
         '-'
+    }
+
+    /**
+     * Creates the client manager
+     */
+    protected static SVNClientManager getClientManager(VersioningExtension extension) {
+        return SVNClientManager.newInstance()
+        // TODO Authentication
     }
 
 }

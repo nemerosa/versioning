@@ -14,6 +14,7 @@ public final class Utils {
      * @param args Command parameters
      * @return Output of the command
      */
+    @Deprecated
     static String run(File wd, String cmd, String... args) {
         // Complete list of arguments
         List<String> list = new ArrayList<>();
