@@ -12,7 +12,6 @@ import org.junit.Test
 
 import java.util.concurrent.atomic.AtomicInteger
 
-import static net.nemerosa.versioning.support.Utils.run
 import static net.nemerosa.versioning.svn.SVNRepo.ignore
 
 class SVNVersionTest {
@@ -87,7 +86,7 @@ class SVNVersionTest {
         repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
         repo.mkdir 'project/trunk/2', 'Commit for TEST-2'
         // Project
-        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/trunk')).build()
+        def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/trunk')).build()
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -103,7 +102,7 @@ class SVNVersionTest {
         repo.mkdir 'project/trunk', 'Trunk'
         repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
         repo.mkdir 'project/trunk/2', 'Commit for TEST-2'
-        def dir = SVNRepo.checkout('project/trunk')
+        def dir = repo.checkout('project/trunk')
         ignore dir, '.gradle'
         // Project
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
@@ -138,7 +137,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
         repo.mkdir 'project/trunk/2', 'Commit for TEST-2'
         // Project
-        def dir = SVNRepo.checkout('project/trunk')
+        def dir = repo.checkout('project/trunk')
         ignore dir, '.gradle'
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
@@ -175,7 +174,7 @@ CUSTOM_SCM=svn
         repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
         repo.mkdir 'project/trunk/2', 'Commit for TEST-2'
         // Project
-        def dir = SVNRepo.checkout('project/trunk')
+        def dir = repo.checkout('project/trunk')
         ignore dir, '.gradle'
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
@@ -214,7 +213,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/feature-test-1-my-feature/2', 'Commit for TEST-1'
 
         // Project
-        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/branches/feature-test-1-my-feature')).build()
+        def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/feature-test-1-my-feature')).build()
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -243,7 +242,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/feature-test-1-my-feature/2', 'Commit for TEST-1'
 
         // Project
-        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/branches/feature-test-1-my-feature')).build()
+        def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/feature-test-1-my-feature')).build()
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -273,7 +272,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/feature-test-1-my-feature/2', 'Commit for TEST-1'
 
         // Project
-        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/branches/feature-test-1-my-feature')).build()
+        def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/feature-test-1-my-feature')).build()
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -303,7 +302,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/feature-test-1-my-feature/2', 'Commit for TEST-1'
 
         // Project
-        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/branches/feature-test-1-my-feature')).build()
+        def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/feature-test-1-my-feature')).build()
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -334,7 +333,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/feature-test-1-my-feature/2', 'Commit for TEST-1'
 
         // Project
-        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/branches/feature-test-1-my-feature')).build()
+        def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/feature-test-1-my-feature')).build()
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -364,7 +363,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/feature-test-1-my-feature/2', 'Commit for TEST-1'
 
         // Project
-        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/branches/feature-test-1-my-feature')).build()
+        def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/feature-test-1-my-feature')).build()
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -396,7 +395,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/release-2.0/2', 'Commit for TEST-1'
 
         // Project
-        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/branches/release-2.0')).build()
+        def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/release-2.0')).build()
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -429,7 +428,7 @@ VERSION_SCM=svn
         repo.copy 'project/branches/release-2.0@2', 'project/tags/2.0.0', 'v2.0.0'
 
         // Project
-        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/branches/release-2.0')).build()
+        def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/release-2.0')).build()
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -462,7 +461,7 @@ VERSION_SCM=svn
         repo.copy 'project/branches/release-2.0@2', 'project/tags/2.0.10', 'v2.0.10'
 
         // Project
-        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/branches/release-2.0')).build()
+        def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/release-2.0')).build()
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -497,7 +496,7 @@ VERSION_SCM=svn
         repo.copy 'project/branches/release-2.0@3', 'project/tags/2.0.1', 'v2.0.1'
 
         // Project
-        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/branches/release-2.0')).build()
+        def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/release-2.0')).build()
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -550,8 +549,8 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
         repo.mkdir 'project/branches/feature-test-1-my-feature/1', 'Commit for TEST-1'
         def dir = repo.checkout('project/branches/feature-test-1-my-feature')
-        run dir, 'touch', 'test.txt'
-        run dir, 'svn', 'add', 'test.txt'
+        new File(dir, 'test.txt').text = 'test'
+        SVNRepo.add dir, 'test.txt'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
@@ -577,7 +576,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
         repo.mkdir 'project/branches/feature-test-1-my-feature/1', 'Commit for TEST-1'
         def dir = repo.checkout('project/branches/feature-test-1-my-feature')
-        run dir, 'touch', 'test.txt'
+        new File(dir, 'test.txt').text = 'test'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
@@ -606,7 +605,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/release-2.0/1', 'Commit for TEST-1'
         repo.mkdir 'project/branches/release-2.0/2', 'Commit for TEST-1'
         def dir = repo.checkout('project/branches/release-2.0')
-        run dir, 'touch', 'test.txt'
+        new File(dir, 'test.txt').text = 'test'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
@@ -634,7 +633,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/release-2.0/1', 'Commit for TEST-1'
         repo.mkdir 'project/branches/release-2.0/2', 'Commit for TEST-1'
         def dir = repo.checkout('project/branches/release-2.0')
-        run dir, 'touch', 'test.txt'
+        new File(dir, 'test.txt').text = 'test'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
@@ -663,7 +662,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/release-2.0/1', 'Commit for TEST-1'
         repo.mkdir 'project/branches/release-2.0/2', 'Commit for TEST-1'
         def dir = repo.checkout('project/branches/release-2.0')
-        run dir, 'touch', 'test.txt'
+        new File(dir, 'test.txt').text = 'test'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
@@ -692,7 +691,7 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/release-2.0/1', 'Commit for TEST-1'
         repo.mkdir 'project/branches/release-2.0/2', 'Commit for TEST-1'
         def dir = repo.checkout('project/branches/release-2.0')
-        run dir, 'touch', 'test.txt'
+        new File(dir, 'test.txt').text = 'test'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)

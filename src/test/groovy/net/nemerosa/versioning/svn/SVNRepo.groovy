@@ -64,9 +64,21 @@ class SVNRepo {
         )
     }
 
-    def ignore(String ignore) {
+    static def add(File dir, String path) {
+        clientManager.getWCClient().doAdd(
+                new File(dir, path),
+                false,
+                false,
+                false,
+                SVNDepth.INFINITY,
+                false,
+                true
+        )
+    }
+
+    static def ignore(File dir, String ignore) {
         clientManager.getWCClient().doSetProperty(
-                repo,
+                dir,
                 'svn:ignore',
                 SVNPropertyValue.create(ignore),
                 false,
@@ -75,7 +87,7 @@ class SVNRepo {
                 []
         )
         clientManager.commitClient.doCommit(
-                [repo] as File[],
+                [dir] as File[],
                 false,
                 "Ignoring",
                 null,
