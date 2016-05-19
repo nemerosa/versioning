@@ -8,6 +8,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 
 import java.util.concurrent.atomic.AtomicInteger
@@ -15,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import static net.nemerosa.versioning.support.Utils.run
 import static net.nemerosa.versioning.svn.SVNRepo.ignore
 
+@Ignore
 class SVNVersionTest {
 
     private static AtomicInteger count = new AtomicInteger()

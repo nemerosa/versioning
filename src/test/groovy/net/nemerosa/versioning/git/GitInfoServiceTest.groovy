@@ -9,7 +9,6 @@ class GitInfoServiceTest {
         GitRepo repo = new GitRepo()
         try {
             repo.with {
-                git 'init'
                 commit 1
             }
             assert !GitInfoService.isGitTreeDirty(repo.dir): "Git tree clean"
@@ -24,7 +23,6 @@ class GitInfoServiceTest {
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 commit 1
                 // Need to modify a tracked file, not just create a new untracked file
                 //cmd 'touch', 'test.txt'
@@ -42,11 +40,10 @@ class GitInfoServiceTest {
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 commit 1
-                // Add a file
-                cmd 'touch', 'test.txt'
-                git 'add', 'test.txt'
+                // Add a file, without committing it
+                new File(repo.dir, 'test.txt').text = 'Test'
+                add 'test.txt'
             }
             assert GitInfoService.isGitTreeDirty(repo.dir): "Uncommitted changes"
         } finally {

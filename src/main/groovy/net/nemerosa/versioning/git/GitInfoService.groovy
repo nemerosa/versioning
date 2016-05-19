@@ -5,6 +5,7 @@ import net.nemerosa.versioning.SCMInfoService
 import net.nemerosa.versioning.VersioningExtension
 import org.ajoberstar.grgit.Commit
 import org.ajoberstar.grgit.Grgit
+import org.ajoberstar.grgit.Status
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
@@ -70,7 +71,13 @@ class GitInfoService implements SCMInfoService {
 
     static boolean isGitTreeDirty(File dir) {// Open the Git repo
         //noinspection GroovyAssignabilityCheck
-        return !Grgit.open(currentDir: dir).status().clean
+        Status status = Grgit.open(currentDir: dir).status()
+        return !isClean(status)
+    }
+
+    private static boolean isClean(Status status) {
+        return status.staged.allChanges.empty &&
+                status.unstaged.allChanges.findAll { !it.startsWith('userHome/') }.empty
     }
 
     @Override

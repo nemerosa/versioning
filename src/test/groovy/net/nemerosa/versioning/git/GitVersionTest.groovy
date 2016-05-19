@@ -4,9 +4,7 @@ import net.nemerosa.versioning.VersionInfo
 import net.nemerosa.versioning.VersioningPlugin
 import net.nemerosa.versioning.support.DirtyException
 import net.nemerosa.versioning.tasks.VersionDisplayTask
-import org.apache.commons.io.FileUtils
 import org.gradle.api.DefaultTask
-import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
 
@@ -38,9 +36,7 @@ class GitVersionTest {
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 4')
             def headAbbreviated = repo.commitLookup('Commit 4', true)
@@ -55,8 +51,8 @@ class GitVersionTest {
             assert info.branchId == 'master'
             assert info.branchType == 'master'
             assert info.commit == head
-            assert info.display == "master-${headAbbreviated}"
-            assert info.full == "master-${headAbbreviated}"
+            assert info.display == "master-${headAbbreviated}" as String
+            assert info.full == "master-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -74,9 +70,7 @@ class GitVersionTest {
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 4')
             def headAbbreviated = repo.commitLookup('Commit 4', true)
@@ -94,8 +88,8 @@ class GitVersionTest {
             assert info.branchId == 'master'
             assert info.branchType == 'master'
             assert info.commit == head
-            assert info.display == "master-${headAbbreviated}"
-            assert info.full == "master-${headAbbreviated}"
+            assert info.display == "master-${headAbbreviated}" as String
+            assert info.full == "master-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -109,7 +103,6 @@ class GitVersionTest {
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
             }
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
@@ -128,7 +121,6 @@ class GitVersionTest {
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
             }
             def head = repo.commitLookup('Commit 4')
@@ -152,7 +144,7 @@ VERSION_COMMIT=${head}
 VERSION_DISPLAY=master-${headAbbreviated}
 VERSION_FULL=master-${headAbbreviated}
 VERSION_SCM=git
-"""
+""" as String
         } finally {
             repo.close()
         }
@@ -164,7 +156,6 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
             }
             def head = repo.commitLookup('Commit 4')
@@ -191,7 +182,7 @@ CUSTOM_COMMIT=${head}
 CUSTOM_DISPLAY=master-${headAbbreviated}
 CUSTOM_FULL=master-${headAbbreviated}
 CUSTOM_SCM=git
-"""
+""" as String
         } finally {
             repo.close()
         }
@@ -203,7 +194,6 @@ CUSTOM_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
             }
             def head = repo.commitLookup('Commit 4')
@@ -230,7 +220,7 @@ VERSION_COMMIT=${head}
 VERSION_DISPLAY=master-${headAbbreviated}
 VERSION_FULL=master-${headAbbreviated}
 VERSION_SCM=git
-"""
+""" as String
         } finally {
             repo.close()
         }
@@ -242,11 +232,9 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'feature/123-great'
+                branch 'feature/123-great'
                 commit 5
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
@@ -261,8 +249,8 @@ VERSION_SCM=git
             assert info.branchId == 'feature-123-great'
             assert info.branchType == 'feature'
             assert info.commit == head
-            assert info.display == "feature-123-great-${headAbbreviated}"
-            assert info.full == "feature-123-great-${headAbbreviated}"
+            assert info.display == "feature-123-great-${headAbbreviated}" as String
+            assert info.full == "feature-123-great-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -276,11 +264,9 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'feature/123-great'
+                branch 'feature/123-great'
                 commit 5
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
@@ -298,8 +284,8 @@ VERSION_SCM=git
             assert info.branchId == 'feature-123-great'
             assert info.branchType == 'feature'
             assert info.commit == head
-            assert info.display == "feature-123-great-${headAbbreviated}"
-            assert info.full == "feature-123-great-${headAbbreviated}"
+            assert info.display == "feature-123-great-${headAbbreviated}" as String
+            assert info.full == "feature-123-great-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -313,11 +299,9 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'feature/123-great'
+                branch 'feature/123-great'
                 commit 5
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
@@ -336,7 +320,7 @@ VERSION_SCM=git
             assert info.branchType == 'feature'
             assert info.commit == head
             assert info.display == "123-great-SNAPSHOT"
-            assert info.full == "feature-123-great-${headAbbreviated}"
+            assert info.full == "feature-123-great-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -350,11 +334,9 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'feature/123-great'
+                branch 'feature/123-great'
                 commit 5
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
@@ -374,7 +356,7 @@ VERSION_SCM=git
             assert info.branchType == 'feature'
             assert info.commit == head
             assert info.display == "123-great.DEV"
-            assert info.full == "feature-123-great-${headAbbreviated}"
+            assert info.full == "feature-123-great-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -388,11 +370,9 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'feature/123-great'
+                branch 'feature/123-great'
                 commit 5
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
@@ -411,7 +391,7 @@ VERSION_SCM=git
             assert info.branchType == 'feature'
             assert info.commit == head
             assert info.display == "123-great"
-            assert info.full == "feature-123-great-${headAbbreviated}"
+            assert info.full == "feature-123-great-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -425,11 +405,9 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'feature/123-great'
+                branch 'feature/123-great'
                 commit 5
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
@@ -449,8 +427,8 @@ VERSION_SCM=git
             assert info.branchId == 'feature-123-great'
             assert info.branchType == 'feature'
             assert info.commit == head
-            assert info.display == "123-great-${headAbbreviated}-SNAPSHOT"
-            assert info.full == "feature-123-great-${headAbbreviated}"
+            assert info.display == "123-great-${headAbbreviated}-SNAPSHOT" as String
+            assert info.full == "feature-123-great-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -464,11 +442,9 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/2.0'
+                branch 'release/2.0'
                 commit 5
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
@@ -484,7 +460,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '2.0.0'
-            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
         } finally {
             repo.close()
@@ -497,13 +473,11 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/2.0'
+                branch 'release/2.0'
                 commit 5
-                git 'tag', '2.0.2'
+                tag '2.0.2'
                 commit 6
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
@@ -519,7 +493,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '2.0.3'
-            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -533,13 +507,11 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/2.0-alpha'
+                branch 'release/2.0-alpha'
                 commit 5
-                git 'tag', '2.0-alpha.2'
+                tag '2.0-alpha.2'
                 commit 6
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
@@ -555,7 +527,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '2.0-alpha.3'
-            assert info.full == "release-2.0-alpha-${headAbbreviated}"
+            assert info.full == "release-2.0-alpha-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -569,23 +541,20 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/3.0-alpha'
+                branch 'release/3.0-alpha'
                 commit 5
-                git 'tag', '3.0-alpha.0'
+                tag '3.0-alpha.0'
                 sleep 1000
                 commit 6
-                git 'tag', '3.0-alpha.1'
+                tag '3.0-alpha.1'
                 commit 7
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 7')
             def headAbbreviated = repo.commitLookup('Commit 7', true)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
-            check(project)
             VersionInfo info = project.versioning.info as VersionInfo
 
             assert info != null
@@ -596,7 +565,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '3.0-alpha.2'
-            assert info.full == "release-3.0-alpha-${headAbbreviated}"
+            assert info.full == "release-3.0-alpha-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -610,23 +579,20 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/3.0-alpha'
+                branch 'release/3.0-alpha'
                 commit 5
-                git 'tag', '3.0-alpha.9'
+                tag '3.0-alpha.9'
                 sleep 1000
                 commit 6
-                git 'tag', '3.0-alpha.10'
+                tag '3.0-alpha.10'
                 commit 7
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 7')
             def headAbbreviated = repo.commitLookup('Commit 7', true)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
-            check(project)
             VersionInfo info = project.versioning.info as VersionInfo
 
             assert info != null
@@ -637,7 +603,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '3.0-alpha.11'
-            assert info.full == "release-3.0-alpha-${headAbbreviated}"
+            assert info.full == "release-3.0-alpha-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -651,23 +617,20 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/3.0-alpha'
+                branch 'release/3.0-alpha'
                 commit 5
-                git 'tag', '3.0-alpha.19'
+                tag '3.0-alpha.19'
                 sleep 1000
                 commit 6
-                git 'tag', '3.0-alpha.20'
+                tag '3.0-alpha.20'
                 commit 7
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 7')
             def headAbbreviated = repo.commitLookup('Commit 7', true)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
-            check(project)
             VersionInfo info = project.versioning.info as VersionInfo
 
             assert info != null
@@ -678,7 +641,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '3.0-alpha.21'
-            assert info.full == "release-3.0-alpha-${headAbbreviated}"
+            assert info.full == "release-3.0-alpha-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -692,17 +655,15 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/2.0'
+                branch 'release/2.0'
                 commit 5
-                git 'tag', '2.0.2'
-                git 'checkout', '-b', 'release/2.1'
+                tag '2.0.2'
+                branch 'release/2.1'
                 commit 6
-                git 'tag', '2.1.0'
-                git 'checkout', 'release/2.0'
+                tag '2.1.0'
+                checkout 'release/2.0'
                 commit 7
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 7')
             def headAbbreviated = repo.commitLookup('Commit 7', true)
@@ -718,7 +679,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '2.0.3'
-            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -732,13 +693,11 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/2.0'
+                branch 'release/2.0'
                 commit 5
-                git 'tag', '2.0.10'
+                tag '2.0.10'
                 commit 6
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
@@ -754,7 +713,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '2.0.11'
-            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -768,11 +727,9 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/2.0'
+                branch 'release/2.0'
                 commit 5
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
@@ -783,8 +740,6 @@ VERSION_SCM=git
                 releaseMode = 'snapshot'
             }
 
-            check(project)
-
             VersionInfo info = project.versioning.info as VersionInfo
             assert info != null
             assert info.build == headAbbreviated
@@ -794,18 +749,10 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '2.0.0-SNAPSHOT'
-            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
         } finally {
             repo.close()
-        }
-    }
-
-    public void check(Project project) {
-        def userHome = project.file('userHome')
-        if (userHome.exists()) {
-            // A user home directory is created by Gradle on MacOS
-            FileUtils.forceDelete(userHome)
         }
     }
 
@@ -815,11 +762,9 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/2.0'
+                branch 'release/2.0'
                 commit 5
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
@@ -839,7 +784,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '2.0.0-DEV'
-            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
         } finally {
             repo.close()
@@ -852,11 +797,9 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/2.0'
+                branch 'release/2.0'
                 commit 5
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
@@ -875,7 +818,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '2.0.0-PREVIEW'
-            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
         } finally {
             repo.close()
@@ -888,13 +831,11 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/2.0'
+                branch 'release/2.0'
                 commit 5
-                git 'tag', '2.0.2'
+                tag '2.0.2'
                 commit 6
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
@@ -913,7 +854,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '2.0.3-SNAPSHOT'
-            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -927,13 +868,11 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/2.0'
+                branch 'release/2.0'
                 commit 5
-                git 'tag', '2.0.2'
+                tag '2.0.2'
                 commit 6
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
@@ -953,7 +892,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '2.0.3-DEV'
-            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -967,13 +906,11 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/2.0'
+                branch 'release/2.0'
                 commit 5
-                git 'tag', '2.0.2'
+                tag '2.0.2'
                 commit 6
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
@@ -992,7 +929,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '2.0.3-PREVIEW'
-            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -1006,13 +943,11 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/2.0'
+                branch 'release/2.0'
                 commit 5
                 commit 6
-                git 'tag', '2.0.2'
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
+                tag '2.0.2'
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
@@ -1031,7 +966,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '2.0.2'
-            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -1045,13 +980,11 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/2.0'
+                branch 'release/2.0'
                 commit 5
                 commit 6
-                git 'tag', '2.0.2'
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
+                tag '2.0.2'
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
@@ -1071,7 +1004,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '2.0.2'
-            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -1085,13 +1018,11 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/2.0'
+                branch 'release/2.0'
                 commit 5
                 commit 6
-                git 'tag', '2.0.2'
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
+                tag '2.0.2'
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
@@ -1110,7 +1041,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '2.0.3-PREVIEW'
-            assert info.full == "release-2.0-${headAbbreviated}"
+            assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
 
         } finally {
@@ -1124,13 +1055,11 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'feature/123-great'
+                branch 'feature/123-great'
                 commit 5
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
                 // Nope, got to mod an existing tracked file
-                //cmd 'touch', 'test.txt'
+                // cmd 'touch', 'test.txt'
 				new File(dir, 'file5') << 'Add some content'
             }
             def head = repo.commitLookup('Commit 5')
@@ -1146,8 +1075,8 @@ VERSION_SCM=git
             assert info.branchId == 'feature-123-great'
             assert info.branchType == 'feature'
             assert info.commit == head
-            assert info.display == "feature-123-great-${headAbbreviated}-dirty"
-            assert info.full == "feature-123-great-${headAbbreviated}-dirty"
+            assert info.display == "feature-123-great-${headAbbreviated}-dirty" as String
+            assert info.full == "feature-123-great-${headAbbreviated}-dirty" as String
             assert info.scm == 'git'
 
         } finally {
@@ -1161,14 +1090,12 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'feature/123-great'
+                branch 'feature/123-great'
                 commit 5
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
                 // Add a file
-                cmd 'touch', 'test.txt'
-                git 'add', 'test.txt'
+                new File(repo.dir, 'test.text').text = 'test'
+                add 'test.txt'
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
@@ -1183,8 +1110,8 @@ VERSION_SCM=git
             assert info.branchId == 'feature-123-great'
             assert info.branchType == 'feature'
             assert info.commit == head
-            assert info.display == "feature-123-great-${headAbbreviated}-dirty"
-            assert info.full == "feature-123-great-${headAbbreviated}-dirty"
+            assert info.display == "feature-123-great-${headAbbreviated}-dirty" as String
+            assert info.full == "feature-123-great-${headAbbreviated}-dirty" as String
             assert info.scm == 'git'
 
         } finally {
@@ -1198,11 +1125,9 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'feature/123-great'
+                branch 'feature/123-great'
                 commit 5
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
                 // Nope, need to mod an existing file to make the tree dirty
                 //cmd 'touch', 'test.txt'
 				new File(dir, 'file5') << 'Add some content'
@@ -1224,8 +1149,8 @@ VERSION_SCM=git
             assert info.branchId == 'feature-123-great'
             assert info.branchType == 'feature'
             assert info.commit == head
-            assert info.display == "feature-123-great-${headAbbreviated}-dev"
-            assert info.full == "feature-123-great-${headAbbreviated}-dev"
+            assert info.display == "feature-123-great-${headAbbreviated}-dev" as String
+            assert info.full == "feature-123-great-${headAbbreviated}-dev" as String
             assert info.scm == 'git'
 
         } finally {
@@ -1239,16 +1164,13 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/2.0'
+                branch 'release/2.0'
                 commit 5
-                git 'tag', '2.0.2'
+                tag '2.0.2'
                 commit 6
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
-                // Nope, got to mod an existing file 
-                //cmd 'touch', 'test.txt'
-		new File(dir, 'file5') << 'Add some content'
+                // Nope, got to mod an existing file
+		        new File(dir, 'file5') << 'Add some content'
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
@@ -1264,7 +1186,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '2.0.3-dirty'
-            assert info.full == "release-2.0-${headAbbreviated}-dirty"
+            assert info.full == "release-2.0-${headAbbreviated}-dirty" as String
             assert info.scm == 'git'
 
         } finally {
@@ -1278,13 +1200,11 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/2.0'
+                branch 'release/2.0'
                 commit 5
-                git 'tag', '2.0.2'
+                tag '2.0.2'
                 commit 6
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
                 // Nope, got to mod an existing file
                 //cmd 'touch', 'test.txt'
 				new File(dir, 'file5') << 'Mod the content'
@@ -1306,7 +1226,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '2.0.3-DIRTY'
-            assert info.full == "release-2.0-${headAbbreviated}-DIRTY"
+            assert info.full == "release-2.0-${headAbbreviated}-DIRTY" as String
             assert info.scm == 'git'
 
         } finally {
@@ -1320,13 +1240,11 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/2.0'
+                branch 'release/2.0'
                 commit 5
-                git 'tag', '2.0.2'
+                tag '2.0.2'
                 commit 6
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
                 // Nope, got to mod an existing file
                 //cmd 'touch', 'test.txt'
 				new File(dir, 'file5') << 'Mod the content'
@@ -1348,7 +1266,7 @@ VERSION_SCM=git
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == '2.0.3-DONOTUSE'
-            assert info.full == "release-2.0-${headAbbreviated}-DONOTUSE"
+            assert info.full == "release-2.0-${headAbbreviated}-DONOTUSE" as String
             assert info.scm == 'git'
 
         } finally {
@@ -1362,13 +1280,11 @@ VERSION_SCM=git
         try {
             // Git initialisation
             repo.with {
-                git 'init'
                 (1..4).each { commit it }
-                git 'checkout', '-b', 'release/2.0'
+                branch 'release/2.0'
                 commit 5
-                git 'tag', '2.0.2'
+                tag '2.0.2'
                 commit 6
-                git 'log', '--oneline', '--graph', '--decorate', '--all'
                 // Nope, mod an existing file
                 //cmd 'touch', 'test.txt'
 				new File(dir, 'file5') << 'mod the content'
