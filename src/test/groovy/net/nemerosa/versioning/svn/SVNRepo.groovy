@@ -1,105 +1,160 @@
 package net.nemerosa.versioning.svn
 
-import org.junit.Assert
-
-import static net.nemerosa.versioning.support.Utils.run
+import org.apache.commons.io.FileUtils
+import org.tmatesoft.svn.core.SVNDepth
+import org.tmatesoft.svn.core.SVNPropertyValue
+import org.tmatesoft.svn.core.SVNURL
+import org.tmatesoft.svn.core.io.SVNRepositoryFactory
+import org.tmatesoft.svn.core.wc.SVNClientManager
+import org.tmatesoft.svn.core.wc.SVNCopySource
+import org.tmatesoft.svn.core.wc.SVNRevision
 
 class SVNRepo {
 
     private final String repoName
     private File repo
-    private long pid
+    private SVNURL url
 
     SVNRepo(String repoName) {
         this.repoName = repoName
-    }
-
-    static SVNRepo get(String repoName) {
-        SVNRepo repo = new SVNRepo(repoName)
-        repo.start()
-        repo
     }
 
     File getDir() {
         repo
     }
 
-    long start() {
+    SVNURL getUrl() {
+        url
+    }
+
+    void start() {
         repo = new File("build/repo/$repoName").absoluteFile
         if (repo.exists()) repo.deleteDir()
         repo.mkdirs()
         println "SVN Test repo at ${repo.absolutePath}"
         // Creates the repository
-        run repo, "svnadmin", "create", repo.absolutePath
-        // Configuration file
-        new File(repo, 'conf/authz').bytes = SVNRepo.class.getResourceAsStream('/svn/conf/authz').bytes
-        new File(repo, 'conf/passwd').bytes = SVNRepo.class.getResourceAsStream('/svn/conf/passwd').bytes
-        new File(repo, 'conf/svnserve.conf').bytes = SVNRepo.class.getResourceAsStream('/svn/conf/svnserve.conf').bytes
-        // Starts serving the repository
-        def pidFile = new File(repo, 'pid')
-        run repo, "svnserve", "--daemon", "--root", repo.absolutePath, "--pid-file", pidFile.absolutePath
-        // Waits until the PID is created
-        boolean pidExists = pidFile.exists()
-        int tries = 0
-        while (!pidExists && tries < 5) {
-            println "Waiting for SVN repo at ${repo.absolutePath} to start..."
-            sleep 1000
-            pidExists = pidFile.exists()
-            tries++
-        }
-        if (!pidExists) {
-            Assert.fail "The SVN repo at ${repo.absolutePath} could not start in 5 seconds."
-        } else {
-            this.pid = pidFile.text as long
-            println "SVN server started in $repo with pid=$pid"
-            // OK
-            pid
-        }
+        url = SVNRepositoryFactory.createLocalRepository(
+                repo, null, true, false,
+                false,
+                false,
+                false,
+                false,
+                true
+        )
+        // TODO Configuration file
+//        new File(repo, 'conf/authz').bytes = SVNRepo.class.getResourceAsStream('/svn/conf/authz').bytes
+//        new File(repo, 'conf/passwd').bytes = SVNRepo.class.getResourceAsStream('/svn/conf/passwd').bytes
+//        new File(repo, 'conf/svnserve.conf').bytes = SVNRepo.class.getResourceAsStream('/svn/conf/svnserve.conf').bytes
     }
 
     void stop() {
-        if (pid != 0) {
-            println "Stopping server with pid=$pid"
-            run repo, "kill", "-KILL", "$pid"
-        }
+        FileUtils.forceDelete(repo)
+    }
+
+    protected static SVNClientManager getClientManager() {
+        return SVNClientManager.newInstance();
     }
 
     def mkdir(String path, String message) {
-        run repo, 'svn', 'mkdir', '--message', message, '--parents', '--username', 'user', '--password', 'test', '--no-auth-cache', "svn://localhost/${path}"
+        clientManager.commitClient.doMkDir(
+                [url.appendPath(path, false)] as SVNURL[],
+                message,
+                null,
+                true
+        )
     }
 
-    static def ignore(File dir, String ignore) {
-        run dir, 'svn', 'propset', 'svn:ignore', ignore, '.'
-        run dir, 'svn', 'commit', '-m', 'Ignoring', '--username', 'user', '--password', 'test', '--no-auth-cache'
+    def ignore(String ignore) {
+        clientManager.getWCClient().doSetProperty(
+                repo,
+                'svn:ignore',
+                SVNPropertyValue.create(ignore),
+                false,
+                SVNDepth.EMPTY,
+                null,
+                []
+        )
+        clientManager.commitClient.doCommit(
+                [repo] as File[],
+                false,
+                "Ignoring",
+                null,
+                [] as String[],
+                false,
+                false,
+                SVNDepth.INFINITY
+        )
     }
 
     /**
      * Checks the code into a temporary directory and returns it
      */
-    static File checkout(String path) {
+    File checkout(String path) {
         def wc = File.createTempDir('svn', '.wd')
-        run wc, 'svn', 'checkout', "svn://localhost/${path}", wc.absolutePath
+        clientManager.updateClient.doCheckout(
+                url.appendPath(path, false),
+                wc,
+                SVNRevision.HEAD,
+                SVNRevision.HEAD,
+                SVNDepth.INFINITY,
+                false
+        )
         wc
     }
 
     /**
      * Merges {@code from} into {@code to} using the {@code wd} working directory.
      */
-    static def merge(File wd, String from, String to, String message) {
+    def merge(File wd, String from, String to, String message) {
         if (wd.exists()) wd.deleteDir()
         wd.mkdirs()
-        // Checks the from out
-        run wd, 'svn', 'checkout', "svn://localhost/${to}", wd.absolutePath
-        // Merge the to
-        run wd, 'svn', 'merge', '--accept', 'postpone', "svn://localhost/${from}", wd.absolutePath
+        // Checks the `to` out
+        clientManager.updateClient.doCheckout(
+                url.appendPath(from, false),
+                wd,
+                SVNRevision.HEAD,
+                SVNRevision.HEAD,
+                SVNDepth.INFINITY,
+                false
+        )
+        // Merge the `from`
+        clientManager.diffClient.doMerge(
+                url.appendPath(from, false),
+                SVNRevision.HEAD,
+                wd,
+                SVNRevision.HEAD,
+                wd,
+                SVNDepth.INFINITY,
+                true,
+                false,
+                false,
+                false
+        )
         // Commit
-        run wd, 'svn', 'commit', '--message', message, wd.absolutePath, '--username', 'user', '--password', 'test', '--no-auth-cache'
+        clientManager.commitClient.doCommit(
+                [wd] as File[],
+                false,
+                message,
+                null,
+                [] as String[],
+                false,
+                false,
+                SVNDepth.INFINITY
+        )
     }
 
     /**
      * Remote copy of {@code from} into {@code into} using the {@code message} message.
      */
     def copy(String from, String into, String message) {
-        run repo, 'svn', 'copy', '--parents', "svn://localhost/${from}", "svn://localhost/${into}", '--message', message, '--username', 'user', '--password', 'test', '--no-auth-cache'
+        clientManager.copyClient.doCopy(
+                [new SVNCopySource(SVNRevision.HEAD, SVNRevision.HEAD, url.appendPath(from, false))] as SVNCopySource[],
+                url.appendPath(into, false),
+                false,
+                true,
+                true,
+                message,
+                null
+        )
     }
 }

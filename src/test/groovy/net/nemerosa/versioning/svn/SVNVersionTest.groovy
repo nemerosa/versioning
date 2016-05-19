@@ -8,7 +8,6 @@ import org.gradle.api.DefaultTask
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 
 import java.util.concurrent.atomic.AtomicInteger
@@ -16,7 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger
 import static net.nemerosa.versioning.support.Utils.run
 import static net.nemerosa.versioning.svn.SVNRepo.ignore
 
-@Ignore
 class SVNVersionTest {
 
     private static AtomicInteger count = new AtomicInteger()
@@ -63,7 +61,7 @@ class SVNVersionTest {
         repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
         repo.mkdir 'project/trunk/2', 'Commit for TEST-2'
         // Project
-        def project = ProjectBuilder.builder().withProjectDir(SVNRepo.checkout('project/trunk')).build()
+        def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/trunk')).build()
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
