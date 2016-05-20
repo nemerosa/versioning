@@ -20,14 +20,6 @@ class SVNRepo {
         this.repoName = repoName
     }
 
-    File getDir() {
-        repo
-    }
-
-    SVNURL getUrl() {
-        url
-    }
-
     void start() {
         repo = new File("build/repo/$repoName").absoluteFile
         if (repo.exists()) repo.deleteDir()
@@ -42,10 +34,6 @@ class SVNRepo {
                 false,
                 true
         )
-        // TODO Configuration file
-//        new File(repo, 'conf/authz').bytes = SVNRepo.class.getResourceAsStream('/svn/conf/authz').bytes
-//        new File(repo, 'conf/passwd').bytes = SVNRepo.class.getResourceAsStream('/svn/conf/passwd').bytes
-//        new File(repo, 'conf/svnserve.conf').bytes = SVNRepo.class.getResourceAsStream('/svn/conf/svnserve.conf').bytes
     }
 
     void stop() {
@@ -113,47 +101,6 @@ class SVNRepo {
                 false
         )
         wc
-    }
-
-    /**
-     * Merges {@code from} into {@code to} using the {@code wd} working directory.
-     */
-    def merge(File wd, String from, String to, String message) {
-        if (wd.exists()) wd.deleteDir()
-        wd.mkdirs()
-        // Checks the `to` out
-        clientManager.updateClient.doCheckout(
-                url.appendPath(from, false),
-                wd,
-                SVNRevision.HEAD,
-                SVNRevision.HEAD,
-                SVNDepth.INFINITY,
-                false
-        )
-        // Merge the `from`
-        clientManager.diffClient.doMerge(
-                url.appendPath(from, false),
-                SVNRevision.HEAD,
-                wd,
-                SVNRevision.HEAD,
-                wd,
-                SVNDepth.INFINITY,
-                true,
-                false,
-                false,
-                false
-        )
-        // Commit
-        clientManager.commitClient.doCommit(
-                [wd] as File[],
-                false,
-                message,
-                null,
-                [] as String[],
-                false,
-                false,
-                SVNDepth.INFINITY
-        )
     }
 
     /**
