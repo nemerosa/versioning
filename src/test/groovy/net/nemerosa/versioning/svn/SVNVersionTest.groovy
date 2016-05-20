@@ -423,9 +423,10 @@ VERSION_SCM=svn
         repo.mkdir 'project/branches/release-2.0', 'Feature branch'
         repo.mkdir 'project/branches/release-2.0/1', 'Commit for TEST-1' // Tag
         repo.mkdir 'project/branches/release-2.0/2', 'Commit for TEST-1'
-
         // Tagging
         repo.copy 'project/branches/release-2.0@2', 'project/tags/2.0.0', 'v2.0.0'
+        // Logging
+        repo.log()
 
         // Project
         def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/release-2.0')).build()

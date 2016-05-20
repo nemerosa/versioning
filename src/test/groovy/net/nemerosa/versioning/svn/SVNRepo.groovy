@@ -1,6 +1,7 @@
 package net.nemerosa.versioning.svn
 
 import org.apache.commons.io.FileUtils
+import org.apache.commons.lang.StringUtils
 import org.tmatesoft.svn.core.SVNDepth
 import org.tmatesoft.svn.core.SVNPropertyValue
 import org.tmatesoft.svn.core.SVNURL
@@ -159,14 +160,43 @@ class SVNRepo {
      * Remote copy of {@code from} into {@code into} using the {@code message} message.
      */
     def copy(String from, String into, String message) {
+        // Parsing (from)
+        String fromPath
+        SVNRevision fromRevision
+        if (from.contains('@')) {
+            fromPath = StringUtils.substringBefore(from, '@')
+            fromRevision = SVNRevision.parse(StringUtils.substringAfter(from, '@'))
+        } else {
+            fromPath = from
+            fromRevision = SVNRevision.HEAD
+        }
+        // Copy
         clientManager.copyClient.doCopy(
-                [new SVNCopySource(SVNRevision.HEAD, SVNRevision.HEAD, url.appendPath(from, false))] as SVNCopySource[],
+                [new SVNCopySource(SVNRevision.HEAD, fromRevision, url.appendPath(fromPath, false))] as SVNCopySource[],
                 url.appendPath(into, false),
-                false,
-                true,
-                true,
+                false, // move
+                true,  // make parents
+                true,  // fail when exists
                 message,
                 null
+        )
+    }
+
+    /**
+     * Logs the repository history
+     */
+    def log() {
+        println "Log for ${url}..."
+        clientManager.logClient.doLog(
+                url,
+                null,
+                SVNRevision.HEAD,
+                SVNRevision.create(1),
+                SVNRevision.HEAD,
+                false,
+                false,
+                1000,
+                { logEntry -> println "${logEntry.revision} ${logEntry.message}" }
         )
     }
 }
