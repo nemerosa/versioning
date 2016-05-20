@@ -6,6 +6,7 @@ import net.nemerosa.versioning.VersioningExtension
 import org.gradle.api.Project
 import org.tmatesoft.svn.core.SVNDepth
 import org.tmatesoft.svn.core.SVNDirEntry
+import org.tmatesoft.svn.core.SVNException
 import org.tmatesoft.svn.core.SVNURL
 import org.tmatesoft.svn.core.wc.*
 
@@ -109,14 +110,24 @@ class SVNInfoService implements SCMInfoService {
         println "[version] Getting list of tags from ${tagsUrl}..."
         // Gets the list
         List<SVNDirEntry> entries = []
-        clientManager.logClient.doList(
-                SVNURL.parseURIEncoded(tagsUrl),
-                SVNRevision.HEAD,
-                SVNRevision.HEAD,
-                false,
-                false,
-                { dirEntry -> entries.add(dirEntry) }
-        )
+        try {
+            clientManager.logClient.doList(
+                    SVNURL.parseURIEncoded(tagsUrl),
+                    SVNRevision.HEAD,
+                    SVNRevision.HEAD,
+                    false,
+                    false,
+                    { dirEntry -> entries.add(dirEntry) }
+            )
+        } catch (SVNException ex) {
+            if (ex.message.contains('E160013')) {
+                // No tag
+                return []
+            } else {
+                // Actual problem
+                throw ex
+            }
+        }
         // Lists of tags, order from the most recent to the oldest
         List<String> tags = entries.sort {
             -it.revision
