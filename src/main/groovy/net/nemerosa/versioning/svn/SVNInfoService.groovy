@@ -8,6 +8,8 @@ import org.tmatesoft.svn.core.SVNDepth
 import org.tmatesoft.svn.core.SVNDirEntry
 import org.tmatesoft.svn.core.SVNException
 import org.tmatesoft.svn.core.SVNURL
+import org.tmatesoft.svn.core.auth.BasicAuthenticationManager
+import org.tmatesoft.svn.core.auth.SVNAuthentication
 import org.tmatesoft.svn.core.wc.*
 
 class SVNInfoService implements SCMInfoService {
@@ -155,22 +157,16 @@ class SVNInfoService implements SCMInfoService {
      * Creates the client manager
      */
     protected static SVNClientManager getClientManager(VersioningExtension extension) {
-        return SVNClientManager.newInstance()
-        // TODO Authentication
-        // Credentials
-//        if (extension.user) {
-//            println "[version] Authenticating with ${extension.user}"
-//            args.addAll([
-//                    '--no-auth-cache',
-//                    '--username', extension.user,
-//                    '--password', extension.password,
-//            ])
-//        }
-//        // Certificate
-//        if (extension.trustServerCert) {
-//            println "[version] Trusting certificate by default"
-//            args << '--trust-server-cert'
-//        }
+        def clientManager = SVNClientManager.newInstance()
+        if (extension.user && extension.password) {
+            println "[version] Authenticating with ${extension.user}"
+            clientManager.setAuthenticationManager(BasicAuthenticationManager.newInstance(extension.user, extension.password.toCharArray()));
+            // The BasicAuthenticationManager trusts the certificates by default
+        } else if (extension.trustServerCert) {
+            println "[version] Trusting certificate by default"
+            clientManager.setAuthenticationManager(BasicAuthenticationManager.newInstance(new SVNAuthentication[0]));
+        }
+        return clientManager
     }
 
 }
