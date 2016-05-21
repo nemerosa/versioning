@@ -2,3 +2,5 @@
 build/
 .idea
 *.iml
+.DS_Store
+userHome
