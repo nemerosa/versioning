@@ -1120,6 +1120,44 @@ VERSION_SCM=git
     }
 
     @Test
+    void 'Git feature branch - ignored files - not dirty'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                (1..4).each { commit it }
+                branch 'feature/123-great'
+                commit 5
+                // Ignore file
+                new File(repo.dir, '.gitignore').text = 'test.txt'
+                add '.gitignore'
+                commit 6
+                // Add a file
+                new File(repo.dir, 'test.txt').text = 'test'
+            }
+            def head = repo.commitLookup('Commit 6')
+            def headAbbreviated = repo.commitLookup('Commit 6', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'feature/123-great'
+            assert info.base == '123-great'
+            assert info.branchId == 'feature-123-great'
+            assert info.branchType == 'feature'
+            assert info.commit == head
+            assert info.display == "feature-123-great-${headAbbreviated}" as String
+            assert info.full == "feature-123-great-${headAbbreviated}" as String
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
     void 'Git feature branch - dirty working copy - custom suffix'() {
         GitRepo repo = new GitRepo()
         try {
