@@ -164,6 +164,7 @@ class SVNInfoService implements SCMInfoService {
             // The BasicAuthenticationManager trusts the certificates by default
         } else if (extension.trustServerCert) {
             println "[version] Trusting certificate by default"
+            println "[version] WARNING The `trustServerCert` is now deprecated - and should not be used any longer."
             clientManager.setAuthenticationManager(BasicAuthenticationManager.newInstance(new SVNAuthentication[0]));
         } else {
             println "[version] Using default SVN configuration"

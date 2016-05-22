@@ -129,6 +129,7 @@ class VersioningExtension {
     /**
      * Certificate - accept SSL server certificates from unknown certificate authorities (for SVN only)
      */
+    @Deprecated
     boolean trustServerCert = false
 
     /**
