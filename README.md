@@ -39,7 +39,7 @@ buildscript {
       jcenter()
    }
    dependencies {
-      classpath 'net.nemerosa:versioning:1.7.1'
+      classpath 'net.nemerosa:versioning:2.0.0'
    }
 }
 
@@ -51,7 +51,7 @@ apply plugin: 'net.nemerosa.versioning'
 ```groovy
 
 plugins {
-   id 'net.nemerosa.versioning' version '1.7.1'
+   id 'net.nemerosa.versioning' version '2.0.0'
 }
 ```
 
@@ -233,7 +233,7 @@ versioning {
    * part of the releases list ("release" only by default).
    */
    dirtyFailOnReleases = false
-   
+
    /**
     * If set to true, no warning will be printed in case the workspace is dirty. Default is
     * to print a warning.
@@ -329,7 +329,7 @@ Property | Description | SVN: `trunk` @ rev 12 | SVN: `branches/feature-great` @
 
 The rules for the display mode remain the same ones than for Git.
 
-Collecting the version information using Subversion will needs one remote access to the repository. Credentials and trust of certificate can be configured using following configuration parameters:
+Collecting the version information using Subversion will needs one remote access to the repository. Credentials can optionally be configured using following configuration parameters:
 
 ```groovy
 versioning {
@@ -337,10 +337,10 @@ versioning {
    // Optional credentials
    user = 'xxx'
    password = 'xxx'
-   // Optionally trusting the remote certificate
-   trustServerCert = true
 }
 ```
+
+> If credentials are not provided, the `versioning` plug-in will rely on the default Subversion configuration for the current user.
 
 ## Release
 
@@ -348,14 +348,10 @@ The CI and release jobs are available in the [Nemerosa Jenkins](https://jenkins.
 
 See http://plugins.gradle.org/submit for the publication on the [Gradle Plug-in Portal](https://plugins.gradle.org/).
 
-## Windows support
+## Migration from 1.x to 2.x
 
-As of version 1.2, Windows is not supported for building and testing.
-
-The tests rely on the local creation of Git and Subversion repositories, and such creation rely heavily on
- shell commands and processes manipulation.
-
-Unless mentioned otherwise, _using_ the Versioning plug-in on Windows should be OK.
+* SVN layer is now using SVNKit for support (before, Subversion needed to be installed)
+* the `trustServerCert` option for SVN is deprecated and should be removed
 
 ## Contributions
 
