@@ -165,6 +165,9 @@ class SVNInfoService implements SCMInfoService {
         } else if (extension.trustServerCert) {
             println "[version] Trusting certificate by default"
             clientManager.setAuthenticationManager(BasicAuthenticationManager.newInstance(new SVNAuthentication[0]));
+        } else {
+            println "[version] Using default SVN configuration"
+            clientManager.setAuthenticationManager(SVNWCUtil.createDefaultAuthenticationManager())
         }
         return clientManager
     }
