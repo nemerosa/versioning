@@ -1340,4 +1340,41 @@ VERSION_SCM=git
         }
     }
 
+
+    @Test
+    void 'Git branch with env TEST_BRANCH'() {
+        // TEST_BRANCH is provided by gradle.build
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                (1..4).each { commit it }
+                branch 'feature/123-great'
+                commit 5
+            }
+            // System.setenv('TEST_BRANCH', 'feature/456-cute')
+            def head = repo.commitLookup('Commit 5')
+            def headAbbreviated = repo.commitLookup('Commit 5', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versioning {
+                branchEnv << 'GIT_TEST_BRANCH'
+            }
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'feature/456-cute'
+            assert info.base == '456-cute'
+            assert info.branchId == 'feature-456-cute'
+            assert info.branchType == 'feature'
+            assert info.commit == head
+            assert info.display == "feature-456-cute-${headAbbreviated}" as String
+            assert info.full == "feature-456-cute-${headAbbreviated}" as String
+            assert info.scm == 'git'
+
+        } finally {
+            repo.close()
+        }
+    }
 }

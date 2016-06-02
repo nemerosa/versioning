@@ -191,6 +191,11 @@ versioning {
         }
     }
     /**
+     * Fetch branch name from environment variables. Useful when using CI like
+     * Travis or Jenkins.
+     */
+    branchEnv = ['TRAVIS_BRANCH', 'GIT_BRANCH', 'SVN_BRANCH', 'BRANCH_NAME']
+    /**
      * Computation of the full version
      */
     full = { branchId, abbreviated -> "${branchId}-${abbreviated}" }

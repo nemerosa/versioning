@@ -71,3 +71,8 @@ bintray {
 task wrapper(type: Wrapper) {
    gradleVersion = '2.13'
 }
+
+test {
+  environment "GIT_TEST_BRANCH", "feature/456-cute"
+  environment "SVN_TEST_BRANCH", "feature-456-cute"
+}

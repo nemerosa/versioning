@@ -29,10 +29,21 @@ class SVNInfoService implements SCMInfoService {
                     project.projectDir,
                     SVNRevision.HEAD
             )
-            // URL
-            String url = info.URL as String
-            // Branch parsing
-            String branch = parseBranch(url)
+
+            // Check passed in environment variable list
+            String branch = null
+            for (ev in extension.branchEnv) {
+                if (System.env[ev] != null) {
+                    branch = System.env[ev]
+                    break
+                }
+            }
+            // Branch parsing from URL
+            if (branch == null) {
+                String url = info.URL as String
+                branch = parseBranch(url)
+            }
+
             // Revision
             String revision = info.committedRevision.number as String
             // OK

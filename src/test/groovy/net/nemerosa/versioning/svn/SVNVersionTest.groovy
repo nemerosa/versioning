@@ -704,4 +704,33 @@ VERSION_SCM=svn
         project.versioning.info as VersionInfo
     }
 
+    @Test
+    void 'SVN branch with env TEST_BRANCH'() {
+
+        // SVN
+        repo.mkdir 'project/branches/feature-test-1-my-feature', 'Feature branch'
+        repo.mkdir 'project/branches/feature-test-1-my-feature/1', 'Commit for TEST-1'
+        repo.mkdir 'project/branches/feature-test-1-my-feature/2', 'Commit for TEST-1'
+
+        // Project
+        def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/feature-test-1-my-feature')).build()
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+            branchEnv << 'SVN_TEST_BRANCH'
+        }
+
+        // Gets the info and checks it
+        VersionInfo info = project.versioning.info as VersionInfo
+        assert info != null
+        assert info.build == '3'
+        assert info.branch == 'feature-456-cute'
+        assert info.base == '456-cute'
+        assert info.branchId == 'feature-456-cute'
+        assert info.branchType == 'feature'
+        assert info.commit == '3'
+        assert info.display == "feature-456-cute-3"
+        assert info.full == "feature-456-cute-3"
+        assert info.scm == 'svn'
+    }
 }
