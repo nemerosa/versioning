@@ -49,9 +49,12 @@ class VersioningExtension {
     String scm = 'git'
 
     /**
-     * Fetch the branch from env Variable
+     * Fetch the branch from environment variable if available.
+     *
+     * By default, the environment is not taken into account, in order to be backward compatible
+     * with existing build systems.
      */
-    List branchEnv = ['TRAVIS_BRANCH', 'GIT_BRANCH', 'SVN_BRANCH', 'BRANCH_NAME']
+    List branchEnv = []
 
     /**
      * Getting the version type from a branch. Default: getting the part before the first "/" (or a second
