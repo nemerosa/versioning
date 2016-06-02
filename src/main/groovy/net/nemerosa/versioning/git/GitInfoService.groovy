@@ -24,8 +24,20 @@ class GitInfoService implements SCMInfoService {
             // Open the Git repo
             //noinspection GroovyAssignabilityCheck
             def grgit = Grgit.open(currentDir: project.projectDir)
-            // Gets the branch info
-            String branch = grgit.branch.current.name
+
+            // Check passed in environment variable list
+            String branch = null
+            for (ev in extension.branchEnv) {
+                if (System.env[ev] != null) {
+                    branch = System.env[ev]
+                    break
+                }
+            }
+            // Gets the branch info from git
+            if (branch == null) {
+                branch = grgit.branch.current.name
+            }
+
             // Gets the commit info (full hash)
             List<Commit> commits = grgit.log(maxCommits: 1)
             if (commits.empty) {
