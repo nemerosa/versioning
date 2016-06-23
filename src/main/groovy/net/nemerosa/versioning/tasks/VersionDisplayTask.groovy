@@ -6,6 +6,14 @@ import org.gradle.api.tasks.TaskAction
 
 class VersionDisplayTask extends DefaultTask {
 
+    /**
+     * Sets a description
+     */
+    VersionDisplayTask() {
+        group = "Versioning tasks"
+        description = "Writes version information on the standard output."
+    }
+
     @TaskAction
     void run() {
         // Gets the version info

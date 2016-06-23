@@ -16,6 +16,14 @@ class VersionFileTask extends DefaultTask {
      */
     String prefix = 'VERSION_'
 
+    /**
+     * Sets a description
+     */
+    VersionFileTask() {
+        group = "Versioning tasks"
+        description = "Writes version information into a file."
+    }
+
     @TaskAction
     void run() {
         // Gets the version info
