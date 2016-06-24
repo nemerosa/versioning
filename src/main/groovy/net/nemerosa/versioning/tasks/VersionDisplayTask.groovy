@@ -10,7 +10,7 @@ class VersionDisplayTask extends DefaultTask {
      * Sets a description
      */
     VersionDisplayTask() {
-        group = "Versioning tasks"
+        group = "Versioning"
         description = "Writes version information on the standard output."
     }
 

@@ -20,7 +20,7 @@ class VersionFileTask extends DefaultTask {
      * Sets a description
      */
     VersionFileTask() {
-        group = "Versioning tasks"
+        group = "Versioning"
         description = "Writes version information into a file."
     }
 
