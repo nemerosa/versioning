@@ -244,6 +244,7 @@ class VersioningExtension {
                 display: versionDisplay,
                 commit: scmInfo.commit,
                 build: scmInfo.abbreviated,
+                tag: scmInfo.tag,
         )
     }
 

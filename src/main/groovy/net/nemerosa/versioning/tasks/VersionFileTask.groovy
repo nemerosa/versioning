@@ -44,6 +44,7 @@ ${prefix}COMMIT=${info.commit}
 ${prefix}DISPLAY=${info.display}
 ${prefix}FULL=${info.full}
 ${prefix}SCM=${info.scm}
+${prefix}TAG=${info.tag ?: ''}
 """
     }
 

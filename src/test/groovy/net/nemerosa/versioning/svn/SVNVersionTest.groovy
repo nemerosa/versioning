@@ -51,6 +51,7 @@ class SVNVersionTest {
         assert info.display == ''
         assert info.full == ''
         assert info.scm == 'n/a'
+        assert info.tag == null
     }
 
     @Test
@@ -77,6 +78,7 @@ class SVNVersionTest {
         assert info.display == "trunk-3"
         assert info.full == "trunk-3"
         assert info.scm == 'svn'
+        assert info.tag == null
     }
 
     @Test
@@ -127,6 +129,7 @@ VERSION_COMMIT=4
 VERSION_DISPLAY=trunk-4
 VERSION_FULL=trunk-4
 VERSION_SCM=svn
+VERSION_TAG=
 """
     }
 
@@ -164,6 +167,7 @@ CUSTOM_COMMIT=4
 CUSTOM_DISPLAY=trunk-4
 CUSTOM_FULL=trunk-4
 CUSTOM_SCM=svn
+CUSTOM_TAG=
 """
     }
 
@@ -201,6 +205,7 @@ VERSION_COMMIT=4
 VERSION_DISPLAY=trunk-4
 VERSION_FULL=trunk-4
 VERSION_SCM=svn
+VERSION_TAG=
 """
     }
 
@@ -231,6 +236,7 @@ VERSION_SCM=svn
         assert info.display == "feature-test-1-my-feature-3"
         assert info.full == "feature-test-1-my-feature-3"
         assert info.scm == 'svn'
+        assert info.tag == null
     }
 
     @Test
@@ -261,6 +267,7 @@ VERSION_SCM=svn
         assert info.display == "feature-test-1-my-feature-3"
         assert info.full == "feature-test-1-my-feature-3"
         assert info.scm == 'svn'
+        assert info.tag == null
     }
 
     @Test
@@ -291,6 +298,7 @@ VERSION_SCM=svn
         assert info.display == "test-1-my-feature-SNAPSHOT"
         assert info.full == "feature-test-1-my-feature-3"
         assert info.scm == 'svn'
+        assert info.tag == null
     }
 
     @Test
@@ -322,6 +330,7 @@ VERSION_SCM=svn
         assert info.display == "test-1-my-feature.DEV"
         assert info.full == "feature-test-1-my-feature-3"
         assert info.scm == 'svn'
+        assert info.tag == null
     }
 
     @Test
@@ -352,6 +361,7 @@ VERSION_SCM=svn
         assert info.display == "test-1-my-feature"
         assert info.full == "feature-test-1-my-feature-3"
         assert info.scm == 'svn'
+        assert info.tag == null
     }
 
     @Test
@@ -384,6 +394,7 @@ VERSION_SCM=svn
         assert info.display == "test-1-my-feature-3-SNAPSHOT"
         assert info.full == "feature-test-1-my-feature-3"
         assert info.scm == 'svn'
+        assert info.tag == null
     }
 
     @Test
@@ -413,6 +424,7 @@ VERSION_SCM=svn
         assert info.display == "2.0.0"
         assert info.full == "release-2.0-3"
         assert info.scm == 'svn'
+        assert info.tag == null
 
     }
 
@@ -447,6 +459,7 @@ VERSION_SCM=svn
         assert info.display == "2.0.1"
         assert info.full == "release-2.0-3"
         assert info.scm == 'svn'
+        assert info.tag == null
 
     }
 
@@ -480,6 +493,7 @@ VERSION_SCM=svn
         assert info.display == "2.0.11"
         assert info.full == "release-2.0-3"
         assert info.scm == 'svn'
+        assert info.tag == null
 
     }
 
@@ -515,6 +529,7 @@ VERSION_SCM=svn
         assert info.display == "2.0.2"
         assert info.full == "release-2.0-4"
         assert info.scm == 'svn'
+        assert info.tag == null
 
     }
 
@@ -542,6 +557,7 @@ VERSION_SCM=svn
         assert info.display == "feature-test-1-my-feature-2-dirty"
         assert info.full == "feature-test-1-my-feature-2-dirty"
         assert info.scm == 'svn'
+        assert info.tag == null
     }
 
     @Test
@@ -570,6 +586,7 @@ VERSION_SCM=svn
         assert info.display == "feature-test-1-my-feature-2-dirty"
         assert info.full == "feature-test-1-my-feature-2-dirty"
         assert info.scm == 'svn'
+        assert info.tag == null
     }
 
     @Test
@@ -597,6 +614,7 @@ VERSION_SCM=svn
         assert info.display == "feature-test-1-my-feature-2-dev"
         assert info.full == "feature-test-1-my-feature-2-dev"
         assert info.scm == 'svn'
+        assert info.tag == null
     }
 
     @Test
@@ -625,6 +643,7 @@ VERSION_SCM=svn
         assert info.display == "2.0.0-dirty"
         assert info.full == "release-2.0-3-dirty"
         assert info.scm == 'svn'
+        assert info.tag == null
     }
 
     @Test
@@ -654,6 +673,7 @@ VERSION_SCM=svn
         assert info.display == "2.0.0-DEV"
         assert info.full == "release-2.0-3-DEV"
         assert info.scm == 'svn'
+        assert info.tag == null
     }
 
     @Test
@@ -683,6 +703,7 @@ VERSION_SCM=svn
         assert info.display == "2.0.0-DONOTUSE"
         assert info.full == "release-2.0-3-DONOTUSE"
         assert info.scm == 'svn'
+        assert info.tag == null
     }
 
     @Test(expected = DirtyException)
@@ -732,5 +753,6 @@ VERSION_SCM=svn
         assert info.display == "feature-456-cute-3"
         assert info.full == "feature-456-cute-3"
         assert info.scm == 'svn'
+        assert info.tag == null
     }
 }

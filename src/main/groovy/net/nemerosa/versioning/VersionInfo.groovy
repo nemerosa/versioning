@@ -19,5 +19,6 @@ class VersionInfo {
     String full = ''
     String base = ''
     String build = ''
+    String tag = null
 
 }

@@ -31,6 +31,7 @@ class VersionDisplayTask extends DefaultTask {
             println "[version] base       = ${info.base}"
             println "[version] build      = ${info.build}"
             println "[version] display    = ${info.display}"
+            println "[version] tag        = ${info.tag ?: ''}"
         }
     }
 

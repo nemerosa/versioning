@@ -92,6 +92,10 @@ Property | Description | Git: `master` | Git: `feature/great` | Git: `release/2.
 `full` | Branch ID and build | `master-09ef629` | `feature-great-09ef629` | `release-2.0-09ef629`
 `base` | Base version for the display version | `` | `great` | `2.0`
 `display` | Display version | `master` | `great` | `2.0.0`, `2.0.1`, ...
+`tag` (1) | Current tag | (2) | (2) | (2)
+
+(1) not supported for Subversion
+(2) will be the name of the current tag if any, or `null` if no tag is associated to the current `HEAD`.
 
 ### Display version
 

@@ -51,7 +51,7 @@ class SVNInfoService implements SCMInfoService {
                     branch,
                     revision,
                     revision,
-                    '',
+                    null,
                     isWorkingCopyDirty(project.projectDir, clientManager)
             )
         }

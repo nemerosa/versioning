@@ -28,6 +28,7 @@ class GitVersionTest {
         assert info.display == ''
         assert info.full == ''
         assert info.scm == 'n/a'
+        assert info.tag == null
     }
 
     @Test
@@ -54,6 +55,7 @@ class GitVersionTest {
             assert info.display == "master-${headAbbreviated}" as String
             assert info.full == "master-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -91,6 +93,7 @@ class GitVersionTest {
             assert info.display == "master-${headAbbreviated}" as String
             assert info.full == "master-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -144,6 +147,7 @@ VERSION_COMMIT=${head}
 VERSION_DISPLAY=master-${headAbbreviated}
 VERSION_FULL=master-${headAbbreviated}
 VERSION_SCM=git
+VERSION_TAG=
 """ as String
         } finally {
             repo.close()
@@ -182,6 +186,7 @@ CUSTOM_COMMIT=${head}
 CUSTOM_DISPLAY=master-${headAbbreviated}
 CUSTOM_FULL=master-${headAbbreviated}
 CUSTOM_SCM=git
+CUSTOM_TAG=
 """ as String
         } finally {
             repo.close()
@@ -220,6 +225,7 @@ VERSION_COMMIT=${head}
 VERSION_DISPLAY=master-${headAbbreviated}
 VERSION_FULL=master-${headAbbreviated}
 VERSION_SCM=git
+VERSION_TAG=
 """ as String
         } finally {
             repo.close()
@@ -252,6 +258,7 @@ VERSION_SCM=git
             assert info.display == "feature-123-great-${headAbbreviated}" as String
             assert info.full == "feature-123-great-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -287,6 +294,7 @@ VERSION_SCM=git
             assert info.display == "feature-123-great-${headAbbreviated}" as String
             assert info.full == "feature-123-great-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -322,6 +330,7 @@ VERSION_SCM=git
             assert info.display == "123-great-SNAPSHOT"
             assert info.full == "feature-123-great-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -358,6 +367,7 @@ VERSION_SCM=git
             assert info.display == "123-great.DEV"
             assert info.full == "feature-123-great-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -393,6 +403,7 @@ VERSION_SCM=git
             assert info.display == "123-great"
             assert info.full == "feature-123-great-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -430,6 +441,7 @@ VERSION_SCM=git
             assert info.display == "123-great-${headAbbreviated}-SNAPSHOT" as String
             assert info.full == "feature-123-great-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -462,6 +474,7 @@ VERSION_SCM=git
             assert info.display == '2.0.0'
             assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
         } finally {
             repo.close()
         }
@@ -495,6 +508,7 @@ VERSION_SCM=git
             assert info.display == '2.0.3'
             assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -529,6 +543,7 @@ VERSION_SCM=git
             assert info.display == '2.0-alpha.3'
             assert info.full == "release-2.0-alpha-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -567,6 +582,7 @@ VERSION_SCM=git
             assert info.display == '3.0-alpha.2'
             assert info.full == "release-3.0-alpha-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -605,6 +621,7 @@ VERSION_SCM=git
             assert info.display == '3.0-alpha.11'
             assert info.full == "release-3.0-alpha-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -643,6 +660,7 @@ VERSION_SCM=git
             assert info.display == '3.0-alpha.21'
             assert info.full == "release-3.0-alpha-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -681,6 +699,7 @@ VERSION_SCM=git
             assert info.display == '2.0.3'
             assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -715,6 +734,7 @@ VERSION_SCM=git
             assert info.display == '2.0.11'
             assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -751,6 +771,7 @@ VERSION_SCM=git
             assert info.display == '2.0.0-SNAPSHOT'
             assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
         } finally {
             repo.close()
         }
@@ -786,6 +807,7 @@ VERSION_SCM=git
             assert info.display == '2.0.0-DEV'
             assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
         } finally {
             repo.close()
         }
@@ -820,6 +842,7 @@ VERSION_SCM=git
             assert info.display == '2.0.0-PREVIEW'
             assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
         } finally {
             repo.close()
         }
@@ -856,6 +879,7 @@ VERSION_SCM=git
             assert info.display == '2.0.3-SNAPSHOT'
             assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -894,6 +918,7 @@ VERSION_SCM=git
             assert info.display == '2.0.3-DEV'
             assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -931,6 +956,7 @@ VERSION_SCM=git
             assert info.display == '2.0.3-PREVIEW'
             assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -968,6 +994,7 @@ VERSION_SCM=git
             assert info.display == '2.0.2'
             assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == '2.0.2'
 
         } finally {
             repo.close()
@@ -1006,6 +1033,7 @@ VERSION_SCM=git
             assert info.display == '2.0.2'
             assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == '2.0.2'
 
         } finally {
             repo.close()
@@ -1043,6 +1071,7 @@ VERSION_SCM=git
             assert info.display == '2.0.3-PREVIEW'
             assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == '2.0.2'
 
         } finally {
             repo.close()
@@ -1078,6 +1107,7 @@ VERSION_SCM=git
             assert info.display == "feature-123-great-${headAbbreviated}-dirty" as String
             assert info.full == "feature-123-great-${headAbbreviated}-dirty" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -1113,6 +1143,7 @@ VERSION_SCM=git
             assert info.display == "feature-123-great-${headAbbreviated}-dirty" as String
             assert info.full == "feature-123-great-${headAbbreviated}-dirty" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -1151,6 +1182,7 @@ VERSION_SCM=git
             assert info.display == "feature-123-great-${headAbbreviated}" as String
             assert info.full == "feature-123-great-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -1190,6 +1222,7 @@ VERSION_SCM=git
             assert info.display == "feature-123-great-${headAbbreviated}-dev" as String
             assert info.full == "feature-123-great-${headAbbreviated}-dev" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -1226,6 +1259,7 @@ VERSION_SCM=git
             assert info.display == '2.0.3-dirty'
             assert info.full == "release-2.0-${headAbbreviated}-dirty" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -1266,6 +1300,7 @@ VERSION_SCM=git
             assert info.display == '2.0.3-DIRTY'
             assert info.full == "release-2.0-${headAbbreviated}-DIRTY" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -1306,6 +1341,7 @@ VERSION_SCM=git
             assert info.display == '2.0.3-DONOTUSE'
             assert info.full == "release-2.0-${headAbbreviated}-DONOTUSE" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
@@ -1372,6 +1408,7 @@ VERSION_SCM=git
             assert info.display == "feature-456-cute-${headAbbreviated}" as String
             assert info.full == "feature-456-cute-${headAbbreviated}" as String
             assert info.scm == 'git'
+            assert info.tag == null
 
         } finally {
             repo.close()
