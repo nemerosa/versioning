@@ -97,7 +97,7 @@ Property | Description | Git: `master` | Git: `feature/great` | Git: `release/2.
 
 (1) not supported for Subversion
 (2) will be the name of the current tag if any, or `null` if no tag is associated to the current `HEAD`.
-(3) depends on the state of teh working copy the plug-in is applied to. `true` if the working copy contains uncommitted
+(3) depends on the state of the working copy the plug-in is applied to. `true` if the working copy contains uncommitted
 files.
 
 ### Display version
