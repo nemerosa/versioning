@@ -93,9 +93,12 @@ Property | Description | Git: `master` | Git: `feature/great` | Git: `release/2.
 `base` | Base version for the display version | `` | `great` | `2.0`
 `display` | Display version | `master` | `great` | `2.0.0`, `2.0.1`, ...
 `tag` (1) | Current tag | (2) | (2) | (2)
+`dirty` | Current state of the working copy | (3) | (3) | (3)
 
 (1) not supported for Subversion
 (2) will be the name of the current tag if any, or `null` if no tag is associated to the current `HEAD`.
+(3) depends on the state of teh working copy the plug-in is applied to. `true` if the working copy contains uncommitted
+files.
 
 ### Display version
 
