@@ -66,19 +66,15 @@ class VersioningExtension {
      * * feature/2.0 --> feature
      * * master --> master
      */
-    Closure<BranchInfo> branchParser = { String branch, String separator = '/' ->
-        int pos = branch.indexOf(separator)
-        if (pos > 0) {
-            new BranchInfo(type: branch.substring(0, pos), base: branch.substring(pos + 1))
-        } else {
-            new BranchInfo(type: branch, base: '')
-        }
+    Closure<ReleaseInfo> releaseParser = { SCMInfo scmInfo, String separator = '/' ->
+        List<String> part = scmInfo.branch.split(separator, 2) + ''
+        new ReleaseInfo(type: part[0], base: part[1])
     }
 
     /**
      * Computes the full version.
      */
-    Closure<String> full = { branchId, abbreviated -> "${branchId}-${abbreviated}" }
+    Closure<String> full = { SCMInfo scmInfo -> "${normalise(scmInfo.branch)}-${scmInfo.abbreviated}" }
 
     /**
      * Set of eligible branch types for computing a display version from the branch base name
@@ -182,25 +178,22 @@ class VersioningExtension {
             return VersionInfo.NONE
         }
 
-        // Version source
-        String versionBranch = scmInfo.branch
-
         // Branch parsing
-        BranchInfo branchInfo = branchParser(versionBranch, scmInfoService.branchTypeSeparator)
-        String versionBranchType = branchInfo.type
-        String versionBase = branchInfo.base
+        ReleaseInfo releaseInfo = releaseParser(scmInfo, scmInfoService.branchTypeSeparator)
+        String versionReleaseType = releaseInfo.type
+        String versionBase = releaseInfo.base
 
         // Branch identifier
-        String versionBranchId = normalise(versionBranch)
+        String versionBranchId = normalise(scmInfo.branch)
 
         // Full version
-        String versionFull = full(versionBranchId, scmInfo.abbreviated)
+        String versionFull = full(scmInfo)
 
         // Display version
         String versionDisplay
-        if (versionBranchType in releases) {
+        if (versionReleaseType in releases) {
             List<String> baseTags = scmInfoService.getBaseTags(project, this, versionBase)
-            versionDisplay = getDisplayVersion(scmInfo, branchInfo, baseTags)
+            versionDisplay = getDisplayVersion(scmInfo, releaseInfo, baseTags)
         } else {
             // Adjusting the base
             def base = versionBase ?: versionBranchId
@@ -208,13 +201,13 @@ class VersioningExtension {
             if (displayMode instanceof String) {
                 def mode = DISPLAY_MODES[displayMode as String]
                 if (mode) {
-                    versionDisplay = mode(versionBranchType, versionBranchId, base, scmInfo.abbreviated, versionFull, this)
+                    versionDisplay = mode(versionReleaseType, versionBranchId, base, scmInfo.abbreviated, versionFull, this)
                 } else {
                     throw new GradleException("${mode} is not a valid display mode.")
                 }
             } else if (displayMode instanceof Closure) {
                 def mode = displayMode as Closure
-                versionDisplay = mode(versionBranchType, versionBranchId, base, scmInfo.abbreviated, versionFull, this)
+                versionDisplay = mode(versionReleaseType, versionBranchId, base, scmInfo.abbreviated, versionFull, this)
             } else {
                 throw new GradleException("The `displayMode` must be a registered default mode or a Closure.")
             }
@@ -222,7 +215,7 @@ class VersioningExtension {
 
         // Dirty update
         if (scmInfo.dirty) {
-            if (dirtyFailOnReleases && versionBranchType in releases) {
+            if (dirtyFailOnReleases && versionReleaseType in releases) {
                 throw new DirtyException()
             } else {
                 if (!noWarningOnDirty) {
@@ -236,8 +229,8 @@ class VersioningExtension {
         // OK
         new VersionInfo(
                 scm: scm,
-                branch: versionBranch,
-                branchType: versionBranchType,
+                branch: scmInfo.branch,
+                branchType: versionReleaseType,
                 branchId: versionBranchId,
                 full: versionFull,
                 base: versionBase,
@@ -249,18 +242,18 @@ class VersioningExtension {
         )
     }
 
-    private String getDisplayVersion(SCMInfo scmInfo, BranchInfo branchInfo, List<String> baseTags) {
+    private String getDisplayVersion(SCMInfo scmInfo, ReleaseInfo releaseInfo, List<String> baseTags) {
         String currentTag = scmInfo.tag
         String lastTag
         String nextTag
         if (baseTags.empty) {
             lastTag = ''
-            nextTag = "${branchInfo.base}.0"
+            nextTag = "${releaseInfo.base}.0"
         } else {
             lastTag = baseTags[0].trim()
-            def lastNumber = (lastTag =~ /${branchInfo.base}\.(\d+)/)[0][1] as int
+            def lastNumber = (lastTag =~ /${releaseInfo.base}\.(\d+)/)[0][1] as int
             def newNumber = lastNumber + 1
-            nextTag = "${branchInfo.base}.${newNumber}"
+            nextTag = "${releaseInfo.base}.${newNumber}"
         }
         Closure<String> mode
         if (releaseMode instanceof String) {
@@ -276,7 +269,7 @@ class VersioningExtension {
         return mode(nextTag, lastTag, currentTag, this)
     }
 
-    private static String normalise(String value) {
+    public static String normalise(String value) {
         value.replaceAll(/[^A-Za-z0-9\.\-_]/, '-')
     }
 

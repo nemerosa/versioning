@@ -1,5 +1,7 @@
 package net.nemerosa.versioning.git
 
+import net.nemerosa.versioning.ReleaseInfo
+import net.nemerosa.versioning.SCMInfo
 import net.nemerosa.versioning.VersionInfo
 import net.nemerosa.versioning.VersioningPlugin
 import net.nemerosa.versioning.support.DirtyException
@@ -851,7 +853,7 @@ VERSION_DIRTY=false
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
             project.versioning {
-                releaseMode = { nextTag, lastTag, currentTag, extension -> "${nextTag}-PREVIEW"}
+                releaseMode = { nextTag, lastTag, currentTag, extension -> "${nextTag}-PREVIEW" }
             }
             VersionInfo info = project.versioning.info as VersionInfo
             assert info != null
@@ -968,7 +970,7 @@ VERSION_DIRTY=false
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
             project.versioning {
-                releaseMode = { nextTag, lastTag, currentTag, extension -> "${nextTag}-PREVIEW"}
+                releaseMode = { nextTag, lastTag, currentTag, extension -> "${nextTag}-PREVIEW" }
             }
             VersionInfo info = project.versioning.info as VersionInfo
             assert info != null
@@ -1086,7 +1088,7 @@ VERSION_DIRTY=false
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
             project.versioning {
-                releaseMode = { nextTag, lastTag, currentTag, extension -> "${nextTag}-PREVIEW"}
+                releaseMode = { nextTag, lastTag, currentTag, extension -> "${nextTag}-PREVIEW" }
             }
             VersionInfo info = project.versioning.info as VersionInfo
             assert info != null
@@ -1118,7 +1120,7 @@ VERSION_DIRTY=false
                 commit 5
                 // Nope, got to mod an existing tracked file
                 // cmd 'touch', 'test.txt'
-				new File(dir, 'file5') << 'Add some content'
+                new File(dir, 'file5') << 'Add some content'
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
@@ -1232,7 +1234,7 @@ VERSION_DIRTY=false
                 commit 5
                 // Nope, need to mod an existing file to make the tree dirty
                 //cmd 'touch', 'test.txt'
-				new File(dir, 'file5') << 'Add some content'
+                new File(dir, 'file5') << 'Add some content'
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
@@ -1274,7 +1276,7 @@ VERSION_DIRTY=false
                 tag '2.0.2'
                 commit 6
                 // Nope, got to mod an existing file
-		        new File(dir, 'file5') << 'Add some content'
+                new File(dir, 'file5') << 'Add some content'
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
@@ -1313,7 +1315,7 @@ VERSION_DIRTY=false
                 commit 6
                 // Nope, got to mod an existing file
                 //cmd 'touch', 'test.txt'
-				new File(dir, 'file5') << 'Mod the content'
+                new File(dir, 'file5') << 'Mod the content'
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
@@ -1355,7 +1357,7 @@ VERSION_DIRTY=false
                 commit 6
                 // Nope, got to mod an existing file
                 //cmd 'touch', 'test.txt'
-				new File(dir, 'file5') << 'Mod the content'
+                new File(dir, 'file5') << 'Mod the content'
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
@@ -1384,6 +1386,47 @@ VERSION_DIRTY=false
         }
     }
 
+    @Test
+    void 'Git release by tag: custom release logic'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                (1..5).each { commit it }
+                tag 'release/v2.0'
+            }
+            def head = repo.commitLookup('Commit 5')
+            def headAbbreviated = repo.commitLookup('Commit 5', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versioning {
+                releaseParser = { SCMInfo scmInfo, separator = '/' ->
+                    List<String> part = scmInfo.tag.split('/') + ''
+                    new ReleaseInfo(type: part[0], base: part[1])
+                }
+                full = { SCMInfo scmInfo ->
+                    "${scmInfo.tag - 'release/'}-${scmInfo.abbreviated}"
+                }
+            }
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'master'
+            assert info.base == 'v2.0'
+            assert info.branchId == 'master'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == 'v2.0.0'
+            assert info.full == "v2.0-${headAbbreviated}" as String
+            assert info.scm == 'git'
+            assert info.tag == 'release/v2.0'
+            assert !info.dirty
+        } finally {
+            repo.close()
+        }
+    }
+
     @Test(expected = DirtyException)
     void 'Git release branch - dirty working copy - fail'() {
         GitRepo repo = new GitRepo()
@@ -1397,7 +1440,7 @@ VERSION_DIRTY=false
                 commit 6
                 // Nope, mod an existing file
                 //cmd 'touch', 'test.txt'
-				new File(dir, 'file5') << 'mod the content'
+                new File(dir, 'file5') << 'mod the content'
             }
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
