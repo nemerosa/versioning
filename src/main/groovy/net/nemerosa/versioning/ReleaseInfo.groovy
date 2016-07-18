@@ -3,7 +3,7 @@ package net.nemerosa.versioning
 import groovy.transform.Canonical
 
 @Canonical
-class BranchInfo {
+class ReleaseInfo {
 
     String type
     String base

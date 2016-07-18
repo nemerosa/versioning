@@ -183,19 +183,14 @@ versioning {
     */
    scm = 'git'
    /**
-    * Computation of the branch type and the base, by parsing the branch name.
-    * By default, we use "/" as a separator between the type and the base. If not
+    * Computation of the release type and the base, by parsing the scm info.
+    * By default, we use "/" as a separator in branch name between the type and the base. If not
     * present, the type is the branch and the base is empty.
+    * F.e. if you want use tag name instead of branch you may provide something like:
     */
-    branchParser = { String branch, String separator = '/' ->
-        int pos = branch.indexOf(separator)
-        if (pos > 0) {
-            new BranchInfo(
-               type: branch.substring(0, pos),
-               base: branch.substring(pos + 1))
-        } else {
-            new BranchInfo(type: branch, base: '')
-        }
+    releaseParser = { scmInfo, separator = '/' -> ->
+        List<String> part = scmInfo.tag.split('/') + ''
+        new net.nemerosa.versioning.ReleaseInfo(type: part[0], base: part[1])
     }
     /**
      * Fetch branch name from environment variables. Useful when using CI like
@@ -205,7 +200,7 @@ versioning {
     /**
      * Computation of the full version
      */
-    full = { branchId, abbreviated -> "${branchId}-${abbreviated}" }
+    full = { scmInfo -> "${scmInfo.branch}-${scmInfo.abbreviated}" }
     /**
      * Set of eligible branch types for computing a display version from the branch base name
      */
