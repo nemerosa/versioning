@@ -1,0 +1,19 @@
+language: java
+
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
+jdk:
+  - oraclejdk8
+
+before_install:
+  - git config --global user.email "notifications@travis-ci.org"
+  - git config --global user.name "Travis CI"
+
+script:
+  - ./gradlew clean versionDisplay build --stacktrace
