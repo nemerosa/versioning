@@ -79,8 +79,6 @@ class GitVersionTest {
             repo.with {
                 (1..4).each { commit it }
             }
-            def head = repo.commitLookup('Commit 4')
-            def headAbbreviated = repo.commitLookup('Commit 4', true)
             def commit3 = repo.commitLookup('Commit 3')
             def commit3Abbreviated = repo.commitLookup('Commit 3', true)
 
@@ -154,6 +152,52 @@ class GitVersionTest {
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+
+        } finally {
+            repo.close()
+        }
+    }
+
+
+    @Test
+    void 'Git shallow history for master'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                (1..4).each { commit it }
+            }
+            def head = repo.commitLookup('Commit 4')
+            def headAbbreviated = repo.commitLookup('Commit 4', true)
+
+            // Creates a temporary directory where to perform a shallow clone operation
+            File detached = File.createTempDir('git', '')
+            try {
+
+                new ProcessBuilder('git', 'clone', '--depth', '1', "file://${repo.dir.absolutePath}", '.')
+                    .directory(detached)
+                    .start()
+                    .waitForOrKill(2000L)
+
+                def project = ProjectBuilder.builder().withProjectDir(detached).build()
+                new VersioningPlugin().apply(project)
+                VersionInfo info = project.versioning.info as VersionInfo
+                assert info != null
+                assert info.build == headAbbreviated
+                assert info.branch == 'master'
+                assert info.base == ''
+                assert info.branchId == 'master'
+                assert info.branchType == 'master'
+                assert info.commit == head
+                assert info.display == "master-${headAbbreviated}" as String
+                assert info.full == "master-${headAbbreviated}" as String
+                assert info.scm == 'git'
+                assert info.tag == null
+                assert !info.dirty
+
+            } finally {
+                detached.deleteDir()
+            }
 
         } finally {
             repo.close()

@@ -43,31 +43,42 @@ class GitInfoService implements SCMInfoService {
             if (commits.empty) {
                 throw new GradleException("No commit available in the repository - cannot compute version")
             }
-            String commit = commits[0].id
+
+            def lastCommit = commits[0]
+            // Full commit hash
+            String commit = lastCommit.id
             // Gets the current commit (short hash)
-            String abbreviated = commits[0].abbreviatedId
+            String abbreviated = lastCommit.abbreviatedId
+            // Is the repository shallow?
+            boolean shallow = lastCommit.parentIds.empty
 
             // Gets the current tag, if any
             String tag
-            String described = grgit.repository.jgit.describe().setLong(true).call()
-            if (described) {
-                // The format returned by the long version of the `describe` command is: <tag>-<number>-<commit>
-                def m = described =~ /^(.*)-(\d+)-g([0-9a-f]+)$/
-                if (m.matches()) {
-                    def count = m.group(2) as int
-                    if (count == 0) {
-                        // We're on a tag
-                        tag = m.group(1)
+            // Cannot use the `describe` command if the repository is shallow
+            if (shallow) {
+                // FIXME Gets the current tag if any
+                tag = null
+            } else {
+                String described = grgit.repository.jgit.describe().setLong(true).call()
+                if (described) {
+                    // The format returned by the long version of the `describe` command is: <tag>-<number>-<commit>
+                    def m = described =~ /^(.*)-(\d+)-g([0-9a-f]+)$/
+                    if (m.matches()) {
+                        def count = m.group(2) as int
+                        if (count == 0) {
+                            // We're on a tag
+                            tag = m.group(1)
+                        } else {
+                            // No tag
+                            tag = null
+                        }
                     } else {
-                        // No tag
-                        tag = null
+                        throw new GradleException("Cannot get parse description of current commit: ${described}")
                     }
                 } else {
-                    throw new GradleException("Cannot get parse description of current commit: ${described}")
+                    // Nothing returned - it means there is no previous tag
+                    tag = null
                 }
-            } else {
-                // Nothing returned - it means there is no previous tag
-                tag = null
             }
 
             // Returns the information
