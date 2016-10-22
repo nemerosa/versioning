@@ -58,6 +58,9 @@ freeStyleJob("${SEED_PROJECT}-${SEED_BRANCH}-build") {
     }
 }
 
+// Triggering the build upon pipeline generation
+queue "${SEED_PROJECT}-${SEED_BRANCH}-build"
+
 if (release) {
     // Publication job
     freeStyleJob("${SEED_PROJECT}-${SEED_BRANCH}-publish") {
