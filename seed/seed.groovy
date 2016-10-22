@@ -32,8 +32,10 @@ freeStyleJob("${SEED_PROJECT}-${SEED_BRANCH}-build") {
                 url "git@github.com:nemerosa/versioning.git"
                 branch "origin/${BRANCH}"
             }
-            wipeOutWorkspace()
-            localBranch "${BRANCH}"
+            extensions {
+                wipeOutWorkspace()
+                localBranch "${BRANCH}"
+            }
         }
     }
     steps {
@@ -68,8 +70,10 @@ if (release) {
                     url "git@github.com:nemerosa/versioning.git"
                     branch "origin/${BRANCH}"
                 }
-                wipeOutWorkspace()
-                localBranch "${BRANCH}"
+                extensions {
+                    wipeOutWorkspace()
+                    localBranch "${BRANCH}"
+                }
             }
         }
         wrappers {
