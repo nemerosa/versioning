@@ -6,6 +6,7 @@ import net.nemerosa.versioning.VersionInfo
 import net.nemerosa.versioning.VersioningPlugin
 import net.nemerosa.versioning.support.DirtyException
 import net.nemerosa.versioning.tasks.VersionDisplayTask
+import org.eclipse.jgit.api.Git
 import org.gradle.api.DefaultTask
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
@@ -60,6 +61,60 @@ class GitVersionTest {
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    /**
+     * When a branch is checked out using a detached HEAD, the branch type will be set to
+     * `detached`.
+     */
+    @Test
+    void 'Git detached HEAD'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                (1..4).each { commit it }
+            }
+            def head = repo.commitLookup('Commit 4')
+            def headAbbreviated = repo.commitLookup('Commit 4', true)
+            def commit3 = repo.commitLookup('Commit 3')
+            def commit3Abbreviated = repo.commitLookup('Commit 3', true)
+
+            // Creates a temporary directory where to perform a detached clone operation
+            File detached = File.createTempDir('git', '')
+            try {
+
+                // Cloning
+                def git = Git.cloneRepository()
+                        .setURI(repo.dir.toURI().toString())
+                        .setDirectory(detached)
+                        .call()
+                // Detached HEAD
+                git.checkout().setName(commit3).call()
+
+                def project = ProjectBuilder.builder().withProjectDir(detached).build()
+                new VersioningPlugin().apply(project)
+                VersionInfo info = project.versioning.info as VersionInfo
+                assert info != null
+                assert info.build == commit3Abbreviated
+                assert info.branch == 'HEAD'
+                assert info.base == ''
+                assert info.branchId == 'HEAD'
+                assert info.branchType == 'HEAD'
+                assert info.commit == commit3
+                assert info.display == "HEAD-${commit3Abbreviated}" as String
+                assert info.full == "HEAD-${commit3Abbreviated}" as String
+                assert info.scm == 'git'
+                assert info.tag == null
+                assert !info.dirty
+
+            } finally {
+                detached.deleteDir()
+            }
 
         } finally {
             repo.close()
