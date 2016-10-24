@@ -307,6 +307,20 @@ The `extension` parameter is the content of the `versioning` configuration objec
 **Note** that the display mode based on the current tag is **not supported in Subversion**. It is kind of tricky
 to get the tag associated to a given revision.
 
+## Detached and shallow clone support
+
+When a repository is checked out in _detached_ mode, the `branch` will be set to `HEAD` and both the `display` and
+`full` version will be set to `HEAD-<commit>` where `<commit>` is the abbreviated commit hash.
+
+When a repository is checked out in _shallow_ mode, no history is available and the `display` version for a _release_
+branch cannot be correctly computed. In this case, we have two situations:
+
+* if the `HEAD` commit has a tag, we use the tag name as `display` version
+* if it has no tag, we use the `base` version and the SNAPSHOT suffix, to indicate that the release exact version
+  cannot be computed.
+
+In both cases, the `VersionInfo` object contains a `shallow` property which is set to `true`.
+
 ## Subversion support
 
 Subversion is supported starting from version `1.1.0` of the Versioning plug-in. In order to enable your working copy
