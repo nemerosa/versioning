@@ -21,5 +21,6 @@ class VersionInfo {
     String build = ''
     String tag = null
     boolean dirty = false
+    boolean shallow = false
 
 }

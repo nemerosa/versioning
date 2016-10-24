@@ -111,6 +111,7 @@ class GitInfoService implements SCMInfoService {
                     abbreviated: abbreviated,
                     dirty: isGitTreeDirty(project.projectDir),
                     tag: tag,
+                    shallow: shallow,
             )
         }
     }

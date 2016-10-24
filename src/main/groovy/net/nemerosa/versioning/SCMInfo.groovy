@@ -12,5 +12,6 @@ class SCMInfo {
     String abbreviated
     String tag
     boolean dirty
+    boolean shallow
 
 }

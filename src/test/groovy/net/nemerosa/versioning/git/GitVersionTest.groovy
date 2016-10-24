@@ -158,7 +158,6 @@ class GitVersionTest {
         }
     }
 
-
     @Test
     void 'Git shallow history for master'() {
         GitRepo repo = new GitRepo()
@@ -194,6 +193,7 @@ class GitVersionTest {
                 assert info.scm == 'git'
                 assert info.tag == null
                 assert !info.dirty
+                assert info.shallow
 
             } finally {
                 detached.deleteDir()
@@ -1437,6 +1437,105 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert info.dirty
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git shallow history for a release branch not on a tag'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                (1..4).each { commit it }
+                branch 'release/2.0'
+                commit 5
+                tag '2.0.2'
+                commit 6
+            }
+            def head = repo.commitLookup('Commit 6')
+            def headAbbreviated = repo.commitLookup('Commit 6', true)
+
+            // Creates a temporary directory where to perform a shallow clone operation
+            File detached = File.createTempDir('git', '')
+            try {
+
+                new ProcessBuilder('git', 'clone', '--depth', '1', "file://${repo.dir.absolutePath}", '.')
+                        .directory(detached)
+                        .start()
+                        .waitForOrKill(2000L)
+
+                def project = ProjectBuilder.builder().withProjectDir(detached).build()
+                new VersioningPlugin().apply(project)
+                VersionInfo info = project.versioning.info as VersionInfo
+                assert info != null
+                assert info.build == headAbbreviated
+                assert info.branch == 'release/2.0'
+                assert info.base == '2.0'
+                assert info.branchId == 'release-2.0'
+                assert info.branchType == 'release'
+                assert info.commit == head
+                assert info.display == "2.0-SNAPSHOT" as String
+                assert info.full == "release-2.0-${headAbbreviated}" as String
+                assert info.scm == 'git'
+                assert info.tag == null
+                assert !info.dirty
+                assert info.shallow
+
+            } finally {
+                detached.deleteDir()
+            }
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git shallow history for a release branch on a tag'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                (1..4).each { commit it }
+                branch 'release/2.0'
+                commit 5
+                tag '2.0.2'
+            }
+            def head = repo.commitLookup('Commit 5')
+            def headAbbreviated = repo.commitLookup('Commit 5', true)
+
+            // Creates a temporary directory where to perform a shallow clone operation
+            File detached = File.createTempDir('git', '')
+            try {
+
+                new ProcessBuilder('git', 'clone', '--depth', '1', "file://${repo.dir.absolutePath}", '.')
+                        .directory(detached)
+                        .start()
+                        .waitForOrKill(2000L)
+
+                def project = ProjectBuilder.builder().withProjectDir(detached).build()
+                new VersioningPlugin().apply(project)
+                VersionInfo info = project.versioning.info as VersionInfo
+                assert info != null
+                assert info.build == headAbbreviated
+                assert info.branch == 'release/2.0'
+                assert info.base == '2.0'
+                assert info.branchId == 'release-2.0'
+                assert info.branchType == 'release'
+                assert info.commit == head
+                assert info.display == "2.0.2" as String
+                assert info.full == "release-2.0-${headAbbreviated}" as String
+                assert info.scm == 'git'
+                assert info.tag == '2.0.2'
+                assert !info.dirty
+                assert info.shallow
+
+            } finally {
+                detached.deleteDir()
+            }
 
         } finally {
             repo.close()

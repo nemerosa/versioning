@@ -239,34 +239,48 @@ class VersioningExtension {
                 build: scmInfo.abbreviated,
                 tag: scmInfo.tag,
                 dirty: scmInfo.dirty,
+                shallow: scmInfo.shallow,
         )
     }
 
     private String getDisplayVersion(SCMInfo scmInfo, ReleaseInfo releaseInfo, List<String> baseTags) {
         String currentTag = scmInfo.tag
-        String lastTag
-        String nextTag
-        if (baseTags.empty) {
-            lastTag = ''
-            nextTag = "${releaseInfo.base}.0"
-        } else {
-            lastTag = baseTags[0].trim()
-            def lastNumber = (lastTag =~ /${releaseInfo.base}\.(\d+)/)[0][1] as int
-            def newNumber = lastNumber + 1
-            nextTag = "${releaseInfo.base}.${newNumber}"
-        }
-        Closure<String> mode
-        if (releaseMode instanceof String) {
-            mode = RELEASE_MODES[releaseMode]
-            if (!mode) {
-                throw new GradleException("${releaseMode} is not a valid release mode.")
+        if (scmInfo.shallow) {
+            // In case the repository has no history (shallow clone or check out), the last
+            // tags cannot be get and the display version cannot be computed correctly.
+            if (currentTag) {
+                // The only special case is when the HEAD commit is exactly on a tag and we can use it
+                return currentTag
+            } else {
+                // In any other case, we can only start from the base information
+                // and add a snapshot information
+                return "${releaseInfo.base}${snapshot}"
             }
-        } else if (releaseMode instanceof Closure) {
-            mode = releaseMode as Closure
         } else {
-            throw new GradleException("The `releaseMode` must be a registered default mode or a Closure.")
+            String lastTag
+            String nextTag
+            if (baseTags.empty) {
+                lastTag = ''
+                nextTag = "${releaseInfo.base}.0"
+            } else {
+                lastTag = baseTags[0].trim()
+                def lastNumber = (lastTag =~ /${releaseInfo.base}\.(\d+)/)[0][1] as int
+                def newNumber = lastNumber + 1
+                nextTag = "${releaseInfo.base}.${newNumber}"
+            }
+            Closure<String> mode
+            if (releaseMode instanceof String) {
+                mode = RELEASE_MODES[releaseMode]
+                if (!mode) {
+                    throw new GradleException("${releaseMode} is not a valid release mode.")
+                }
+            } else if (releaseMode instanceof Closure) {
+                mode = releaseMode as Closure
+            } else {
+                throw new GradleException("The `releaseMode` must be a registered default mode or a Closure.")
+            }
+            return mode(nextTag, lastTag, currentTag, this)
         }
-        return mode(nextTag, lastTag, currentTag, this)
     }
 
     public static String normalise(String value) {
