@@ -6,8 +6,13 @@ import net.nemerosa.versioning.VersioningExtension
 import org.ajoberstar.grgit.Commit
 import org.ajoberstar.grgit.Grgit
 import org.ajoberstar.grgit.Status
+import org.eclipse.jgit.lib.Constants
+import org.eclipse.jgit.lib.ObjectId
+import org.eclipse.jgit.lib.Ref
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+
+import static org.eclipse.jgit.lib.Constants.R_TAGS
 
 class GitInfoService implements SCMInfoService {
 
@@ -56,8 +61,26 @@ class GitInfoService implements SCMInfoService {
             String tag
             // Cannot use the `describe` command if the repository is shallow
             if (shallow) {
-                // FIXME Gets the current tag if any
-                tag = null
+                // Map of tags
+                Map<ObjectId, Ref> tags = new HashMap<ObjectId, Ref>();
+
+                def gitRepository = grgit.repository.jgit.repository
+
+                for (Ref r : gitRepository.refDatabase.getRefs(R_TAGS).values()) {
+                    ObjectId key = gitRepository.peel(r).getPeeledObjectId();
+                    if (key == null)
+                        key = r.getObjectId();
+                    tags.put(key, r);
+                }
+                // If we're on a tag, we can use it directly
+                Ref lucky = tags.get(gitRepository.resolve(Constants.HEAD))
+                if (lucky != null) {
+                    tag = lucky.name.substring(R_TAGS.length());
+                }
+                // If not, we do not go further
+                else {
+                    tag = null
+                }
             } else {
                 String described = grgit.repository.jgit.describe().setLong(true).call()
                 if (described) {
