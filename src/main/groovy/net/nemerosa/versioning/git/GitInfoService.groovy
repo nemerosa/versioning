@@ -134,7 +134,6 @@ class GitInfoService implements SCMInfoService {
         // Git access
         //noinspection GroovyAssignabilityCheck
         def grgit = Grgit.open(currentDir: project.projectDir)
-        def tags = grgit.tag.list()
         // List all tags
         return grgit.tag.list()
         // ... filters using the pattern
