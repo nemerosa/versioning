@@ -121,7 +121,7 @@ class GitVersionTest {
 
     /**
      * The Git information is accessible from a sub project.
-     * @issue #20
+     * @issue # 20
      */
     @Test
     void 'Git sub project'() {
@@ -174,9 +174,9 @@ class GitVersionTest {
             try {
 
                 new ProcessBuilder('git', 'clone', '--depth', '1', "file://${repo.dir.absolutePath}", '.')
-                    .directory(detached)
-                    .start()
-                    .waitForOrKill(2000L)
+                        .directory(detached)
+                        .start()
+                        .waitForOrKill(2000L)
 
                 def project = ProjectBuilder.builder().withProjectDir(detached).build()
                 new VersioningPlugin().apply(project)
@@ -1487,6 +1487,43 @@ VERSION_DIRTY=false
             } finally {
                 detached.deleteDir()
             }
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Getting the version when two tags are set on a commit'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                (1..4).each { commit it }
+                branch 'release/2.0'
+                tag '2.0.2'
+                tag '2.0.3'
+                commit 5
+            }
+            def head = repo.commitLookup('Commit 5')
+            def headAbbreviated = repo.commitLookup('Commit 5', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/2.0'
+            assert info.base == '2.0'
+            assert info.branchId == 'release-2.0'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == "2.0.4" as String
+            assert info.full == "release-2.0-${headAbbreviated}" as String
+            assert info.scm == 'git'
+            assert info.tag == null
+            assert !info.dirty
+            assert !info.shallow
 
         } finally {
             repo.close()

@@ -134,12 +134,16 @@ class GitInfoService implements SCMInfoService {
         // Git access
         //noinspection GroovyAssignabilityCheck
         def grgit = Grgit.open(currentDir: project.projectDir)
+        def tags = grgit.tag.list()
         // List all tags
         return grgit.tag.list()
         // ... filters using the pattern
                 .findAll { it.name ==~ baseTagPattern }
-        // ... sort by desc time
+        // ... sort by desc commit time
                 .sort { -it.commit.time }
+        // ... (#36) commit time is not enough. We have also to consider the case where several pattern compliant tags
+        // ...       are on the same commit, and we must sort them by desc version
+                .sort { -((it.name - "${base}.") as int) }
         // ... gets their name only
                 .collect { it.name }
     }
