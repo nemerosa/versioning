@@ -1738,11 +1738,11 @@ VERSION_DIRTY=false
             repo.with {
                 (1..4).each { commit it }
                 branch 'release/2.0'
-                commit 5
                 tag '2.0.2'
+                commit 5
             }
-            def head = repo.commitLookup('Commit 4')
-            def headAbbreviated = repo.commitLookup('Commit 4', true)
+            def head = repo.commitLookup('Commit 5')
+            def headAbbreviated = repo.commitLookup('Commit 5', true)
 
             // Creates a temporary directory for the project
             File projectDir = File.createTempDir('project', '')
@@ -1759,10 +1759,10 @@ VERSION_DIRTY=false
             assert info.branchId == 'release-2.0'
             assert info.branchType == 'release'
             assert info.commit == head
-            assert info.display == "2.0.2" as String
+            assert info.display == "2.0.3" as String
             assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
-            assert info.tag == '2.0.2'
+            assert info.tag == null
             assert !info.dirty
             assert !info.shallow
 

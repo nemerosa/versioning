@@ -29,9 +29,11 @@ class GitInfoService implements SCMInfoService {
         }
         // Git information available
         else {
+            // Git directory
+            File gitDir = getGitDirectory(extension, project)
             // Open the Git repo
             //noinspection GroovyAssignabilityCheck
-            def grgit = Grgit.open(currentDir: project.projectDir)
+            def grgit = Grgit.open(currentDir: gitDir)
 
             // Check passed in environment variable list
             String branch = null
@@ -112,11 +114,23 @@ class GitInfoService implements SCMInfoService {
                     branch: branch,
                     commit: commit,
                     abbreviated: abbreviated,
-                    dirty: isGitTreeDirty(project.projectDir),
+                    dirty: isGitTreeDirty(gitDir),
                     tag: tag,
                     shallow: shallow,
             )
         }
+    }
+
+    /**
+     * Gets the actual Git working directory to use.
+     * @param extension Extension of the plugin
+     * @param project Project
+     * @return Directory to use
+     */
+    protected static File getGitDirectory(VersioningExtension extension, Project project) {
+        return extension.gitRepoRootDir ?
+                new File(extension.gitRepoRootDir) :
+                project.projectDir
     }
 
     static boolean isGitTreeDirty(File dir) {// Open the Git repo
@@ -136,7 +150,7 @@ class GitInfoService implements SCMInfoService {
         def baseTagPattern = /^${base}\.(\d+)$/
         // Git access
         //noinspection GroovyAssignabilityCheck
-        def grgit = Grgit.open(currentDir: project.projectDir)
+        def grgit = Grgit.open(currentDir: getGitDirectory(extension, project))
         // List all tags
         return grgit.tag.list()
         // ... filters using the pattern
