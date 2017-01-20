@@ -21,7 +21,8 @@ class GitInfoService implements SCMInfoService {
         // Is Git enabled?
         boolean hasGit = project.rootProject.file('.git').exists() ||
                          project.file('.git').exists() ||
-                         (extension.dotgitPath != null && new File(extension.dotgitPath).exists())
+                         (extension.gitRepoRootDir != null &&
+                                 new File("${extension.gitRepoRootDir}${File.pathSeparator}.git").exists())
         // No Git information
         if (!hasGit) {
             SCMInfo.NONE
