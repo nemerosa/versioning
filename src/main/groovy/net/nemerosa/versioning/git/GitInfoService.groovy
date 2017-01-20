@@ -19,7 +19,9 @@ class GitInfoService implements SCMInfoService {
     @Override
     SCMInfo getInfo(Project project, VersioningExtension extension) {
         // Is Git enabled?
-        boolean hasGit = project.rootProject.file('.git').exists()
+        boolean hasGit = project.rootProject.file('.git').exists() ||
+                         project.file('.git').exists() ||
+                         (extension.dotgitPath != null && new File(extension.dotgitPath).exists())
         // No Git information
         if (!hasGit) {
             SCMInfo.NONE

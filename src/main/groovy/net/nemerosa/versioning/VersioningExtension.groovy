@@ -49,6 +49,14 @@ class VersioningExtension {
     String scm = 'git'
 
     /**
+     * Allow setting location of .git file for non conventional git/gradle setups.
+     * This is the path to the .git folder used to validate if git is present for the current
+     * project.
+     *
+     */
+    String dotgitPath = null
+
+    /**
      * Fetch the branch from environment variable if available.
      *
      * By default, the environment is not taken into account, in order to be backward compatible

@@ -34,6 +34,12 @@ dependencies {
     compile "org.eclipse.jgit:org.eclipse.jgit.ui:${jgitVersion}"
     compile "org.eclipse.jgit:org.eclipse.jgit:${jgitVersion}"
     compile 'org.tmatesoft.svnkit:svnkit:1.8.12'
+    testCompile "junit:junit:4.12"
+    testCompile "commons-lang:commons-lang:2.6"
+    testCompile "commons-io:commons-io:2.5"
+
+
+
 }
 
 /**
