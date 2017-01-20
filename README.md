@@ -321,6 +321,19 @@ branch cannot be correctly computed. In this case, we have two situations:
 
 In both cases, the `VersionInfo` object contains a `shallow` property which is set to `true`.
 
+## External Git repository
+
+In some very specific [cases](https://github.com/nemerosa/versioning/issues/37),
+the Git directory might be external to the project.
+
+In order to support this case, you can specify the `gitRepoRootDir` property:
+
+```groovy
+versioning {
+    gitRepoRootDir = '/path/to/other/directory'
+}
+```
+
 ## Subversion support
 
 Subversion is supported starting from version `1.1.0` of the Versioning plug-in. In order to enable your working copy
