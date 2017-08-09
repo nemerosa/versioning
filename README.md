@@ -249,9 +249,23 @@ versioning {
 }
 ```
 
-### Snapshots on release branches
+### Snapshots
+
+Recomended configuration for development with `-SNAPSHOT`, for details see below.
+
+```groovy
+versioning {
+   releaseBuild = false		// own control, which build is really release, set to true in CI-server release job
+   releaseMode = 'snapshot'	// how to compute version on release-branches
+   displayMode = 'snapshot'	// how to compute version on non-release-branches
+   dirty = { t -> t }		// switch off dirty-suffix ( could be usefull for local development )
+}
+```
+
+#### Snapshots on release branches
 
 Sometimes, you do not want to have the `display` version for a _release_ branch being the next tag if you are already on a tag.
+( _release_ branch is defined in the `releases`-set. )
 
 By default, the `versioning` plug-in will behave correctly if you tag only as the very end of your delivery pipeline,
 when the project is actually delivered. But if you want to tag upfront, you probably need to indicate that your `display` version
@@ -306,6 +320,51 @@ The `extension` parameter is the content of the `versioning` configuration objec
 
 **Note** that the display mode based on the current tag is **not supported in Subversion**. It is kind of tricky
 to get the tag associated to a given revision.
+
+If You want to have more control when release or snapshot build is performed, You can use `releaseBuild` boolean property.
+This is usefull in case of usage central maven repository, which forbids replacement of released final artifacts.
+
+```groovy
+versioning {
+   releaseBuild = false // this could be set as build argument of gradle
+   releaseMode = 'snapshot'
+}
+```
+
+#### Snapshots on non-release branches
+
+Non-release branches are all which doesn't exists in `release`-set.
+In case you prefer maven way for creating artifacts and You want to use `-SNAPSHOT` suffix , it's recomended to use `displayMode`.
+
+```groovy
+versioning {
+   displayMode = 'snapshot'
+}
+```
+
+Possible values for `displayMode` are defined as closures :
+```groovy
+DISPLAY_MODES = [
+    full    : { branchType, branchId, base, build, full, extension ->
+                "${branchId}-${build}"
+              },
+    snapshot: { branchType, branchId, base, build, full, extension ->
+                "${base}${extension.snapshot}"
+              },
+    base    : { branchType, branchId, base, build, full, extension ->
+                base
+              },
+]
+```
+
+You can use also use own display mode defined as a closure :
+```groovy
+versioning {
+   displayMode = { branchType, branchId, base, build, full, extension ->
+                "${branchType}-${base}${extension.snapshot}"
+            }
+}
+```
 
 ## Detached and shallow clone support
 
