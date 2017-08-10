@@ -1184,7 +1184,7 @@ VERSION_DIRTY=false
             assert info.branchId == 'release-2.0'
             assert info.branchType == 'release'
             assert info.commit == head
-            assert info.display == '2.0.2'
+            assert info.display == '2.0.3-SNAPSHOT'
             assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
             assert info.tag == '2.0.2'
@@ -1225,7 +1225,7 @@ VERSION_DIRTY=false
             assert info.branchId == 'release-2.0'
             assert info.branchType == 'release'
             assert info.commit == head
-            assert info.display == '2.0.2'
+            assert info.display == '2.0.3-DEV'
             assert info.full == "release-2.0-${headAbbreviated}" as String
             assert info.scm == 'git'
             assert info.tag == '2.0.2'
@@ -1654,7 +1654,7 @@ VERSION_DIRTY=false
                 assert info.branchId == 'release-2.0'
                 assert info.branchType == 'release'
                 assert info.commit == head
-                assert info.display == "2.0.2" as String
+                assert info.display == "2.0-SNAPSHOT" as String
                 assert info.full == "release-2.0-${headAbbreviated}" as String
                 assert info.scm == 'git'
                 assert info.tag == '2.0.2'
