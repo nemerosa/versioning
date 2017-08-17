@@ -39,7 +39,7 @@ class VersioningExtension {
                 nextTag
             },
             snapshot: { nextTag, lastTag, currentTag, extension ->
-                currentTag ?: "${nextTag}${extension.snapshot}"
+                extension.releaseBuild && currentTag ? currentTag : "${nextTag}${extension.snapshot}"
             },
     ]
 
@@ -98,6 +98,11 @@ class VersioningExtension {
      * Release mode
      */
     def releaseMode = 'tag'
+
+    /**
+     * True if it's release build. Default is true, and branch shoud be in releases-set.
+     */
+    def releaseBuild = true
 
     /**
      * Default Snapshot extension
@@ -256,7 +261,7 @@ class VersioningExtension {
         if (scmInfo.shallow) {
             // In case the repository has no history (shallow clone or check out), the last
             // tags cannot be get and the display version cannot be computed correctly.
-            if (currentTag) {
+            if (releaseBuild && currentTag) {
                 // The only special case is when the HEAD commit is exactly on a tag and we can use it
                 return currentTag
             } else {
