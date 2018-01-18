@@ -217,7 +217,7 @@ staged or not committed.
 When the working copy the version is computed from, the default behaviour is to
 append the `-dirty` suffix to the `display` and `full` version.
 
-This can be customised with the following ettaributes on the `versioning` extension:
+This can be customised with the following attributes on the `versioning` extension:
 
 ```groovy
 versioning {
