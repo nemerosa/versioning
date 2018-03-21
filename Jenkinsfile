@@ -89,8 +89,8 @@ set -e
     --stacktrace \\
     --profile \\
     --console plain \\
-    -PBINTRAY_USER=${BINTRAY_USR} \\
-    -PBINTRAY_API_KEY=${BINTRAY_PSW}
+    -PbintrayUser=${BINTRAY_USR} \\
+    -PbintrayApiKey=${BINTRAY_PSW}
 '''
                 script {
                     // Reads version information
