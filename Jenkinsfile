@@ -95,7 +95,7 @@ echo "Creating tag ${VERSION} for ${GIT_COMMIT}"
 
 curl -X POST "https://api.github.com/repos/nemerosa/versioning/releases" \\
     --fail \\
-    --data "{\"target_commitish\":\"${GIT_COMMIT}\",\"tag_name\":\"${VERSION}\",\"name\":\"${VERSION}\"}" \\
+    --data "{\\"target_commitish\\":\\"${GIT_COMMIT}\\",\\"tag_name\\":\\"${VERSION}\\",\\"name\\":\\"${VERSION}\\"}" \\
     --user "${GITHUB}"
 '''
             }
@@ -114,8 +114,6 @@ curl -X POST "https://api.github.com/repos/nemerosa/versioning/releases" \\
 set -e
 
 ./gradlew \\
-    versionDisplay \\
-    versionFile \\
     publishPluginToBintray \\
     -x test \\
     --stacktrace \\
