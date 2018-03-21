@@ -69,6 +69,30 @@ set -e
             }
         }
 
+        stage('Release') {
+            when {
+                branch 'release/*'
+            }
+            environment {
+                GIT_COMMIT = "${gitCommit}"
+                VERSION = "${version}"
+                GITHUB = credentials('GITHUB_NEMEROSA_JENKINS2')
+            }
+            steps {
+                sh '''\
+#!/bin/bash
+set -e
+
+echo "Creating tag ${VERSION} for ${GIT_COMMIT}"
+
+curl -X POST "https://api.github.com/repos/nemerosa/versioning/releases" \\
+    --fail \\
+    --data "{\"target_commitish\":\"${GIT_COMMIT}\",\"tag_name\":\"${VERSION}\",\"name\":\"${VERSION}\"}" \\
+    --user '${GITHUB}'
+'''
+            }
+        }
+
         stage('Publication') {
             when {
                 branch 'release/*'
@@ -99,30 +123,6 @@ set -e
                     gitCommit = props.VERSION_COMMIT
                 }
                 echo "Version = ${version}"
-            }
-        }
-
-        stage('Release') {
-            when {
-                branch 'release/*'
-            }
-            environment {
-                GIT_COMMIT = "${gitCommit}"
-                VERSION = "${version}"
-                GITHUB = credentials('GITHUB_NEMEROSA_JENKINS2')
-            }
-            steps {
-                sh '''\
-#!/bin/bash
-set -e
-
-echo "Creating tag ${VERSION} for ${GIT_COMMIT}"
-
-curl -X POST "https://api.github.com/repos/nemerosa/versioning/releases" \\
-    --fail \\
-    --data "{\"target_commitish\":\"${GIT_COMMIT}\",\"tag_name\":\"${VERSION}\",\"name\":\"${VERSION}\"}" \\
-    --user '${GITHUB}'
-'''
             }
         }
     }
