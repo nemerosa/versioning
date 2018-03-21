@@ -68,5 +68,59 @@ set -e
 '''
             }
         }
+
+        stage('Publication') {
+            when {
+                branch 'release/*'
+            }
+            environment {
+                BINTRAY = credentials('BINTRAY')
+            }
+            steps {
+                sh '''\
+#!/bin/bash
+set -e
+
+./gradlew \\
+    versionDisplay \\
+    versionFile \\
+    publishPluginToBintray \\
+    -x test \\
+    --stacktrace \\
+    --profile \\
+    --console plain \\
+    -PBINTRAY_USER=${BINTRAY_USR} \\
+    -PBINTRAY_API_KEY=${BINTRAY_PSW}
+'''
+                script {
+                    // Reads version information
+                    def props = readProperties(file: 'build/version.properties')
+                    version = props.VERSION_DISPLAY
+                    gitCommit = props.VERSION_COMMIT
+                }
+                echo "Version = ${version}"
+            }
+        }
+
+        stage('Release') {
+            when {
+                branch 'release/*'
+            }
+            environment {
+                GIT_COMMIT = "${gitCommit}"
+                VERSION = "${version}"
+                GITHUB = credentials('GITHUB_NEMEROSA_JENKINS2')
+            }
+            steps {
+                sh '''\
+#!/bin/bash
+set -e
+
+curl -X POST "https://api.github.com/repos/nemerosa/versioning/releases" \\
+    --data "{\"target_commitish\":\"${GIT_COMMIT}\",\"tag_name\":\"${VERSION}\",\"name\":\"${VERSION}\"}" \\
+    --user '${GITHUB}'
+'''
+            }
+        }
     }
 }
