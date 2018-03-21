@@ -60,12 +60,20 @@ set -e
 ./gradlew \\
     clean \\
     versionDisplay \\
+    versionFile \\
     build \\
     --stacktrace \\
     --profile \\
     --parallel \\
     --console plain
 '''
+                script {
+                    // Reads version information
+                    def props = readProperties(file: 'build/version.properties')
+                    version = props.VERSION_DISPLAY
+                    gitCommit = props.VERSION_COMMIT
+                }
+                echo "Version = ${version}"
             }
         }
 
