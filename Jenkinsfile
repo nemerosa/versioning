@@ -57,7 +57,7 @@ pipeline {
 #!/bin/bash
 set -e
 
-gradlew \\
+./gradlew \\
     clean \\
     versionDisplay \\
     build \\
