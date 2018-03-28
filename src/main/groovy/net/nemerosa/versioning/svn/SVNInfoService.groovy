@@ -175,12 +175,12 @@ class SVNInfoService implements SCMInfoService {
         def clientManager = SVNClientManager.newInstance()
         if (extension.user && extension.password) {
             LOGGER.info("[version] Authenticating with ${extension.user}")
-            clientManager.setAuthenticationManager(BasicAuthenticationManager.newInstance(extension.user, extension.password.toCharArray()));
+            clientManager.setAuthenticationManager(BasicAuthenticationManager.newInstance(extension.user, extension.password.toCharArray()))
             // The BasicAuthenticationManager trusts the certificates by default
         } else if (extension.trustServerCert) {
             LOGGER.info("[version] Trusting certificate by default")
             LOGGER.warn("[version] WARNING The `trustServerCert` is now deprecated - and should not be used any longer.")
-            clientManager.setAuthenticationManager(BasicAuthenticationManager.newInstance(new SVNAuthentication[0]));
+            clientManager.setAuthenticationManager(BasicAuthenticationManager.newInstance(new SVNAuthentication[0]))
         } else {
             LOGGER.info("[version] Using default SVN configuration")
             clientManager.setAuthenticationManager(SVNWCUtil.createDefaultAuthenticationManager())
