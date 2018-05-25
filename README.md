@@ -131,6 +131,8 @@ Displays the version information in the standard output. For example:
 [version] base       = 0.3
 [version] build      = da50c50
 [version] display    = 0.3.0
+[version] tag        =
+[version] dirty      = false
 ```
 
 ### `versionFile`
@@ -149,6 +151,8 @@ VERSION_COMMIT=da50c50567073d3d3a7756829926a9590f2644c6
 VERSION_DISPLAY=0.3.0
 VERSION_FULL=release-0.3-da50c50
 VERSION_SCM=git
+VERSION_TAG=
+VERSION_DIRTY=false
 ```
 
 This makes this file easy to integrate in a Bash script:
