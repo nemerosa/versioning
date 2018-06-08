@@ -11,6 +11,7 @@ import org.tmatesoft.svn.core.SVNDirEntry
 import org.tmatesoft.svn.core.SVNException
 import org.tmatesoft.svn.core.SVNURL
 import org.tmatesoft.svn.core.auth.BasicAuthenticationManager
+import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager
 import org.tmatesoft.svn.core.auth.SVNAuthentication
 import org.tmatesoft.svn.core.wc.*
 
@@ -182,19 +183,38 @@ class SVNInfoService implements SCMInfoService {
      */
     protected static SVNClientManager getClientManager(VersioningExtension extension) {
         def clientManager = SVNClientManager.newInstance()
+        ISVNAuthenticationManager authenticationManager
         if (extension.user && extension.password) {
             LOGGER.info("[version] Authenticating with ${extension.user}")
-            clientManager.setAuthenticationManager(BasicAuthenticationManager.newInstance(extension.user, extension.password.toCharArray()))
+            authenticationManager = configureProxy(BasicAuthenticationManager.newInstance(extension.user, extension.password.toCharArray()))
             // The BasicAuthenticationManager trusts the certificates by default
         } else if (extension.trustServerCert) {
             LOGGER.info("[version] Trusting certificate by default")
             LOGGER.warn("[version] WARNING The `trustServerCert` is now deprecated - and should not be used any longer.")
-            clientManager.setAuthenticationManager(BasicAuthenticationManager.newInstance(new SVNAuthentication[0]))
+            authenticationManager = configureProxy(BasicAuthenticationManager.newInstance(new SVNAuthentication[0]))
         } else {
             LOGGER.info("[version] Using default SVN configuration")
-            clientManager.setAuthenticationManager(SVNWCUtil.createDefaultAuthenticationManager())
+            authenticationManager = SVNWCUtil.createDefaultAuthenticationManager()
         }
+        clientManager.setAuthenticationManager(authenticationManager)
         return clientManager
+    }
+
+    private static BasicAuthenticationManager configureProxy(BasicAuthenticationManager authenticationManager) {
+        def properties= System.properties
+        def proxyHost = properties.getProperty('http.proxyHost')
+        def proxyPort = properties.getProperty('http.proxyPort')
+        def proxyUser = properties.getProperty('http.proxyUser')
+        def proxyPassword = properties.getProperty('http.proxyPassword')
+        if (proxyHost != null && proxyPort != null) {
+            if (proxyUser != null && proxyPassword != null) {
+                authenticationManager.setProxy(proxyHost, proxyPort as int, proxyUser, proxyPassword.toCharArray())
+            } else {
+                authenticationManager.setProxy(proxyHost, proxyPort as int, null, [] as char[])
+            }
+        }
+
+        return authenticationManager
     }
 
 }
