@@ -11,6 +11,7 @@ class SCMInfo {
     String commit
     String abbreviated
     String tag
+    String lastTag
     boolean dirty
     boolean shallow
 

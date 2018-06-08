@@ -45,6 +45,7 @@ ${prefix}DISPLAY=${info.display}
 ${prefix}FULL=${info.full}
 ${prefix}SCM=${info.scm}
 ${prefix}TAG=${info.tag ?: ''}
+${prefix}LAST_TAG=${info.lastTag ?: ''}
 ${prefix}DIRTY=${info.dirty}
 """
     }

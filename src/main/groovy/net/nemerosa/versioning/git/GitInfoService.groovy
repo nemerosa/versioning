@@ -109,6 +109,8 @@ class GitInfoService implements SCMInfoService {
                 }
             }
 
+            // FIXME Gets the last tag if any
+
             // Returns the information
             new SCMInfo(
                     branch: branch,
@@ -116,6 +118,7 @@ class GitInfoService implements SCMInfoService {
                     abbreviated: abbreviated,
                     dirty: isGitTreeDirty(gitDir),
                     tag: tag,
+                    lastTag: lastTag,
                     shallow: shallow,
             )
         }

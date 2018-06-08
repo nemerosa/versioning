@@ -1770,4 +1770,106 @@ VERSION_DIRTY=false
             repo.close()
         }
     }
+
+    @Test
+    void 'Git master branch last tag'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                (1..4).each { commit it }
+                tag '2.0.2'
+                (5..6).each { commit it }
+            }
+            def head = repo.commitLookup('Commit 6')
+            def headAbbreviated = repo.commitLookup('Commit 6', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'master'
+            assert info.base == ''
+            assert info.branchId == 'master'
+            assert info.branchType == 'master'
+            assert info.commit == head
+            assert info.display == "master-${headAbbreviated}" as String
+            assert info.full == "master-${headAbbreviated}" as String
+            assert info.scm == 'git'
+            assert info.tag == null
+            assert info.lastTag == '2.0.2'
+            assert !info.dirty
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git master branch current last tag'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                (1..6).each { commit it }
+                tag '2.0.2'
+            }
+            def head = repo.commitLookup('Commit 6')
+            def headAbbreviated = repo.commitLookup('Commit 6', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'master'
+            assert info.base == ''
+            assert info.branchId == 'master'
+            assert info.branchType == 'master'
+            assert info.commit == head
+            assert info.display == "master-${headAbbreviated}" as String
+            assert info.full == "master-${headAbbreviated}" as String
+            assert info.scm == 'git'
+            assert info.tag == '2.0.2'
+            assert info.lastTag == '2.0.2'
+            assert !info.dirty
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git master branch no last tag'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                (1..6).each { commit it }
+            }
+            def head = repo.commitLookup('Commit 6')
+            def headAbbreviated = repo.commitLookup('Commit 6', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'master'
+            assert info.base == ''
+            assert info.branchId == 'master'
+            assert info.branchType == 'master'
+            assert info.commit == head
+            assert info.display == "master-${headAbbreviated}" as String
+            assert info.full == "master-${headAbbreviated}" as String
+            assert info.scm == 'git'
+            assert info.tag == null
+            assert info.lastTag == null
+            assert !info.dirty
+
+        } finally {
+            repo.close()
+        }
+    }
 }

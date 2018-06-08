@@ -251,6 +251,7 @@ class VersioningExtension {
                 commit: scmInfo.commit,
                 build: scmInfo.abbreviated,
                 tag: scmInfo.tag,
+                lastTag: scmInfo.lastTag,
                 dirty: scmInfo.dirty,
                 shallow: scmInfo.shallow,
         )
