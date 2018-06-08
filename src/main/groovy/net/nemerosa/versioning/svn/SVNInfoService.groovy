@@ -100,6 +100,15 @@ class SVNInfoService implements SCMInfoService {
 
     @Override
     List<String> getBaseTags(Project project, VersioningExtension extension, String base) {
+        return getLastTags(
+                project,
+                extension,
+                /(${base}\.(\d+))/
+        )
+    }
+
+    @Override
+    List<String> getLastTags(Project project, VersioningExtension extension, String tagPattern) {
         // Gets the client manager
         def clientManager = getClientManager(extension)
         // Gets the SVN information
@@ -148,9 +157,8 @@ class SVNInfoService implements SCMInfoService {
             it.name
         }
         // Keeping only tags which fit the release pattern
-        def baseTagPattern = /(${base}\.(\d+))/
         return tags.collect { tag ->
-            def m = tag =~ baseTagPattern
+            def m = tag =~ tagPattern
             if (m.find()) {
                 m.group(1)
             } else {

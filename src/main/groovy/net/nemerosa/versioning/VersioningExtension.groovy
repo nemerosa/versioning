@@ -144,6 +144,14 @@ class VersioningExtension {
     String password = ''
 
     /**
+     * Pattern used to match when looking for the last tag. By default, checks for any
+     * tag having a last part being numeric. At least one numeric grouping
+     * expression is required. The first one will be used to reverse order
+     * the tags in Git.
+     */
+    String lastTagPattern = /(\d+)$/
+
+    /**
      * Certificate - accept SSL server certificates from unknown certificate authorities (for SVN only)
      */
     @Deprecated

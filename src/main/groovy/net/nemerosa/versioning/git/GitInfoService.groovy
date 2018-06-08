@@ -3,6 +3,7 @@ package net.nemerosa.versioning.git
 import net.nemerosa.versioning.SCMInfo
 import net.nemerosa.versioning.SCMInfoService
 import net.nemerosa.versioning.VersioningExtension
+import net.nemerosa.versioning.support.TagSupport
 import org.ajoberstar.grgit.Commit
 import org.ajoberstar.grgit.Grgit
 import org.ajoberstar.grgit.Status
@@ -109,7 +110,9 @@ class GitInfoService implements SCMInfoService {
                 }
             }
 
-            // FIXME Gets the last tag if any
+            // Last tag
+            List<String> lastTags = getLastTags(project, extension, extension.lastTagPattern)
+            String lastTag = lastTags.empty ? null : lastTags.first()
 
             // Returns the information
             new SCMInfo(
@@ -149,20 +152,27 @@ class GitInfoService implements SCMInfoService {
 
     @Override
     List<String> getBaseTags(Project project, VersioningExtension extension, String base) {
-        // Filtering on patterns
-        def baseTagPattern = /^${base}\.(\d+)$/
+        return getLastTags(
+                project,
+                extension,
+                /^${base}\.(\d+)$/
+        )
+    }
+
+    @Override
+    List<String> getLastTags(Project project, VersioningExtension extension, String tagPattern) {
         // Git access
         //noinspection GroovyAssignabilityCheck
         def grgit = Grgit.open(currentDir: getGitDirectory(extension, project))
         // List all tags
         return grgit.tag.list()
         // ... filters using the pattern
-                .findAll { it.name ==~ baseTagPattern }
+                .findAll { (it.name =~ tagPattern).find() }
         // ... sort by desc commit time
                 .sort { -it.commit.time }
         // ... (#36) commit time is not enough. We have also to consider the case where several pattern compliant tags
         // ...       are on the same commit, and we must sort them by desc version
-                .sort { -((it.name - "${base}.") as int) }
+                .sort { -TagSupport.tagOrder(tagPattern, it.name) }
         // ... gets their name only
                 .collect { it.name }
     }
