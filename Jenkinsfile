@@ -75,6 +75,11 @@ set -e
                 }
                 echo "Version = ${version}"
             }
+            post {
+                always {
+                    junit "**/build/test-results/**/*.xml"
+                }
+            }
         }
 
         stage('Release') {
