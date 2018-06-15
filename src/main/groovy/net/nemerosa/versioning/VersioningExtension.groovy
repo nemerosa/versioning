@@ -35,7 +35,7 @@ class VersioningExtension {
      * Registry of release modes
      */
     private static final Map<String, Closure<String>> RELEASE_MODES = [
-            tag : { nextTag, lastTag, currentTag, extension ->
+            tag     : { nextTag, lastTag, currentTag, extension ->
                 nextTag
             },
             snapshot: { nextTag, lastTag, currentTag, extension ->
@@ -62,7 +62,7 @@ class VersioningExtension {
      * By default, the environment is not taken into account, in order to be backward compatible
      * with existing build systems.
      */
-    List branchEnv = []
+    List<String> branchEnv = []
 
     /**
      * Getting the version type from a branch. Default: getting the part before the first "/" (or a second
@@ -100,7 +100,7 @@ class VersioningExtension {
     def releaseMode = 'tag'
 
     /**
-     * True if it's release build. Default is true, and branch shoud be in releases-set.
+     * True if it's release build. Default is true, and branch should be in releases-set.
      */
     def releaseBuild = true
 
@@ -131,7 +131,7 @@ class VersioningExtension {
     /**
      * If set to <code>true</code>, no warning will be printed in case the workspace is dirty.
      */
-    boolean noWarningOnDirty = false;
+    boolean noWarningOnDirty = false
 
     /**
      * Credentials (for SVN only)
@@ -240,7 +240,7 @@ class VersioningExtension {
                 throw new DirtyException()
             } else {
                 if (!noWarningOnDirty) {
-                    println "[versioning] WARNING - the working copy has unstaged or uncommitted changes."
+                    project.getLogger().warn("[versioning] WARNING - the working copy has unstaged or uncommitted changes.")
                 }
                 versionDisplay = dirty(versionDisplay)
                 versionFull = dirty(versionFull)
@@ -305,8 +305,8 @@ class VersioningExtension {
         }
     }
 
-    public static String normalise(String value) {
-        value.replaceAll(/[^A-Za-z0-9\.\-_]/, '-')
+    static String normalise(String value) {
+        value.replaceAll(/[^A-Za-z0-9.\-_]/, '-')
     }
 
     private static SCMInfoService getSCMInfoService(String type) {

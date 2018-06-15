@@ -4,6 +4,8 @@ import net.nemerosa.versioning.SCMInfo
 import net.nemerosa.versioning.SCMInfoService
 import net.nemerosa.versioning.VersioningExtension
 import org.gradle.api.Project
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 import org.tmatesoft.svn.core.SVNDepth
 import org.tmatesoft.svn.core.SVNDirEntry
 import org.tmatesoft.svn.core.SVNException
@@ -13,6 +15,8 @@ import org.tmatesoft.svn.core.auth.SVNAuthentication
 import org.tmatesoft.svn.core.wc.*
 
 class SVNInfoService implements SCMInfoService {
+
+    private static final Logger LOGGER = Logging.getLogger(this.getClass())
 
     @Override
     SCMInfo getInfo(Project project, VersioningExtension extension) {
@@ -130,7 +134,7 @@ class SVNInfoService implements SCMInfoService {
         }
         // Gets the list of tags
         String tagsUrl = "${baseUrl}/tags"
-        println "[version] Getting list of tags from ${tagsUrl}..."
+        LOGGER.info("[version] Getting list of tags from ${tagsUrl}...")
         // Gets the list
         List<SVNDirEntry> entries = []
         try {
@@ -179,15 +183,15 @@ class SVNInfoService implements SCMInfoService {
     protected static SVNClientManager getClientManager(VersioningExtension extension) {
         def clientManager = SVNClientManager.newInstance()
         if (extension.user && extension.password) {
-            println "[version] Authenticating with ${extension.user}"
-            clientManager.setAuthenticationManager(BasicAuthenticationManager.newInstance(extension.user, extension.password.toCharArray()));
+            LOGGER.info("[version] Authenticating with ${extension.user}")
+            clientManager.setAuthenticationManager(BasicAuthenticationManager.newInstance(extension.user, extension.password.toCharArray()))
             // The BasicAuthenticationManager trusts the certificates by default
         } else if (extension.trustServerCert) {
-            println "[version] Trusting certificate by default"
-            println "[version] WARNING The `trustServerCert` is now deprecated - and should not be used any longer."
-            clientManager.setAuthenticationManager(BasicAuthenticationManager.newInstance(new SVNAuthentication[0]));
+            LOGGER.info("[version] Trusting certificate by default")
+            LOGGER.warn("[version] WARNING The `trustServerCert` is now deprecated - and should not be used any longer.")
+            clientManager.setAuthenticationManager(BasicAuthenticationManager.newInstance(new SVNAuthentication[0]))
         } else {
-            println "[version] Using default SVN configuration"
+            LOGGER.info("[version] Using default SVN configuration")
             clientManager.setAuthenticationManager(SVNWCUtil.createDefaultAuthenticationManager())
         }
         return clientManager
