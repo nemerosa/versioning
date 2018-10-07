@@ -25,12 +25,12 @@ version = versioning.info.display
  */
 
 ext {
-    jgitVersion = '4.5.0.201609210915-r'
+    jgitVersion = '5.1.1.201809181055-r'
 }
 
 dependencies {
     localGroovy()
-    compile 'org.ajoberstar:grgit:1.7.0'
+    compile 'org.ajoberstar.grgit:grgit-core:3.0.0-rc.2'
     compile "org.eclipse.jgit:org.eclipse.jgit.ui:${jgitVersion}"
     compile "org.eclipse.jgit:org.eclipse.jgit:${jgitVersion}"
     compile 'org.tmatesoft.svnkit:svnkit:1.8.12'
