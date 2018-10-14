@@ -31,6 +31,15 @@ allprojects {
 
 The `versioning` plug-in is hosted in [JCenter](https://bintray.com/bintray/jcenter) and is registered in the [Gradle Plug-in Portal](https://plugins.gradle.org/).
 
+### Gradle 2.1 and higher
+
+```groovy
+
+plugins {
+   id 'net.nemerosa.versioning' version '2.8.2'
+}
+```
+
 ### Gradle 1.x and 2.0
 
 ```groovy
@@ -39,20 +48,11 @@ buildscript {
       jcenter()
    }
    dependencies {
-      classpath 'net.nemerosa:versioning:2.7.1'
+      classpath 'net.nemerosa:versioning:2.8.2'
    }
 }
 
 apply plugin: 'net.nemerosa.versioning'
-```
-
-### Gradle 2.1 and higher
-
-```groovy
-
-plugins {
-   id 'net.nemerosa.versioning' version '2.7.1'
-}
 ```
 
 ## Change log
@@ -218,7 +218,7 @@ versioning {
      */
     releases = ['release']
     /**
-     * Pattern used to match when looking for the last tag. By default, checks for any 
+     * Pattern used to match when looking for the last tag. By default, checks for any
      * tag having a last part being numeric. At least one numeric grouping
      * expression is required. The first one will be used to reverse order
      * the tags in Git.
