@@ -120,7 +120,6 @@ curl -X POST "https://api.github.com/repos/nemerosa/versioning/releases" \\
 set -e
 
 ./gradlew \\
-
     publishPlugins \\
     --stacktrace \\
     --profile \\
