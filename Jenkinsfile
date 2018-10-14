@@ -72,6 +72,7 @@ set -e
                     def props = readProperties(file: 'build/version.properties')
                     version = props.VERSION_DISPLAY
                     gitCommit = props.VERSION_COMMIT
+                    currentBuild.description = "Version $version"
                 }
                 echo "Version = ${version}"
             }
@@ -111,7 +112,7 @@ curl -X POST "https://api.github.com/repos/nemerosa/versioning/releases" \\
                 branch 'release/*'
             }
             environment {
-                BINTRAY = credentials('BINTRAY')
+                GRADLE_PLUGINS = credentials('GRADLE_PLUGINS')
             }
             steps {
                 sh '''\
@@ -119,21 +120,14 @@ curl -X POST "https://api.github.com/repos/nemerosa/versioning/releases" \\
 set -e
 
 ./gradlew \\
-    publishPluginToBintray \\
-    -x test \\
+
+    publishPlugins \\
     --stacktrace \\
     --profile \\
     --console plain \\
-    -PbintrayUser=${BINTRAY_USR} \\
-    -PbintrayApiKey=${BINTRAY_PSW}
+    -Pgradle.publish.key=${GRADLE_PLUGINS_USR} \\
+    -Pgradle.publish.secret=${GRADLE_PLUGINS_PSW}
 '''
-                script {
-                    // Reads version information
-                    def props = readProperties(file: 'build/version.properties')
-                    version = props.VERSION_DISPLAY
-                    gitCommit = props.VERSION_COMMIT
-                }
-                echo "Version = ${version}"
             }
         }
     }

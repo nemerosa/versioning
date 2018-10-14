@@ -3,15 +3,20 @@
  */
 
 plugins {
-   id 'nu.studer.plugindev' version '1.0.3'
-   id 'com.jfrog.bintray' version '1.8.4'
+    /**
+     * Plugin
+     */
+    id 'java-gradle-plugin'
+    id 'com.gradle.plugin-publish' version '0.10.0'
     /**
      * Versioning applied to itself
      */
     id 'net.nemerosa.versioning' version '2.7.1'
+    /**
+     * Written in Groovy
+     */
+    id 'groovy'
 }
-
-apply plugin: 'groovy'
 
 /**
  * Meta information
@@ -28,8 +33,13 @@ ext {
     jgitVersion = '5.1.1.201809181055-r'
 }
 
+repositories {
+   jcenter()
+}
+
 dependencies {
-    localGroovy()
+    compile gradleApi()
+    compile localGroovy()
     compile 'org.ajoberstar.grgit:grgit-core:3.0.0-rc.2'
     compile "org.eclipse.jgit:org.eclipse.jgit.ui:${jgitVersion}"
     compile "org.eclipse.jgit:org.eclipse.jgit:${jgitVersion}"
@@ -37,51 +47,27 @@ dependencies {
     testCompile "junit:junit:4.12"
     testCompile "commons-lang:commons-lang:2.6"
     testCompile "commons-io:commons-io:2.5"
-
-
-
 }
 
 /**
  * Plug-in definition
  */
 
-plugindev {
-    pluginImplementationClass 'net.nemerosa.versioning.VersioningPlugin'
-    pluginDescription 'Gradle plug-in that computes version information from the SCM'
-    pluginLicenses 'MIT'
-    pluginTags 'gradle', 'plugin', 'scm', 'git', 'svn', 'version'
-    authorId 'dcoraboeuf'
-    authorName 'Damien Coraboeuf'
-    authorEmail 'damien.coraboeuf@gmail.com'
-    projectUrl 'https://github.com/nemerosa/versioning'
-    projectInceptionYear '2015'
-    done()
+pluginBundle {
+    website = 'https://github.com/nemerosa/versioning/'
+    vcsUrl = 'https://github.com/nemerosa/versioning/'
+    tags = ['gradle', 'plugin', 'scm', 'git', 'svn', 'version']
 }
 
-/**
- * Plug-in publication
- */
-
-bintray {
-    user = bintrayUser
-    key = bintrayApiKey
-    pkg {
-        repo = 'nemerosa'
-        version {
-            attributes = [
-                    'gradle-plugin': 'net.nemerosa.versioning:net.nemerosa:versioning'
-            ]
+gradlePlugin {
+    plugins {
+        versioningPlugin {
+            id = 'net.nemerosa.versioning'
+            displayName = 'Versioning plugin for Gradle'
+            description = 'Gradle plug-in that computes version information from the SCM'
+            implementationClass = 'net.nemerosa.versioning.VersioningPlugin'
         }
     }
-}
-
-/**
- * Wrapper definition
- */
-
-task wrapper(type: Wrapper) {
-   gradleVersion = '2.13'
 }
 
 test {
