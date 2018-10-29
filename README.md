@@ -45,7 +45,9 @@ plugins {
 ```groovy
 buildscript {
    repositories {
-      jcenter()
+      maven {
+         url "https://plugins.gradle.org/m2/"
+       }
    }
    dependencies {
       classpath 'net.nemerosa:versioning:2.8.2'
