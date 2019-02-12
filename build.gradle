@@ -4,6 +4,10 @@
 
 plugins {
     /**
+     * Build performance
+     */
+    id 'com.gradle.build-scan' version '1.16'
+    /**
      * Plugin
      */
     id 'java-gradle-plugin'
@@ -16,10 +20,6 @@ plugins {
      * Written in Groovy
      */
     id 'groovy'
-    /**
-     * Build performance
-     */
-    id 'com.gradle.build-scan' version '1.16'
 }
 
 buildScan {
