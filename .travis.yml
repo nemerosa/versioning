@@ -16,4 +16,4 @@ before_install:
   - git config --global user.name "Travis CI"
 
 script:
-  - ./gradlew clean versionDisplay build --stacktrace
+  - ./gradlew clean versionDisplay build --stacktrace --scan
