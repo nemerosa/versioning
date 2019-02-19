@@ -4,6 +4,10 @@
 
 plugins {
     /**
+     * Build performance
+     */
+    id 'com.gradle.build-scan' version '1.16'
+    /**
      * Plugin
      */
     id 'java-gradle-plugin'
@@ -16,6 +20,11 @@ plugins {
      * Written in Groovy
      */
     id 'groovy'
+}
+
+buildScan {
+    termsOfServiceUrl   = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
 }
 
 /**
