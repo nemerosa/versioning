@@ -24,9 +24,9 @@ class SVNURLParsingTest {
         SVNInfoService.parseBranch('svn://localhost/project/branches/xxx-yyy/zzz')
     }
 
-    @Test(expected = SVNInfoURLException)
+    @Test
     void 'Tag'() {
-        SVNInfoService.parseBranch('svn://localhost/project/tags/1.0')
+        assert SVNInfoService.parseBranch('svn://localhost/project/tags/1.0') == '1.0'
     }
 
     @Test(expected = SVNInfoURLException)

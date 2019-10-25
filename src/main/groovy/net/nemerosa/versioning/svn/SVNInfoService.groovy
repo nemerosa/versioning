@@ -95,7 +95,7 @@ class SVNInfoService implements SCMInfoService {
         if (url ==~ /.*\/trunk$/) {
             'trunk'
         } else {
-            def m = url =~ /.*\/branches\/([^\/]+)$/
+            def m = url =~ /.*\/(?:branches|tags)\/([^\/]+)$/
             if (m.matches()) {
                 m.group(1)
             } else {
