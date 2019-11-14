@@ -6,6 +6,8 @@ import net.nemerosa.versioning.svn.SVNInfoService
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
+import java.util.regex.Matcher
+
 class VersioningExtension {
 
     /**
@@ -152,6 +154,27 @@ class VersioningExtension {
     String lastTagPattern = /(\d+)$/
 
     /**
+     * Compute version code
+     *
+     * Closure that compute versionCode from <i>scmInfo</i>, <i>versionReleaseType</i>, <i>versionBranchId</i>,
+     * <i>versionFull</i>, <i>versionBase</i> and <i>versionDisplay</i>
+     *
+     * By default it tries to find this pattern in display : "\d{2}.\d{2}.\d{2}". Version code is computed with
+     * this algo : code = group(1) * 10000 + group(2) * 100 + group(3)
+     */
+    Closure<Integer> computeVersionCode = { SCMInfo scmInfo, String versionReleaseType, String versionBranchId,
+                                            String versionFull, String versionBase, String versionDisplay ->
+        String code = getVersionCodeFromName(versionDisplay)
+        int ret = 0
+        try {
+            ret = code.toInteger()
+        } catch (NumberFormatException ignore) {
+            println("Version code is ${code}, use $ret as version code")
+        }
+        return ret
+    }
+
+    /**
      * Certificate - accept SSL server certificates from unknown certificate authorities (for SVN only)
      */
     @Deprecated
@@ -174,9 +197,10 @@ class VersioningExtension {
     VersioningExtension(Project project) {
         this.project = project
     }
-/**
- * Gets the computed version information
- */
+
+    /**
+     * Gets the computed version information
+     */
     VersionInfo getInfo() {
         if (!info) {
             info = computeInfo()
@@ -247,6 +271,9 @@ class VersioningExtension {
             }
         }
 
+        int versionCode = computeVersionCode(scmInfo, versionReleaseType, versionBranchId,
+                versionFull, versionBase, versionDisplay)
+
         // OK
         new VersionInfo(
                 scm: scm,
@@ -262,6 +289,7 @@ class VersioningExtension {
                 lastTag: scmInfo.lastTag,
                 dirty: scmInfo.dirty,
                 shallow: scmInfo.shallow,
+                versionCode: versionCode,
         )
     }
 
@@ -315,6 +343,26 @@ class VersioningExtension {
             return scmInfoService
         } else {
             throw new GradleException("Unknown SCM info service: ${type}")
+        }
+    }
+
+    /**
+     * Return a version code from a name.
+     *
+     * Version code is computed from name that contain this pattern : {digit}.{digit}.{digit}* If this pattern is not found, then it returns 0
+     * @param name from which version code is determined
+     * @return version code
+     */
+    static String getVersionCodeFromName(String name) {
+        Matcher m = (name =~ '([0-9]+)[.]([0-9]+)[.]([0-9]+)')
+        if (m.find()) {
+            int n1 = Integer.parseInt(m.group(1))
+            int n2 = Integer.parseInt(m.group(2))
+            int n3 = Integer.parseInt(m.group(3))
+            int n = (n1 * 10000) + (n2 * 100) + n3
+            return "$n"
+        } else {
+            return name
         }
     }
 }

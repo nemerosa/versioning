@@ -8,6 +8,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 
 import java.util.concurrent.atomic.AtomicInteger
@@ -134,6 +135,7 @@ VERSION_SCM=svn
 VERSION_TAG=
 VERSION_LAST_TAG=
 VERSION_DIRTY=false
+VERSION_VERSIONCODE=0
 """
     }
 
@@ -174,6 +176,7 @@ CUSTOM_SCM=svn
 CUSTOM_TAG=
 CUSTOM_LAST_TAG=
 CUSTOM_DIRTY=false
+CUSTOM_VERSIONCODE=0
 """
     }
 
@@ -214,6 +217,7 @@ VERSION_SCM=svn
 VERSION_TAG=
 VERSION_LAST_TAG=
 VERSION_DIRTY=false
+VERSION_VERSIONCODE=0
 """
     }
 

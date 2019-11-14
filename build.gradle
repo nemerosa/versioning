@@ -61,10 +61,10 @@ dependencies {
 /**
  * Plug-in definition
  */
-
 pluginBundle {
     website = 'https://github.com/nemerosa/versioning/'
     vcsUrl = 'https://github.com/nemerosa/versioning/'
+    description = 'Gradle plug-in that computes version information from the SCM'
     tags = ['gradle', 'plugin', 'scm', 'git', 'svn', 'version']
 }
 

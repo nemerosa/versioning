@@ -47,6 +47,7 @@ ${prefix}SCM=${info.scm}
 ${prefix}TAG=${info.tag ?: ''}
 ${prefix}LAST_TAG=${info.lastTag ?: ''}
 ${prefix}DIRTY=${info.dirty}
+${prefix}VERSIONCODE=${info.versionCode}
 """
     }
 
