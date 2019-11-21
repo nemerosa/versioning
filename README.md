@@ -97,6 +97,12 @@ Property | Description | Git: `master` | Git: `feature/great` | Git: `release/2.
 `tag` (1) | Current tag | (2) | (2) | (2)
 `lastTag` (1) | Last tag | (4) | (4) | (4)
 `dirty` | Current state of the working copy | (3) | (3) | (3)
+`versionNumber` | Version number containing major, minor, patch, qualifier and versionCode |  |  |  
+`versionNumber.major` | Major version | 0 | 0 |  2
+`versionNumber.minor` | Minor version | 0 | 0 |  0
+`versionNumber.patch` | Patch version | 0 | 0 |  0, 1, 2, ...
+`versionNumber.qualifier` | Version qualifier (alpha, beta, engineer, ...)| '' | '' | '' 
+`versionNumber.versionCode` | Version code | 0 | 0 |  20000, 20001, 20002, ...
 
 (1) not supported for Subversion
 (2) will be the name of the current tag if any, or `null` if no tag is associated to the current `HEAD`.
@@ -118,6 +124,18 @@ For branches to type `release`, an additional computation occurs:
 * if a tag is available on the branch which has the `base` as a prefix, the `display` version is this tag, where the last digit is incremented by 1
 
 By using the `display` version when tagging a release, the `display` version will be automatically incremented, patch after patch, using the `release` base at a prefix.
+
+### Version number
+
+Version number is a container of several numbers computed from `display` by default . It is hosting major, minor, patch, 
+qualifier and versionCode.
+
+- In a tag like `1.2.3`, then major is `1`, minor is `2` and patch is `3`
+- Qualifier are taken from tags formatted like `1.2-beta.0` where qualifier is `-beta` here
+- Version code is a integer computed from major, minor and patch version.
+    - `1.2.3` will give 10203
+    - `21.5.16` will give 210516
+    - `2.0-alpha.0` will give 20000
 
 ## Tasks
 
@@ -142,6 +160,11 @@ Displays the version information in the standard output. For example:
 [version] tag        =
 [version] lastTag    = 0.2.0
 [version] dirty      = false
+[version] versionCode = 0
+[version] major       = 0
+[version] minor       = 0
+[version] patch       = 0
+[version] qualifier   = 
 ```
 
 ### `versionFile`
@@ -163,6 +186,11 @@ VERSION_SCM=git
 VERSION_TAG=
 VERSION_LAST_TAG=0.2.0
 VERSION_DIRTY=false
+VERSION_VERSIONCODE=0
+VERSION_MAJOR=0
+VERSION_MINOR=0
+VERSION_PATCH=0
+VERSION_QUALIFIER=
 ```
 
 This makes this file easy to integrate in a Bash script:
@@ -202,7 +230,7 @@ versioning {
     * present, the type is the branch and the base is empty.
     * F.e. if you want use tag name instead of branch you may provide something like:
     */
-    releaseParser = { scmInfo, separator = '/' -> ->
+    releaseParser = { scmInfo, separator = '/' ->
         List<String> part = scmInfo.tag.split('/') + ''
         new net.nemerosa.versioning.ReleaseInfo(type: part[0], base: part[1])
     }
@@ -226,7 +254,6 @@ versioning {
      * the tags in Git.
      */
     lastTagPattern = /(\d+)$/
-*/
 }
 ```
 
@@ -385,6 +412,83 @@ versioning {
    displayMode = { branchType, branchId, base, build, full, extension ->
                 "${branchType}-${base}${extension.snapshot}"
             }
+}
+```
+### Version number
+
+Version number computation can be customised by setting some properties in the `versioning` extension.
+
+```groovy
+versioning {
+    /**
+     * Digit precision for computing version code.
+     *
+     * With a precision of 2, 1.25.3 will become 12503.
+     * With a precision of 3, 1.25.3 will become 1250003.
+     */
+    int precision = 2
+
+    /**
+     * Default number to use when no version number can be extracted from version string.
+     */
+    int defaultNumber = 0
+
+    /**
+     * Closure that takes major, minor and patch integers in parameter and is computing versionCode number.
+     */
+    Closure<Integer> computeVersionCode = { int major, int minor, int patch ->
+        return (major * 10**(2 * precision)) + (minor * 10**precision) + patch
+    }
+
+    /**
+     * Compute version number
+     *
+     * Closure that compute VersionNumber from <i>scmInfo</i>, <i>versionReleaseType</i>, <i>versionBranchId</i>,
+     * <i>versionFull</i>, <i>versionBase</i> and <i>versionDisplay</i>
+     *
+     * By default it tries to find this pattern in display : '([0-9]+)[.]([0-9]+)[.]([0-9]+)(.*)$'.
+     * Version code is computed with this algo : code = group(1) * 10^2precision + group(2) * 10^precision + group(3)
+     *
+     * Example :
+     *
+     * - with precision = 2
+     *
+     * 1.2.3 -> 10203
+     * 10.55.62 -> 105562
+     * 20.3.2 -> 200302
+     *
+     * - with precision = 3
+     *
+     * 1.2.3 -> 1002003
+     * 10.55.62 -> 100055062
+     * 20.3.2 -> 20003002
+     **/
+    Closure<VersionNumber> parseVersionNumber = { SCMInfo scmInfo, String versionReleaseType, String versionBranchId,
+                                                  String versionFull, String versionBase, String versionDisplay ->
+        // We are specifying all these parameters because we want to leave the choice to the developer
+        // to use data that's right to him
+        // Regex explained :
+        // - 1st group one digit that is major version
+        // - 2nd group one digit that is minor version
+        // - It can be followed by a qualifier name
+        // - 3rd group and last part is one digit that is patch version
+        Matcher m = (versionDisplay =~ '([0-9]+)[.]([0-9]+).*[.]([0-9]+)(.*)$')
+        if (m.find()) {
+            try {
+                int n1 = Integer.parseInt(m.group(1))
+                int n2 = Integer.parseInt(m.group(2))
+                int n3 = Integer.parseInt(m.group(3))
+                String q = m.group(4) ?: ''
+                return new VersionNumber(n1, n2, n3, q, computeVersionCode(n1, n2, n3).intValue(), versionDisplay)
+            } catch (Exception ignore) {
+                // Should never go here
+                return new VersionNumber(0, 0, 0, '', defaultNumber, versionDisplay)
+            }
+        } else {
+            return new VersionNumber(0, 0, 0, '', defaultNumber, versionDisplay)
+        }
+    }
+
 }
 ```
 

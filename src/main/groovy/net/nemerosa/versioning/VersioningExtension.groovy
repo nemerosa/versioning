@@ -1,5 +1,6 @@
 package net.nemerosa.versioning
 
+
 import net.nemerosa.versioning.git.GitInfoService
 import net.nemerosa.versioning.support.DirtyException
 import net.nemerosa.versioning.svn.SVNInfoService
@@ -154,24 +155,72 @@ class VersioningExtension {
     String lastTagPattern = /(\d+)$/
 
     /**
-     * Compute version code
+     * Digit precision for computing version code.
      *
-     * Closure that compute versionCode from <i>scmInfo</i>, <i>versionReleaseType</i>, <i>versionBranchId</i>,
+     * With a precision of 2, 1.25.3 will become 12503.
+     * With a precision of 3, 1.25.3 will become 1250003.
+     */
+    int precision = 2
+
+    /**
+     * Default number to use when no version number can be extracted from version string.
+     */
+    int defaultNumber = 0
+
+    /**
+     * Closure that takes major, minor and patch integers in parameter and is computing versionCode number.
+     */
+    Closure<Integer> computeVersionCode = { int major, int minor, int patch ->
+        return (major * 10**(2 * precision)) + (minor * 10**precision) + patch
+    }
+
+    /**
+     * Compute version number
+     *
+     * Closure that compute VersionNumber from <i>scmInfo</i>, <i>versionReleaseType</i>, <i>versionBranchId</i>,
      * <i>versionFull</i>, <i>versionBase</i> and <i>versionDisplay</i>
      *
-     * By default it tries to find this pattern in display : "\d{2}.\d{2}.\d{2}". Version code is computed with
-     * this algo : code = group(1) * 10000 + group(2) * 100 + group(3)
-     */
-    Closure<Integer> computeVersionCode = { SCMInfo scmInfo, String versionReleaseType, String versionBranchId,
-                                            String versionFull, String versionBase, String versionDisplay ->
-        String code = getVersionCodeFromName(versionDisplay)
-        int ret = 0
-        try {
-            ret = code.toInteger()
-        } catch (NumberFormatException ignore) {
-            println("Version code is ${code}, use $ret as version code")
+     * By default it tries to find this pattern in display : '([0-9]+)[.]([0-9]+)[.]([0-9]+)(.*)$'.
+     * Version code is computed with this algo : code = group(1) * 10^2precision + group(2) * 10^precision + group(3)
+     *
+     * Example :
+     *
+     * - with precision = 2
+     *
+     * 1.2.3 -> 10203
+     * 10.55.62 -> 105562
+     * 20.3.2 -> 200302
+     *
+     * - with precision = 3
+     *
+     * 1.2.3 -> 1002003
+     * 10.55.62 -> 100055062
+     * 20.3.2 -> 20003002
+     **/
+    Closure<VersionNumber> parseVersionNumber = { SCMInfo scmInfo, String versionReleaseType, String versionBranchId,
+                                                  String versionFull, String versionBase, String versionDisplay ->
+        // We are specifying all these parameters because we want to leave the choice to the developer
+        // to use data that's right to him
+        // Regex explained :
+        // - 1st group one digit that is major version
+        // - 2nd group one digit that is minor version
+        // - It can be followed by a qualifier name
+        // - 3rd group and last part is one digit that is patch version
+        Matcher m = (versionDisplay =~ '([0-9]+)[.]([0-9]+).*[.]([0-9]+)(.*)$')
+        if (m.find()) {
+            try {
+                int n1 = Integer.parseInt(m.group(1))
+                int n2 = Integer.parseInt(m.group(2))
+                int n3 = Integer.parseInt(m.group(3))
+                String q = m.group(4) ?: ''
+                return new VersionNumber(n1, n2, n3, q, computeVersionCode(n1, n2, n3).intValue(), versionDisplay)
+            } catch (Exception ignore) {
+                // Should never go here
+                return new VersionNumber(0, 0, 0, '', defaultNumber, versionDisplay)
+            }
+        } else {
+            return new VersionNumber(0, 0, 0, '', defaultNumber, versionDisplay)
         }
-        return ret
     }
 
     /**
@@ -271,9 +320,8 @@ class VersioningExtension {
             }
         }
 
-        int versionCode = computeVersionCode(scmInfo, versionReleaseType, versionBranchId,
-                versionFull, versionBase, versionDisplay)
-
+        VersionNumber versionNumber = parseVersionNumber(
+                scmInfo, versionReleaseType, versionBranchId, versionFull, versionBase, versionDisplay)
         // OK
         new VersionInfo(
                 scm: scm,
@@ -289,7 +337,7 @@ class VersioningExtension {
                 lastTag: scmInfo.lastTag,
                 dirty: scmInfo.dirty,
                 shallow: scmInfo.shallow,
-                versionCode: versionCode,
+                versionNumber: versionNumber,
         )
     }
 
@@ -309,6 +357,8 @@ class VersioningExtension {
         } else {
             String lastTag
             String nextTag
+            //FIXME remove this log after debugging
+            println "Base tags : $baseTags"
             if (baseTags.empty) {
                 lastTag = ''
                 nextTag = "${releaseInfo.base}.0"
@@ -343,26 +393,6 @@ class VersioningExtension {
             return scmInfoService
         } else {
             throw new GradleException("Unknown SCM info service: ${type}")
-        }
-    }
-
-    /**
-     * Return a version code from a name.
-     *
-     * Version code is computed from name that contain this pattern : {digit}.{digit}.{digit}* If this pattern is not found, then it returns 0
-     * @param name from which version code is determined
-     * @return version code
-     */
-    static String getVersionCodeFromName(String name) {
-        Matcher m = (name =~ '([0-9]+)[.]([0-9]+)[.]([0-9]+)')
-        if (m.find()) {
-            int n1 = Integer.parseInt(m.group(1))
-            int n2 = Integer.parseInt(m.group(2))
-            int n3 = Integer.parseInt(m.group(3))
-            int n = (n1 * 10000) + (n2 * 100) + n3
-            return "$n"
-        } else {
-            return name
         }
     }
 }

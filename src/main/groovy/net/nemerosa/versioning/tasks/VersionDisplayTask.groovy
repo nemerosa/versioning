@@ -34,7 +34,11 @@ class VersionDisplayTask extends DefaultTask {
             println "[version] tag         = ${info.tag ?: ''}"
             println "[version] lastTag     = ${info.lastTag ?: ''}"
             println "[version] dirty       = ${info.dirty}"
-            println "[version] versionCode = ${info.versionCode}"
+            println "[version] versionCode = ${info.versionNumber.versionCode}"
+            println "[version] major       = ${info.versionNumber.major}"
+            println "[version] minor       = ${info.versionNumber.minor}"
+            println "[version] patch       = ${info.versionNumber.patch}"
+            println "[version] qualifier   = ${info.versionNumber.qualifier}"
         }
     }
 
