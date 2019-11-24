@@ -36,6 +36,7 @@ class GitVersionReleaseBuildTrueTest {
         assert info.scm == 'n/a'
         assert info.tag == null
         assert !info.dirty
+        assert info.versionNumber == null
     }
 
     @Test
@@ -67,6 +68,7 @@ class GitVersionReleaseBuildTrueTest {
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -118,6 +120,7 @@ class GitVersionReleaseBuildTrueTest {
                 assert info.scm == 'git'
                 assert info.tag == null
                 assert !info.dirty
+                assert info.versionNumber.versionCode == 0
 
             } finally {
                 detached.deleteDir()
@@ -164,6 +167,7 @@ class GitVersionReleaseBuildTrueTest {
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -209,6 +213,7 @@ class GitVersionReleaseBuildTrueTest {
                 assert info.tag == null
                 assert !info.dirty
                 assert info.shallow
+                assert info.versionNumber.versionCode == 0
 
             } finally {
                 detached.deleteDir()
@@ -275,6 +280,11 @@ VERSION_SCM=git
 VERSION_TAG=
 VERSION_LAST_TAG=
 VERSION_DIRTY=false
+VERSION_VERSIONCODE=0
+VERSION_MAJOR=0
+VERSION_MINOR=0
+VERSION_PATCH=0
+VERSION_QUALIFIER=
 """ as String
         } finally {
             repo.close()
@@ -319,6 +329,11 @@ CUSTOM_SCM=git
 CUSTOM_TAG=
 CUSTOM_LAST_TAG=
 CUSTOM_DIRTY=false
+CUSTOM_VERSIONCODE=0
+CUSTOM_MAJOR=0
+CUSTOM_MINOR=0
+CUSTOM_PATCH=0
+CUSTOM_QUALIFIER=
 """ as String
         } finally {
             repo.close()
@@ -363,6 +378,11 @@ VERSION_SCM=git
 VERSION_TAG=
 VERSION_LAST_TAG=
 VERSION_DIRTY=false
+VERSION_VERSIONCODE=0
+VERSION_MAJOR=0
+VERSION_MINOR=0
+VERSION_PATCH=0
+VERSION_QUALIFIER=
 """ as String
         } finally {
             repo.close()
@@ -400,6 +420,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -438,6 +459,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -476,6 +498,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -515,6 +538,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -553,6 +577,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -593,6 +618,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -630,6 +656,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20000
         } finally {
             repo.close()
         }
@@ -668,6 +695,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -707,6 +735,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -750,6 +779,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 30002
 
         } finally {
             repo.close()
@@ -793,6 +823,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 30011
 
         } finally {
             repo.close()
@@ -836,6 +867,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 30021
 
         } finally {
             repo.close()
@@ -879,6 +911,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -918,6 +951,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20011
 
         } finally {
             repo.close()
@@ -957,6 +991,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20000
         } finally {
             repo.close()
         }
@@ -995,6 +1030,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20000
         } finally {
             repo.close()
         }
@@ -1032,6 +1068,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20000
         } finally {
             repo.close()
         }
@@ -1071,6 +1108,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -1112,6 +1150,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -1152,6 +1191,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -1192,6 +1232,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == '2.0.2'
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20002
 
         } finally {
             repo.close()
@@ -1233,6 +1274,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == '2.0.2'
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20002
 
         } finally {
             repo.close()
@@ -1273,6 +1315,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == '2.0.2'
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -1313,6 +1356,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -1353,6 +1397,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -1396,6 +1441,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -1438,6 +1484,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -1479,6 +1526,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -1522,6 +1570,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -1571,6 +1620,7 @@ VERSION_DIRTY=false
                 assert info.tag == null
                 assert !info.dirty
                 assert info.shallow
+                assert info.versionNumber.versionCode == 0
 
             } finally {
                 detached.deleteDir()
@@ -1615,6 +1665,7 @@ VERSION_DIRTY=false
             assert info.tag == null
             assert !info.dirty
             assert !info.shallow
+            assert info.versionNumber.versionCode == 20004
 
         } finally {
             repo.close()
@@ -1663,6 +1714,7 @@ VERSION_DIRTY=false
                 assert info.tag == '2.0.2'
                 assert !info.dirty
                 assert info.shallow
+                assert info.versionNumber.versionCode == 20002
 
             } finally {
                 detached.deleteDir()
@@ -1710,6 +1762,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -1753,6 +1806,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == 'release/v2.0'
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20000
         } finally {
             repo.close()
         }
@@ -1822,6 +1876,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -1864,6 +1919,7 @@ VERSION_DIRTY=false
             assert info.tag == null
             assert !info.dirty
             assert !info.shallow
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
