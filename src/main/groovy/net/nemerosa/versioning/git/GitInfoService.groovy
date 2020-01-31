@@ -88,7 +88,7 @@ class GitInfoService implements SCMInfoService {
                     tag = null
                 }
             } else {
-                String described = grgit.repository.jgit.describe().setLong(true).call()
+                String described = grgit.repository.jgit.describe().setTags(true).setLong(true).call()
                 if (described) {
                     // The format returned by the long version of the `describe` command is: <tag>-<number>-<commit>
                     def m = described =~ /^(.*)-(\d+)-g([0-9a-f]+)$/
