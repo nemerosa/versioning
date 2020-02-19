@@ -743,6 +743,47 @@ VERSION_QUALIFIER=
     }
 
     @Test
+    void 'Git release branch: when retrieving last tag chronological order of tags must be taken into account'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                (1..4).each { commit it }
+                branch 'release/1.3'
+                commit 5
+                tag '1.2.16'
+                sleep 1000
+                commit 6
+                tag '1.3.11'
+                commit 7
+            }
+            def head = repo.commitLookup('Commit 7')
+            def headAbbreviated = repo.commitLookup('Commit 7', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            VersionInfo info = project.versioning.info as VersionInfo
+
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/1.3'
+            assert info.base == '1.3'
+            assert info.branchId == 'release-1.3'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '1.3.12'
+            assert info.full == "release-1.3-${headAbbreviated}" as String
+            assert info.scm == 'git'
+            assert info.tag == null
+            assert !info.dirty
+            assert info.versionNumber.versionCode == 10312
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
     void 'Git release branch: with previous tags alpha, chronological order of tags must be taken into account'() {
         GitRepo repo = new GitRepo()
         try {
