@@ -11,7 +11,7 @@ plugins {
      * Plugin
      */
     id 'java-gradle-plugin'
-    id 'com.gradle.plugin-publish' version '0.10.0'
+    id 'com.gradle.plugin-publish' version '0.10.1'
     /**
      * Versioning applied to itself
      */
@@ -39,7 +39,7 @@ version = versioning.info.display
  */
 
 ext {
-    jgitVersion = '5.1.1.201809181055-r'
+    jgitVersion = '5.2.1.201812262042-r'
 }
 
 repositories {
@@ -49,13 +49,13 @@ repositories {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'org.ajoberstar.grgit:grgit-core:3.0.0-rc.2'
+    compile 'org.ajoberstar.grgit:grgit-core:3.0.0'
     compile "org.eclipse.jgit:org.eclipse.jgit.ui:${jgitVersion}"
     compile "org.eclipse.jgit:org.eclipse.jgit:${jgitVersion}"
-    compile 'org.tmatesoft.svnkit:svnkit:1.8.12'
+    compile 'org.tmatesoft.svnkit:svnkit:1.9.3'
     testCompile "junit:junit:4.12"
     testCompile "commons-lang:commons-lang:2.6"
-    testCompile "commons-io:commons-io:2.5"
+    testCompile "commons-io:commons-io:2.6"
 }
 
 /**
