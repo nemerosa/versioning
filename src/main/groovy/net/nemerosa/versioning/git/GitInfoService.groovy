@@ -88,7 +88,7 @@ class GitInfoService implements SCMInfoService {
                     tag = null
                 }
             } else {
-                String described = grgit.repository.jgit.describe().setLong(true).call()
+                String described = grgit.repository.jgit.describe().setTags(true).setLong(true).call()
                 if (described) {
                     // The format returned by the long version of the `describe` command is: <tag>-<number>-<commit>
                     def m = described =~ /^(.*)-(\d+)-g([0-9a-f]+)$/
@@ -168,13 +168,14 @@ class GitInfoService implements SCMInfoService {
         return grgit.tag.list()
         // ... filters using the pattern
                 .findAll { (it.name =~ tagPattern).find() }
+                .sort{ a,b ->
         // ... sort by desc commit time
-                .sort { -it.commit.dateTime.toEpochSecond() }
+                    b.commit.dateTime.toEpochSecond() <=> a.commit.dateTime.toEpochSecond() ?:
         // ... (#36) commit time is not enough. We have also to consider the case where several pattern compliant tags
         // ...       are on the same commit, and we must sort them by desc version
-                .sort { -TagSupport.tagOrder(tagPattern, it.name) }
+                    TagSupport.tagOrder(tagPattern, b.name) <=> TagSupport.tagOrder(tagPattern, a.name)
         // ... gets their name only
-                .collect { it.name }
+                }*.name
     }
 
     @Override
