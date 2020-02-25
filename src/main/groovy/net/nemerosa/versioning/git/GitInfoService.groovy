@@ -46,7 +46,7 @@ class GitInfoService implements SCMInfoService {
             }
             // Gets the branch info from git
             if (branch == null) {
-                branch = grgit.branch.current.name
+                branch = grgit.branch.current().name
             }
 
             // Gets the commit info (full hash)
@@ -72,8 +72,8 @@ class GitInfoService implements SCMInfoService {
 
                 def gitRepository = grgit.repository.jgit.repository
 
-                for (Ref r : gitRepository.refDatabase.getRefs(R_TAGS).values()) {
-                    ObjectId key = gitRepository.peel(r).getPeeledObjectId();
+                for (Ref r : gitRepository.refDatabase.getRefsByPrefix(R_TAGS)) {
+                    ObjectId key = gitRepository.refDatabase.peel(r).getPeeledObjectId();
                     if (key == null)
                         key = r.getObjectId();
                     tags.put(key, r);
@@ -170,7 +170,7 @@ class GitInfoService implements SCMInfoService {
                 .findAll { (it.name =~ tagPattern).find() }
                 .sort{ a,b ->
         // ... sort by desc commit time
-                    b.commit.time <=> a.commit.time ?:
+                    b.commit.dateTime.toEpochSecond() <=> a.commit.dateTime.toEpochSecond() ?:
         // ... (#36) commit time is not enough. We have also to consider the case where several pattern compliant tags
         // ...       are on the same commit, and we must sort them by desc version
                     TagSupport.tagOrder(tagPattern, b.name) <=> TagSupport.tagOrder(tagPattern, a.name)
