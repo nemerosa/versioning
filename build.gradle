@@ -49,7 +49,7 @@ repositories {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'org.ajoberstar.grgit:grgit-core:4.0.0'
+    compile 'org.ajoberstar.grgit:grgit-core:4.0.1'
     compile "org.eclipse.jgit:org.eclipse.jgit.ui:${jgitVersion}"
     compile "org.eclipse.jgit:org.eclipse.jgit:${jgitVersion}"
     compile 'org.tmatesoft.svnkit:svnkit:1.8.12'
