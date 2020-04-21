@@ -156,6 +156,7 @@ Displays the version information in the standard output. For example:
 [version] full       = release-0.3-da50c50
 [version] base       = 0.3
 [version] build      = da50c50
+[version] gradle     = 0.3.0
 [version] display    = 0.3.0
 [version] tag        =
 [version] lastTag    = 0.2.0
@@ -180,6 +181,7 @@ VERSION_BASE=0.3
 VERSION_BRANCHID=release-0.3
 VERSION_BRANCHTYPE=release
 VERSION_COMMIT=da50c50567073d3d3a7756829926a9590f2644c6
+VERSION_GRADLE=0.3.0
 VERSION_DISPLAY=0.3.0
 VERSION_FULL=release-0.3-da50c50
 VERSION_SCM=git
@@ -209,6 +211,8 @@ versionFile {
    prefix = 'VERSION_'
 }
 ```
+
+In addition to the versioning information, `versionDisplay` and `versionFile` commands also display the `version gradle`, which represents the current version of the project. 
 
 ## Customisation
 

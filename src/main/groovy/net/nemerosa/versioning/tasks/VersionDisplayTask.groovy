@@ -30,6 +30,7 @@ class VersionDisplayTask extends DefaultTask {
             println "[version] full        = ${info.full}"
             println "[version] base        = ${info.base}"
             println "[version] build       = ${info.build}"
+            println "[version] gradle      = ${project.version == 'unspecified' ? '' : project.version}"
             println "[version] display     = ${info.display}"
             println "[version] tag         = ${info.tag ?: ''}"
             println "[version] lastTag     = ${info.lastTag ?: ''}"
