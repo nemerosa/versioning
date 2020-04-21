@@ -93,6 +93,7 @@ Property | Description | Git: `master` | Git: `feature/great` | Git: `release/2.
 `build` | Short commit/revision indicator, suitable for a build number | `09ef629` | `09ef629` | `09ef629`
 `full` | Branch ID and build | `master-09ef629` | `feature-great-09ef629` | `release-2.0-09ef629`
 `base` | Base version for the display version | `` | `great` | `2.0`
+`gradle` | Project's version |  |  | 
 `display` | Display version | `master` | `great` | `2.0.0`, `2.0.1`, ...
 `tag` (1) | Current tag | (2) | (2) | (2)
 `lastTag` (1) | Last tag | (4) | (4) | (4)
@@ -211,8 +212,6 @@ versionFile {
    prefix = 'VERSION_'
 }
 ```
-
-In addition to the versioning information, `versionDisplay` and `versionFile` commands also display the `version gradle`, which represents the current version of the project. 
 
 ## Customisation
 
