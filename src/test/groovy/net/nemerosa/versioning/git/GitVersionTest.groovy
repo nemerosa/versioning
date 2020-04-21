@@ -256,6 +256,52 @@ VERSION_BASE=\n\
 VERSION_BRANCHID=master
 VERSION_BRANCHTYPE=master
 VERSION_COMMIT=${head}
+VERSION_GRADLE=
+VERSION_DISPLAY=master-${headAbbreviated}
+VERSION_FULL=master-${headAbbreviated}
+VERSION_SCM=git
+VERSION_TAG=
+VERSION_LAST_TAG=
+VERSION_DIRTY=false
+VERSION_VERSIONCODE=0
+VERSION_MAJOR=0
+VERSION_MINOR=0
+VERSION_PATCH=0
+VERSION_QUALIFIER=
+""" as String
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git version file - project version'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                (1..4).each { commit it }
+            }
+            def head = repo.commitLookup('Commit 4')
+            def headAbbreviated = repo.commitLookup('Commit 4', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            project.version = '0.0.1'
+            new VersioningPlugin().apply(project)
+            def task = project.tasks.getByName('versionFile') as DefaultTask
+            task.execute()
+
+            // Checks the file
+            def file = new File(project.buildDir, 'version.properties')
+            assert file.exists(): "File ${file} must exist."
+            assert file.text == """\
+VERSION_BUILD=${headAbbreviated}
+VERSION_BRANCH=master
+VERSION_BASE=\n\
+VERSION_BRANCHID=master
+VERSION_BRANCHTYPE=master
+VERSION_COMMIT=${head}
+VERSION_GRADLE=0.0.1
 VERSION_DISPLAY=master-${headAbbreviated}
 VERSION_FULL=master-${headAbbreviated}
 VERSION_SCM=git
@@ -302,6 +348,7 @@ CUSTOM_BASE=\n\
 CUSTOM_BRANCHID=master
 CUSTOM_BRANCHTYPE=master
 CUSTOM_COMMIT=${head}
+CUSTOM_GRADLE=
 CUSTOM_DISPLAY=master-${headAbbreviated}
 CUSTOM_FULL=master-${headAbbreviated}
 CUSTOM_SCM=git
@@ -348,6 +395,7 @@ VERSION_BASE=\n\
 VERSION_BRANCHID=master
 VERSION_BRANCHTYPE=master
 VERSION_COMMIT=${head}
+VERSION_GRADLE=
 VERSION_DISPLAY=master-${headAbbreviated}
 VERSION_FULL=master-${headAbbreviated}
 VERSION_SCM=git

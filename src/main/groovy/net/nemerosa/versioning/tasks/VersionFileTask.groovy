@@ -41,6 +41,7 @@ ${prefix}BASE=${info.base}
 ${prefix}BRANCHID=${info.branchId}
 ${prefix}BRANCHTYPE=${info.branchType}
 ${prefix}COMMIT=${info.commit}
+${prefix}GRADLE=${project.version == 'unspecified' ? '' : project.version}
 ${prefix}DISPLAY=${info.display}
 ${prefix}FULL=${info.full}
 ${prefix}SCM=${info.scm}

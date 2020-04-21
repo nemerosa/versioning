@@ -93,6 +93,7 @@ Property | Description | Git: `master` | Git: `feature/great` | Git: `release/2.
 `build` | Short commit/revision indicator, suitable for a build number | `09ef629` | `09ef629` | `09ef629`
 `full` | Branch ID and build | `master-09ef629` | `feature-great-09ef629` | `release-2.0-09ef629`
 `base` | Base version for the display version | `` | `great` | `2.0`
+`gradle` | Project's version |  |  | 
 `display` | Display version | `master` | `great` | `2.0.0`, `2.0.1`, ...
 `tag` (1) | Current tag | (2) | (2) | (2)
 `lastTag` (1) | Last tag | (4) | (4) | (4)
@@ -156,6 +157,7 @@ Displays the version information in the standard output. For example:
 [version] full       = release-0.3-da50c50
 [version] base       = 0.3
 [version] build      = da50c50
+[version] gradle     = 0.3.0
 [version] display    = 0.3.0
 [version] tag        =
 [version] lastTag    = 0.2.0
@@ -180,6 +182,7 @@ VERSION_BASE=0.3
 VERSION_BRANCHID=release-0.3
 VERSION_BRANCHTYPE=release
 VERSION_COMMIT=da50c50567073d3d3a7756829926a9590f2644c6
+VERSION_GRADLE=0.3.0
 VERSION_DISPLAY=0.3.0
 VERSION_FULL=release-0.3-da50c50
 VERSION_SCM=git
