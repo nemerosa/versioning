@@ -58,6 +58,7 @@ class SVNInfoService implements SCMInfoService {
                     revision,
                     null,
                     null,
+                    null,
                     isWorkingCopyDirty(project.projectDir, clientManager)
             )
         }
