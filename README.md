@@ -298,12 +298,17 @@ versioning {
     * to print a warning.
     */
    noWarningOnDirty = false
+
+  /**
+   * If set to true, displays the git status in case the workspace is dirty. Default is false.
+   */
+  dirtyStatusLog = false
 }
 ```
 
 ### Snapshots
 
-Recomended configuration for development with `-SNAPSHOT`, for details see below.
+Recommended configuration for development with `-SNAPSHOT`, for details see below.
 
 ```groovy
 versioning {
@@ -504,7 +509,7 @@ When a repository is checked out in _shallow_ mode, no history is available and 
 branch cannot be correctly computed. In this case, we have two situations:
 
 * if the `HEAD` commit has a tag, we use the tag name as `display` version
-* if it has no tag, we use the `base` version and the SNAPSHOT suffix, to indicate that the release exact version
+* if it has no tag, we use the `base` version and the SNAPSHOT suffix to indicate that the release's exact version
   cannot be computed.
 
 In both cases, the `VersionInfo` object contains a `shallow` property which is set to `true`.
@@ -533,7 +538,7 @@ versioning {
 }
 ```
 
-The branches are read from under the `branches/` folder and the branch type is parsed
+The branches are read from under the `branches/` folder, and the branch type is parsed
 using '-' as a separator. The table below gives some examples for Subversion based branches:
 
 
@@ -549,9 +554,9 @@ Property | Description | SVN: `trunk` @ rev 12 | SVN: `branches/feature-great` @
 `base` | Base version for the display version | `` | `great` | `2.0`
 `display` | Display version | `trunk` | `great` | `2.0.0`, `2.0.1`, ...
 
-The rules for the display mode remain the same ones than for Git.
+The rules for the display mode remain the same for Git.
 
-Collecting the version information using Subversion will needs one remote access to the repository. Credentials can optionally be configured using following configuration parameters:
+Collecting the version information using Subversion requires remote access to the repository. Credentials can optionally be configured using following configuration parameters:
 
 ```groovy
 versioning {

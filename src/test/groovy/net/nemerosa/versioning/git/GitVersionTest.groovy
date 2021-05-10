@@ -12,8 +12,6 @@ import org.gradle.api.DefaultTask
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
 
-import java.util.regex.Matcher
-
 class GitVersionTest {
 
     @Test
@@ -642,7 +640,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch: no previous tag'() {
+    void 'Git release branch - no previous tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -676,7 +674,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch: with previous tag'() {
+    void 'Git release branch - with previous tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -713,7 +711,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch: with previous tag alpha'() {
+    void 'Git release branch - with previous tag alpha'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -750,7 +748,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch: with previous tags alpha, older tag must be taken into account'() {
+    void 'Git release branch - with previous tags alpha, older tag must be taken into account'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -791,7 +789,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch: when retrieving last tag chronological order of tags must be taken into account'() {
+    void 'Git release branch - when retrieving last tag chronological order of tags must be taken into account'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -832,7 +830,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch: with previous tags alpha, chronological order of tags must be taken into account'() {
+    void 'Git release branch - with previous tags alpha, chronological order of tags must be taken into account'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -873,7 +871,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch: with previous tags alpha, chronological order of tags must be taken into account - 2'() {
+    void 'Git release branch - with previous tags alpha, chronological order of tags must be taken into account - 2'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -914,7 +912,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch: with previous tag on different branches'() {
+    void 'Git release branch - with previous tag on different branches'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -955,7 +953,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch: with previous tag with two final digits'() {
+    void 'Git release branch - with previous tag with two final digits'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -992,7 +990,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch with snapshot: no previous tag'() {
+    void 'Git release branch with snapshot - no previous tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -1030,7 +1028,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch with custom snapshot: no previous tag'() {
+    void 'Git release branch with custom snapshot - no previous tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -1068,7 +1066,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch with custom display: no previous tag'() {
+    void 'Git release branch with custom display - no previous tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -1105,7 +1103,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch with snapshot: with previous tag'() {
+    void 'Git release branch with snapshot - with previous tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -1145,7 +1143,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch with custom snapshot: with previous tag'() {
+    void 'Git release branch with custom snapshot - with previous tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -1186,7 +1184,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch with custom display: with previous tag'() {
+    void 'Git release branch with custom display - with previous tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -1226,7 +1224,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch with snapshot: on tag'() {
+    void 'Git release branch with snapshot - on tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -1266,7 +1264,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch with custom snapshot: on tag'() {
+    void 'Git release branch with custom snapshot - on tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -1307,7 +1305,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch with custom display: on tag'() {
+    void 'Git release branch with custom display - on tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -1484,6 +1482,7 @@ VERSION_QUALIFIER=
             project.versioning {
                 dirtySuffix = '-dev'
                 noWarningOnDirty = true
+                dirtyStatusLog = true
             }
             VersionInfo info = project.versioning.info as VersionInfo
             assert info != null
@@ -1774,7 +1773,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release by tag: custom release logic'() {
+    void 'Git release by tag - custom release logic'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -1842,7 +1841,6 @@ VERSION_QUALIFIER=
             repo.close()
         }
     }
-
 
     @Test
     void 'Git branch with env TEST_BRANCH'() {
@@ -2106,7 +2104,7 @@ VERSION_QUALIFIER=
     }
 
     @Test
-    void 'Git release branch: with precision = 3'() {
+    void 'Git release branch - with precision = 3'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -2144,7 +2142,6 @@ VERSION_QUALIFIER=
             repo.close()
         }
     }
-
 
     @Test
     void 'Git release branch with custom versionNumber computing'() {

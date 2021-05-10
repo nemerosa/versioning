@@ -1,6 +1,5 @@
 package net.nemerosa.versioning
 
-
 import net.nemerosa.versioning.git.GitInfoService
 import net.nemerosa.versioning.support.DirtyException
 import net.nemerosa.versioning.svn.SVNInfoService
@@ -135,6 +134,11 @@ class VersioningExtension {
      * If set to <code>true</code>, no warning will be printed in case the workspace is dirty.
      */
     boolean noWarningOnDirty = false
+
+    /**
+     * If set to {@code true}, displays the git status in case the workspace is dirty.
+     */
+    boolean dirtyStatusLog = false
 
     /**
      * Credentials (for SVN only)
@@ -309,6 +313,19 @@ class VersioningExtension {
 
         // Dirty update
         if (scmInfo.dirty) {
+            if (dirtyStatusLog) {
+                def p = project
+                project.logger.warn("[versioning] WARNING - git status:")
+                [
+                        "staged"   : scmInfo.status.staged.allChanges,
+                        "unstaged" : scmInfo.status.unstaged.allChanges,
+                        "conflicts": scmInfo.status.conflicts
+                ].each {
+                    if (it.value) {
+                        p.logger.warn("$it.key [\n\t{}\n]", it.value.join('\n\t'))
+                    }
+                }
+            }
             if (dirtyFailOnReleases && versionReleaseType in releases) {
                 throw new DirtyException()
             } else {
