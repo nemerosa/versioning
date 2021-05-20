@@ -300,7 +300,7 @@ versioning {
    noWarningOnDirty = false
 
   /**
-   * If set to true, displays the git status in case the workspace is dirty. Default is false.
+   * If set to true, displays the scm status in case the workspace is dirty. Default is false.
    */
   dirtyStatusLog = false
 }
@@ -379,7 +379,7 @@ The `extension` parameter is the content of the `versioning` configuration objec
 to get the tag associated to a given revision.
 
 If You want to have more control when release or snapshot build is performed, You can use `releaseBuild` boolean property.
-This is usefull in case of usage central maven repository, which forbids replacement of released final artifacts.
+This is useful in case of usage central maven repository, which forbids replacement of released final artifacts.
 
 ```groovy
 versioning {
