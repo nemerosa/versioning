@@ -12,7 +12,7 @@ class VersionFileTask extends DefaultTask {
     File file = new File(project.buildDir, 'version.properties')
 
     /**
-     * Prefix to apply. Defauts to <code>VERSION_</code>
+     * Prefix to apply. Defaults to <code>VERSION_</code>
      */
     String prefix = 'VERSION_'
 
