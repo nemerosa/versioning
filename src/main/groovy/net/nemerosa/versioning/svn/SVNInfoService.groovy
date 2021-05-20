@@ -51,6 +51,8 @@ class SVNInfoService implements SCMInfoService {
 
             // Revision
             String revision = info.committedRevision.number as String
+            // Dirty status
+            def status = getDirtyStatuses(project.projectDir, clientManager)
             // OK
             new SCMInfo(
                     branch,
@@ -58,14 +60,13 @@ class SVNInfoService implements SCMInfoService {
                     revision,
                     null,
                     null,
-                    null,
-                    isWorkingCopyDirty(project.projectDir, clientManager)
+                    status,
+                    !status.empty
             )
         }
     }
 
-    static boolean isWorkingCopyDirty(File dir, SVNClientManager clientManager) {
-        // Gets the status
+    static List<SVNStatus> getStatus(File dir, SVNClientManager clientManager) {
         List<SVNStatus> statuses = []
         clientManager.statusClient.doStatus(
                 dir,
@@ -78,10 +79,12 @@ class SVNInfoService implements SCMInfoService {
                 { SVNStatus status -> statuses.add(status) },
                 null
         )
-        // List of entries
-        if (statuses.empty) return false
-        // Checks every entry
-        def dirtyEntry = statuses.find { entry ->
+        return statuses
+    }
+
+    static List<SVNStatus> getDirtyStatuses(File dir, SVNClientManager clientManager) {
+        List<SVNStatus> statuses = getStatus(dir, clientManager)
+        return statuses.findAll { entry ->
             def path = (entry.file.absolutePath - dir.absolutePath)
             if (path && !path.startsWith('/userHome')) {
                 return (entry.nodeStatus != SVNStatusType.UNCHANGED && entry.nodeStatus != SVNStatusType.STATUS_EXTERNAL) || (entry.propertiesStatus != SVNStatusType.UNCHANGED)
@@ -89,7 +92,6 @@ class SVNInfoService implements SCMInfoService {
                 return false
             }
         }
-        return dirtyEntry != null
     }
 
     static String parseBranch(String url) {

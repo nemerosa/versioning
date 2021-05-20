@@ -3,8 +3,10 @@ package net.nemerosa.versioning
 import net.nemerosa.versioning.git.GitInfoService
 import net.nemerosa.versioning.support.DirtyException
 import net.nemerosa.versioning.svn.SVNInfoService
+import org.ajoberstar.grgit.Status
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.tmatesoft.svn.core.wc.SVNStatus
 
 import java.util.regex.Matcher
 
@@ -315,14 +317,23 @@ class VersioningExtension {
         if (scmInfo.dirty) {
             if (dirtyStatusLog) {
                 def p = project
-                project.logger.warn("[versioning] WARNING - git status:")
-                [
-                        "staged"   : scmInfo.status.staged.allChanges,
-                        "unstaged" : scmInfo.status.unstaged.allChanges,
-                        "conflicts": scmInfo.status.conflicts
-                ].each {
-                    if (it.value) {
-                        p.logger.warn("$it.key [\n\t{}\n]", it.value.join('\n\t'))
+                if (scmInfo.status instanceof Status) {
+                    Status status = scmInfo.status as Status
+                    project.logger.warn("[versioning] WARNING - git status:")
+                    [
+                            "staged"   : status.staged.allChanges,
+                            "unstaged" : status.unstaged.allChanges,
+                            "conflicts": status.conflicts
+                    ].each {
+                        if (it.value) {
+                            p.logger.warn("$it.key [\n\t{}\n]", it.value.join('\n\t'))
+                        }
+                    }
+                } else if (scmInfo.status instanceof List<SVNStatus>) {
+                    List<SVNStatus> statuses = scmInfo.status as List<SVNStatus>
+                    project.logger.warn("[versioning] WARNING - SVN status:")
+                    statuses.each {
+                        p.logger.warn("\t$it.myFile $it.myNodeStatus.myName")
                     }
                 }
             }

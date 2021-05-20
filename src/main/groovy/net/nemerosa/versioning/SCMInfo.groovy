@@ -13,7 +13,7 @@ class SCMInfo {
     String abbreviated
     String tag
     String lastTag
-    Status status
+    Object status
     boolean dirty
     boolean shallow
 
