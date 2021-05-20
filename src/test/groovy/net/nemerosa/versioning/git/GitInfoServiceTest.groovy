@@ -1,5 +1,6 @@
 package net.nemerosa.versioning.git
 
+import org.ajoberstar.grgit.Status
 import org.junit.Test
 
 class GitInfoServiceTest {
@@ -11,7 +12,8 @@ class GitInfoServiceTest {
             repo.with {
                 commit 1
             }
-            assert !GitInfoService.isGitTreeDirty(repo.dir): "Git tree clean"
+            Status status = GitInfoService.getStatus(repo.dir)
+            assert !GitInfoService.isGitTreeDirty(status): "Git tree clean"
         } finally {
             repo.close()
         }
@@ -28,7 +30,8 @@ class GitInfoServiceTest {
                 //cmd 'touch', 'test.txt'
                 new File(dir, 'file1') << 'Add some content'
             }
-            assert GitInfoService.isGitTreeDirty(repo.dir): "Unstaged changes"
+            Status status = GitInfoService.getStatus(repo.dir)
+            assert GitInfoService.isGitTreeDirty(status): "Unstaged changes"
         } finally {
             repo.close()
         }
@@ -45,7 +48,8 @@ class GitInfoServiceTest {
                 new File(repo.dir, 'test.txt').text = 'Test'
                 add 'test.txt'
             }
-            assert GitInfoService.isGitTreeDirty(repo.dir): "Uncommitted changes"
+            Status status = GitInfoService.getStatus(repo.dir)
+            assert GitInfoService.isGitTreeDirty(status): "Uncommitted changes"
         } finally {
             repo.close()
         }

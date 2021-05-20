@@ -1,6 +1,7 @@
 package net.nemerosa.versioning
 
 import groovy.transform.Canonical
+import org.ajoberstar.grgit.Status
 
 @Canonical
 class SCMInfo {
@@ -12,6 +13,7 @@ class SCMInfo {
     String abbreviated
     String tag
     String lastTag
+    Object status
     boolean dirty
     boolean shallow
 

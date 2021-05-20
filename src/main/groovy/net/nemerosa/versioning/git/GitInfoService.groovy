@@ -115,11 +115,13 @@ class GitInfoService implements SCMInfoService {
             String lastTag = lastTags.empty ? null : lastTags.first()
 
             // Returns the information
+            Status status = getStatus(gitDir)
             new SCMInfo(
                     branch: branch,
                     commit: commit,
                     abbreviated: abbreviated,
-                    dirty: isGitTreeDirty(gitDir),
+                    dirty: isGitTreeDirty(status),
+                    status: status,
                     tag: tag,
                     lastTag: lastTag,
                     shallow: shallow,
@@ -139,9 +141,12 @@ class GitInfoService implements SCMInfoService {
                 project.projectDir
     }
 
-    static boolean isGitTreeDirty(File dir) {// Open the Git repo
+    static Status getStatus(File dir) {
         //noinspection GroovyAssignabilityCheck
-        Status status = Grgit.open(currentDir: dir).status()
+        return Grgit.open(currentDir: dir).status()
+    }
+
+    static boolean isGitTreeDirty(Status status) {
         return !isClean(status)
     }
 
