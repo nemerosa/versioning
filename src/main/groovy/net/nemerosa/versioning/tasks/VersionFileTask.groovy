@@ -2,6 +2,8 @@ package net.nemerosa.versioning.tasks
 
 import net.nemerosa.versioning.VersionInfo
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
 class VersionFileTask extends DefaultTask {
@@ -9,11 +11,13 @@ class VersionFileTask extends DefaultTask {
     /**
      * File to write the information info. Defaults to <code>new File(project.buildDir, 'version.properties')</code>.
      */
+    @OutputFile
     File file = new File(project.buildDir, 'version.properties')
 
     /**
      * Prefix to apply. Defauts to <code>VERSION_</code>
      */
+    @Input
     String prefix = 'VERSION_'
 
     /**
