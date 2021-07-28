@@ -87,7 +87,7 @@ class SVNInfoService implements SCMInfoService {
         return statuses.findAll { entry ->
             def path = (entry.file.absolutePath - dir.absolutePath)
             if (path && !path.startsWith('/userHome')) {
-                return (entry.nodeStatus != SVNStatusType.UNCHANGED && entry.nodeStatus != SVNStatusType.STATUS_EXTERNAL) || (entry.propertiesStatus != SVNStatusType.UNCHANGED)
+                return !(entry.nodeStatus == SVNStatusType.UNCHANGED && entry.propertiesStatus == SVNStatusType.UNCHANGED) && entry.nodeStatus != SVNStatusType.STATUS_EXTERNAL
             } else {
                 return false
             }
