@@ -21,82 +21,38 @@ pipeline {
 
         stage("Setup") {
             steps {
-                ontrackCliSetup()
+                ontrackCliSetup(autoValidationStamps: true)
+            }
+        }
+
+        stage("Build") {
+            steps {
+                sh '''
+                    ./gradlew versionDisplay versionFile --stacktrace --parallel --console plain
+                '''
+                script {
+                    // Reads version information
+                    def props = readProperties(file: 'build/version.properties')
+                    env.VERSION = props.VERSION_DISPLAY
+                    env.GIT_COMMIT = props.VERSION_COMMIT
+                    // Creates a build
+                    ontrackCliBuild(name: env.BUILD_NUMBER, release: env.VERSION)
+                }
+                sh '''
+                    ./gradlew build --stacktrace --parallel --console plain
+                '''
+            }
+            post {
+                always {
+                    ontrackCliValidateTests(stamp: 'BUILD', pattern: 'build/test-results/**/*.xml')
+                }
             }
         }
 
     }
 
 }
-
-//String version = ''
-//String gitCommit = ''
-//String branchName = ''
-//String projectName = 'versioning'
-//
-//boolean pr = false
-//
 //pipeline {
-//
-//    stages {
-//
-//        stage('Setup') {
-//            steps {
-//                script {
-//                    branchName = ontrackBranchName(BRANCH_NAME)
-//                    echo "Ontrack branch name = ${branchName}"
-//                    pr = BRANCH_NAME ==~ 'PR-.*'
-//                }
-//                script {
-//                    if (pr) {
-//                        echo "No Ontrack setup for PR."
-//                    } else {
-//                        echo "Ontrack setup for ${branchName}"
-//                        ontrackBranchSetup(project: projectName, branch: branchName, script: """
-//                            branch.config {
-//                                gitBranch '${branchName}', [
-//                                    buildCommitLink: [
-//                                        id: 'git-commit-property'
-//                                    ]
-//                                ]
-//                            }
-//                        """)
-//                    }
-//                }
-//            }
-//        }
-//
-//        stage('Build') {
-//            steps {
-//                sh '''\
-//#!/bin/bash
-//set -e
-//
-//./gradlew \\
-//    clean \\
-//    versionDisplay \\
-//    versionFile \\
-//    build \\
-//    --stacktrace \\
-//    --profile \\
-//    --parallel \\
-//    --console plain
-//'''
-//                script {
-//                    // Reads version information
-//                    def props = readProperties(file: 'build/version.properties')
-//                    version = props.VERSION_DISPLAY
-//                    gitCommit = props.VERSION_COMMIT
-//                    currentBuild.description = "Version $version"
-//                }
-//                echo "Version = ${version}"
-//            }
-//            post {
-//                always {
-//                    junit "**/build/test-results/**/*.xml"
-//                }
-//            }
-//        }
 //
 //        stage('Release') {
 //            when {
