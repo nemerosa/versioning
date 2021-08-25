@@ -3,6 +3,7 @@ package net.nemerosa.versioning.git
 import net.nemerosa.versioning.ReleaseInfo
 import net.nemerosa.versioning.SCMInfo
 import net.nemerosa.versioning.VersionInfo
+import net.nemerosa.versioning.VersionNumber
 import net.nemerosa.versioning.VersioningPlugin
 import net.nemerosa.versioning.support.DirtyException
 import net.nemerosa.versioning.tasks.VersionDisplayTask
@@ -33,6 +34,7 @@ class GitVersionTest {
         assert info.scm == 'n/a'
         assert info.tag == null
         assert !info.dirty
+        assert info.versionNumber == null
     }
 
     @Test
@@ -61,6 +63,7 @@ class GitVersionTest {
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -109,6 +112,7 @@ class GitVersionTest {
                 assert info.scm == 'git'
                 assert info.tag == null
                 assert !info.dirty
+                assert info.versionNumber.versionCode == 0
 
             } finally {
                 detached.deleteDir()
@@ -152,6 +156,7 @@ class GitVersionTest {
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -194,6 +199,7 @@ class GitVersionTest {
                 assert info.tag == null
                 assert !info.dirty
                 assert info.shallow
+                assert info.versionNumber.versionCode == 0
 
             } finally {
                 detached.deleteDir()
@@ -248,12 +254,63 @@ VERSION_BASE=\n\
 VERSION_BRANCHID=master
 VERSION_BRANCHTYPE=master
 VERSION_COMMIT=${head}
+VERSION_GRADLE=
 VERSION_DISPLAY=master-${headAbbreviated}
 VERSION_FULL=master-${headAbbreviated}
 VERSION_SCM=git
 VERSION_TAG=
 VERSION_LAST_TAG=
 VERSION_DIRTY=false
+VERSION_VERSIONCODE=0
+VERSION_MAJOR=0
+VERSION_MINOR=0
+VERSION_PATCH=0
+VERSION_QUALIFIER=
+""" as String
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git version file - project version'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                (1..4).each { commit it }
+            }
+            def head = repo.commitLookup('Commit 4')
+            def headAbbreviated = repo.commitLookup('Commit 4', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            project.version = '0.0.1'
+            new VersioningPlugin().apply(project)
+            def task = project.tasks.getByName('versionFile') as DefaultTask
+            task.execute()
+
+            // Checks the file
+            def file = new File(project.buildDir, 'version.properties')
+            assert file.exists(): "File ${file} must exist."
+            assert file.text == """\
+VERSION_BUILD=${headAbbreviated}
+VERSION_BRANCH=master
+VERSION_BASE=\n\
+VERSION_BRANCHID=master
+VERSION_BRANCHTYPE=master
+VERSION_COMMIT=${head}
+VERSION_GRADLE=0.0.1
+VERSION_DISPLAY=master-${headAbbreviated}
+VERSION_FULL=master-${headAbbreviated}
+VERSION_SCM=git
+VERSION_TAG=
+VERSION_LAST_TAG=
+VERSION_DIRTY=false
+VERSION_VERSIONCODE=0
+VERSION_MAJOR=0
+VERSION_MINOR=0
+VERSION_PATCH=0
+VERSION_QUALIFIER=
 """ as String
         } finally {
             repo.close()
@@ -289,12 +346,18 @@ CUSTOM_BASE=\n\
 CUSTOM_BRANCHID=master
 CUSTOM_BRANCHTYPE=master
 CUSTOM_COMMIT=${head}
+CUSTOM_GRADLE=
 CUSTOM_DISPLAY=master-${headAbbreviated}
 CUSTOM_FULL=master-${headAbbreviated}
 CUSTOM_SCM=git
 CUSTOM_TAG=
 CUSTOM_LAST_TAG=
 CUSTOM_DIRTY=false
+CUSTOM_VERSIONCODE=0
+CUSTOM_MAJOR=0
+CUSTOM_MINOR=0
+CUSTOM_PATCH=0
+CUSTOM_QUALIFIER=
 """ as String
         } finally {
             repo.close()
@@ -330,12 +393,18 @@ VERSION_BASE=\n\
 VERSION_BRANCHID=master
 VERSION_BRANCHTYPE=master
 VERSION_COMMIT=${head}
+VERSION_GRADLE=
 VERSION_DISPLAY=master-${headAbbreviated}
 VERSION_FULL=master-${headAbbreviated}
 VERSION_SCM=git
 VERSION_TAG=
 VERSION_LAST_TAG=
 VERSION_DIRTY=false
+VERSION_VERSIONCODE=0
+VERSION_MAJOR=0
+VERSION_MINOR=0
+VERSION_PATCH=0
+VERSION_QUALIFIER=
 """ as String
         } finally {
             repo.close()
@@ -370,6 +439,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -407,6 +477,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -444,6 +515,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -482,6 +554,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -519,6 +592,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -558,6 +632,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -565,7 +640,7 @@ VERSION_DIRTY=false
     }
 
     @Test
-    void 'Git release branch: no previous tag'() {
+    void 'Git release branch - no previous tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -592,13 +667,14 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20000
         } finally {
             repo.close()
         }
     }
 
     @Test
-    void 'Git release branch: with previous tag'() {
+    void 'Git release branch - with previous tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -627,6 +703,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -634,7 +711,7 @@ VERSION_DIRTY=false
     }
 
     @Test
-    void 'Git release branch: with previous tag alpha'() {
+    void 'Git release branch - with previous tag alpha'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -663,6 +740,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -670,7 +748,7 @@ VERSION_DIRTY=false
     }
 
     @Test
-    void 'Git release branch: with previous tags alpha, older tag must be taken into account'() {
+    void 'Git release branch - with previous tags alpha, older tag must be taken into account'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -703,6 +781,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 30002
 
         } finally {
             repo.close()
@@ -710,7 +789,48 @@ VERSION_DIRTY=false
     }
 
     @Test
-    void 'Git release branch: with previous tags alpha, chronological order of tags must be taken into account'() {
+    void 'Git release branch - when retrieving last tag chronological order of tags must be taken into account'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                (1..4).each { commit it }
+                branch 'release/1.3'
+                commit 5
+                tag '1.2.16'
+                sleep 1000
+                commit 6
+                tag '1.3.11'
+                commit 7
+            }
+            def head = repo.commitLookup('Commit 7')
+            def headAbbreviated = repo.commitLookup('Commit 7', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            VersionInfo info = project.versioning.info as VersionInfo
+
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/1.3'
+            assert info.base == '1.3'
+            assert info.branchId == 'release-1.3'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '1.3.12'
+            assert info.full == "release-1.3-${headAbbreviated}" as String
+            assert info.scm == 'git'
+            assert info.tag == null
+            assert !info.dirty
+            assert info.versionNumber.versionCode == 10312
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git release branch - with previous tags alpha, chronological order of tags must be taken into account'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -743,6 +863,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 30011
 
         } finally {
             repo.close()
@@ -750,7 +871,7 @@ VERSION_DIRTY=false
     }
 
     @Test
-    void 'Git release branch: with previous tags alpha, chronological order of tags must be taken into account - 2'() {
+    void 'Git release branch - with previous tags alpha, chronological order of tags must be taken into account - 2'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -783,6 +904,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 30021
 
         } finally {
             repo.close()
@@ -790,7 +912,7 @@ VERSION_DIRTY=false
     }
 
     @Test
-    void 'Git release branch: with previous tag on different branches'() {
+    void 'Git release branch - with previous tag on different branches'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -823,6 +945,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -830,7 +953,7 @@ VERSION_DIRTY=false
     }
 
     @Test
-    void 'Git release branch: with previous tag with two final digits'() {
+    void 'Git release branch - with previous tag with two final digits'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -859,6 +982,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20011
 
         } finally {
             repo.close()
@@ -866,7 +990,7 @@ VERSION_DIRTY=false
     }
 
     @Test
-    void 'Git release branch with snapshot: no previous tag'() {
+    void 'Git release branch with snapshot - no previous tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -897,13 +1021,14 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20000
         } finally {
             repo.close()
         }
     }
 
     @Test
-    void 'Git release branch with custom snapshot: no previous tag'() {
+    void 'Git release branch with custom snapshot - no previous tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -934,13 +1059,14 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20000
         } finally {
             repo.close()
         }
     }
 
     @Test
-    void 'Git release branch with custom display: no previous tag'() {
+    void 'Git release branch with custom display - no previous tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -970,13 +1096,14 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20000
         } finally {
             repo.close()
         }
     }
 
     @Test
-    void 'Git release branch with snapshot: with previous tag'() {
+    void 'Git release branch with snapshot - with previous tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -1008,6 +1135,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -1015,7 +1143,7 @@ VERSION_DIRTY=false
     }
 
     @Test
-    void 'Git release branch with custom snapshot: with previous tag'() {
+    void 'Git release branch with custom snapshot - with previous tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -1048,6 +1176,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -1055,7 +1184,7 @@ VERSION_DIRTY=false
     }
 
     @Test
-    void 'Git release branch with custom display: with previous tag'() {
+    void 'Git release branch with custom display - with previous tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -1087,6 +1216,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -1094,7 +1224,7 @@ VERSION_DIRTY=false
     }
 
     @Test
-    void 'Git release branch with snapshot: on tag'() {
+    void 'Git release branch with snapshot - on tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -1126,6 +1256,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == '2.0.2'
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20002
 
         } finally {
             repo.close()
@@ -1133,7 +1264,7 @@ VERSION_DIRTY=false
     }
 
     @Test
-    void 'Git release branch with custom snapshot: on tag'() {
+    void 'Git release branch with custom snapshot - on tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -1166,6 +1297,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == '2.0.2'
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20002
 
         } finally {
             repo.close()
@@ -1173,7 +1305,7 @@ VERSION_DIRTY=false
     }
 
     @Test
-    void 'Git release branch with custom display: on tag'() {
+    void 'Git release branch with custom display - on tag'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -1205,6 +1337,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == '2.0.2'
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -1242,6 +1375,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -1279,6 +1413,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -1319,6 +1454,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -1346,6 +1482,7 @@ VERSION_DIRTY=false
             project.versioning {
                 dirtySuffix = '-dev'
                 noWarningOnDirty = true
+                dirtyStatusLog = true
             }
             VersionInfo info = project.versioning.info as VersionInfo
             assert info != null
@@ -1360,6 +1497,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -1398,6 +1536,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -1440,6 +1579,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -1486,6 +1626,7 @@ VERSION_DIRTY=false
                 assert info.tag == null
                 assert !info.dirty
                 assert info.shallow
+                assert info.versionNumber.versionCode == 0
 
             } finally {
                 detached.deleteDir()
@@ -1527,6 +1668,7 @@ VERSION_DIRTY=false
             assert info.tag == null
             assert !info.dirty
             assert !info.shallow
+            assert info.versionNumber.versionCode == 20004
 
         } finally {
             repo.close()
@@ -1572,6 +1714,7 @@ VERSION_DIRTY=false
                 assert info.tag == '2.0.2'
                 assert !info.dirty
                 assert info.shallow
+                assert info.versionNumber.versionCode == 20002
 
             } finally {
                 detached.deleteDir()
@@ -1603,6 +1746,10 @@ VERSION_DIRTY=false
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
             project.versioning {
+                displayMode = 'full'
+                releaseMode = 'tag'
+            }
+            project.versioning {
                 dirty = { version -> "${version}-DONOTUSE" }
             }
             VersionInfo info = project.versioning.info as VersionInfo
@@ -1618,6 +1765,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert info.dirty
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -1625,7 +1773,7 @@ VERSION_DIRTY=false
     }
 
     @Test
-    void 'Git release by tag: custom release logic'() {
+    void 'Git release by tag - custom release logic'() {
         GitRepo repo = new GitRepo()
         try {
             // Git initialisation
@@ -1660,6 +1808,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == 'release/v2.0'
             assert !info.dirty
+            assert info.versionNumber.versionCode == 20000
         } finally {
             repo.close()
         }
@@ -1692,7 +1841,6 @@ VERSION_DIRTY=false
             repo.close()
         }
     }
-
 
     @Test
     void 'Git branch with env TEST_BRANCH'() {
@@ -1727,6 +1875,7 @@ VERSION_DIRTY=false
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
+            assert info.versionNumber.versionCode == 0
 
         } finally {
             repo.close()
@@ -1768,6 +1917,7 @@ VERSION_DIRTY=false
             assert info.tag == null
             assert !info.dirty
             assert !info.shallow
+            assert info.versionNumber.versionCode == 20003
 
         } finally {
             repo.close()
@@ -1947,6 +2097,89 @@ VERSION_DIRTY=false
             assert info.tag == '2.0.2'
             assert info.lastTag == '21'
             assert !info.dirty
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git release branch - with precision = 3'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                (1..4).each { commit it }
+                branch 'release/2.0'
+                commit 5
+                tag '2.0.10'
+                commit 6
+            }
+            def head = repo.commitLookup('Commit 6')
+            def headAbbreviated = repo.commitLookup('Commit 6', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versioning {
+                precision = 3
+            }
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/2.0'
+            assert info.base == '2.0'
+            assert info.branchId == 'release-2.0'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '2.0.11'
+            assert info.full == "release-2.0-${headAbbreviated}" as String
+            assert info.scm == 'git'
+            assert info.tag == null
+            assert !info.dirty
+            assert info.versionNumber.versionCode == 2000011
+
+        } finally {
+            repo.close()
+        }
+    }
+
+    @Test
+    void 'Git release branch with custom versionNumber computing'() {
+        GitRepo repo = new GitRepo()
+        try {
+            // Git initialisation
+            repo.with {
+                (1..4).each { commit it }
+                branch 'release/2.0'
+                commit 5
+                tag '2.0.10'
+            }
+            def head = repo.commitLookup('Commit 5')
+            def headAbbreviated = repo.commitLookup('Commit 5', true)
+
+            def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
+            new VersioningPlugin().apply(project)
+            project.versioning {
+                parseVersionNumber = { SCMInfo scmInfo, String versionReleaseType, String versionBranchId,
+                                       String versionFull, String versionBase, String versionDisplay ->
+
+                    return new VersionNumber(1, 2, 3, 'toto', 4, 'tata')
+                }
+            }
+            VersionInfo info = project.versioning.info as VersionInfo
+            assert info != null
+            assert info.build == headAbbreviated
+            assert info.branch == 'release/2.0'
+            assert info.base == '2.0'
+            assert info.branchId == 'release-2.0'
+            assert info.branchType == 'release'
+            assert info.commit == head
+            assert info.display == '2.0.11'
+            assert info.full == "release-2.0-${headAbbreviated}" as String
+            assert info.scm == 'git'
+            assert info.tag == '2.0.10'
+            assert !info.dirty
+            assert info.versionNumber.versionCode == 4
 
         } finally {
             repo.close()

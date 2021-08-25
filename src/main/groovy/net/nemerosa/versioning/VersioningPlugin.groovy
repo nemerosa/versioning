@@ -12,9 +12,9 @@ class VersioningPlugin implements Plugin<Project> {
         // Creates a new `versionInfo` extension
         project.extensions.create('versioning', VersioningExtension, project)
         // `versionDisplay` task
-        project.tasks.create('versionDisplay', VersionDisplayTask)
+        project.tasks.register('versionDisplay', VersionDisplayTask)
         // `versionFile` task
-        project.tasks.create('versionFile', VersionFileTask)
+        project.tasks.register('versionFile', VersionFileTask)
     }
 
 }

@@ -8,6 +8,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 
 import java.util.concurrent.atomic.AtomicInteger
@@ -128,12 +129,62 @@ VERSION_BASE=\n\
 VERSION_BRANCHID=trunk
 VERSION_BRANCHTYPE=trunk
 VERSION_COMMIT=4
+VERSION_GRADLE=
 VERSION_DISPLAY=trunk-4
 VERSION_FULL=trunk-4
 VERSION_SCM=svn
 VERSION_TAG=
 VERSION_LAST_TAG=
 VERSION_DIRTY=false
+VERSION_VERSIONCODE=0
+VERSION_MAJOR=0
+VERSION_MINOR=0
+VERSION_PATCH=0
+VERSION_QUALIFIER=
+"""
+    }
+
+    @Test
+    void 'SVN version file - project version'() {
+        // SVN
+        repo.mkdir 'project/trunk', 'Trunk'
+        repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
+        repo.mkdir 'project/trunk/2', 'Commit for TEST-2'
+        def dir = repo.checkout('project/trunk')
+        ignore dir, '.gradle'
+        // Project
+        def project = ProjectBuilder.builder().withProjectDir(dir).build()
+        project.version = '0.0.1'
+        new VersioningPlugin().apply(project)
+        project.versioning {
+            scm = 'svn'
+        }
+        // version file task
+        def task = project.tasks.getByName('versionFile') as DefaultTask
+        task.execute()
+
+        // Checks the file
+        def file = new File(project.buildDir, 'version.properties')
+        assert file.exists(): "File ${file} must exist."
+        assert file.text == """\
+VERSION_BUILD=4
+VERSION_BRANCH=trunk
+VERSION_BASE=\n\
+VERSION_BRANCHID=trunk
+VERSION_BRANCHTYPE=trunk
+VERSION_COMMIT=4
+VERSION_GRADLE=0.0.1
+VERSION_DISPLAY=trunk-4
+VERSION_FULL=trunk-4
+VERSION_SCM=svn
+VERSION_TAG=
+VERSION_LAST_TAG=
+VERSION_DIRTY=false
+VERSION_VERSIONCODE=0
+VERSION_MAJOR=0
+VERSION_MINOR=0
+VERSION_PATCH=0
+VERSION_QUALIFIER=
 """
     }
 
@@ -168,12 +219,18 @@ CUSTOM_BASE=\n\
 CUSTOM_BRANCHID=trunk
 CUSTOM_BRANCHTYPE=trunk
 CUSTOM_COMMIT=4
+CUSTOM_GRADLE=
 CUSTOM_DISPLAY=trunk-4
 CUSTOM_FULL=trunk-4
 CUSTOM_SCM=svn
 CUSTOM_TAG=
 CUSTOM_LAST_TAG=
 CUSTOM_DIRTY=false
+CUSTOM_VERSIONCODE=0
+CUSTOM_MAJOR=0
+CUSTOM_MINOR=0
+CUSTOM_PATCH=0
+CUSTOM_QUALIFIER=
 """
     }
 
@@ -208,12 +265,18 @@ VERSION_BASE=\n\
 VERSION_BRANCHID=trunk
 VERSION_BRANCHTYPE=trunk
 VERSION_COMMIT=4
+VERSION_GRADLE=
 VERSION_DISPLAY=trunk-4
 VERSION_FULL=trunk-4
 VERSION_SCM=svn
 VERSION_TAG=
 VERSION_LAST_TAG=
 VERSION_DIRTY=false
+VERSION_VERSIONCODE=0
+VERSION_MAJOR=0
+VERSION_MINOR=0
+VERSION_PATCH=0
+VERSION_QUALIFIER=
 """
     }
 
@@ -646,11 +709,14 @@ VERSION_DIRTY=false
         repo.mkdir 'project/branches/release-2.0/2', 'Commit for TEST-1'
         def dir = repo.checkout('project/branches/release-2.0')
         new File(dir, 'test.txt').text = 'test'
+        new File(dir, 'other.txt').text = 'other'
+        repo.add dir, 'other.txt'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
+            dirtyStatusLog = true
         }
 
         VersionInfo info = project.versioning.info as VersionInfo

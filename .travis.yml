@@ -9,7 +9,7 @@ cache:
     - $HOME/.gradle/wrapper/
 
 jdk:
-  - oraclejdk8
+  - openjdk8
 
 before_install:
   - git config --global user.email "notifications@travis-ci.org"
