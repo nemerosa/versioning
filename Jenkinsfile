@@ -49,52 +49,48 @@ pipeline {
             }
         }
 
+        stage('Release') {
+            when {
+                branch 'release/*'
+            }
+            environment {
+                GITHUB = credentials('GITHUB_NEMEROSA_JENKINS2')
+            }
+            steps {
+                sh '''
+                ./gradlew githubRelease --stacktrace --console plain \\
+                  -PgitHubToken=${GITHUB_PSW} \\
+                  -PgitHubCommit=${GIT_COMMIT}
+                '''
+            }
+            post {
+                always {
+                    ontrackCliValidate(stamp: 'GITHUB.RELEASE')
+                }
+            }
+        }
+
+        stage('Publication') {
+            when {
+                branch 'release/*'
+            }
+            environment {
+                GRADLE_PLUGINS = credentials('GRADLE_PLUGINS')
+            }
+            steps {
+                sh '''
+                ./gradlew publishPlugins --stacktrace --console plain \\
+                    -Pgradle.publish.key=${GRADLE_PLUGINS_USR} \\
+                    -Pgradle.publish.secret=${GRADLE_PLUGINS_PSW}
+                '''
+            }
+            post {
+                always {
+                    ontrackCliValidate(stamp: 'GRADLE.PLUGIN')
+                }
+            }
+        }
+
     }
 
 }
-//pipeline {
-//
-//        stage('Release') {
-//            when {
-//                branch 'release/*'
-//            }
-//            environment {
-//                GIT_COMMIT = "${gitCommit}"
-//                GITHUB = credentials('GITHUB_NEMEROSA_JENKINS2')
-//            }
-//            steps {
-//                sh '''
-//                ./gradlew \\
-//                  githubRelease \\
-//                  -PgitHubToken=${GITHUB_PSW} \\
-//                  -PgitHubCommit=${GIT_COMMIT} \\
-//                  --stacktrace \\
-//                  --console plain
-//                '''
-//            }
-//        }
-//
-//        stage('Publication') {
-//            when {
-//                branch 'release/*'
-//            }
-//            environment {
-//                GRADLE_PLUGINS = credentials('GRADLE_PLUGINS')
-//            }
-//            steps {
-//                sh '''\
-//#!/bin/bash
-//set -e
-//
-//./gradlew \\
-//    publishPlugins \\
-//    --stacktrace \\
-//    --profile \\
-//    --console plain \\
-//    -Pgradle.publish.key=${GRADLE_PLUGINS_USR} \\
-//    -Pgradle.publish.secret=${GRADLE_PLUGINS_PSW}
-//'''
-//            }
-//        }
-//    }
-//}
