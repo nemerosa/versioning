@@ -221,7 +221,9 @@ class GitVersionTest {
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
             def task = project.tasks.getByName('versionDisplay') as VersionDisplayTask
-            task.execute()
+            task.actions.each { action ->
+                action.execute(task)
+            }
 
         } finally {
             repo.close()
@@ -242,7 +244,9 @@ class GitVersionTest {
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
             def task = project.tasks.getByName('versionFile') as DefaultTask
-            task.execute()
+            task.actions.each { action ->
+                action.execute(task)
+            }
 
             // Checks the file
             def file = new File(project.buildDir, 'version.properties')
@@ -287,7 +291,9 @@ VERSION_QUALIFIER=
             project.version = '0.0.1'
             new VersioningPlugin().apply(project)
             def task = project.tasks.getByName('versionFile') as DefaultTask
-            task.execute()
+            task.actions.each { action ->
+                action.execute(task)
+            }
 
             // Checks the file
             def file = new File(project.buildDir, 'version.properties')
@@ -334,7 +340,9 @@ VERSION_QUALIFIER=
                 prefix = 'CUSTOM_'
             }
             def task = project.tasks.getByName('versionFile') as DefaultTask
-            task.execute()
+            task.actions.each { action ->
+                action.execute(task)
+            }
 
             // Checks the file
             def file = new File(project.buildDir, 'version.properties')
@@ -381,7 +389,9 @@ CUSTOM_QUALIFIER=
                 file = new File(repo.dir, '.version')
             }
             def task = project.tasks.getByName('versionFile') as DefaultTask
-            task.execute()
+            task.actions.each { action ->
+                action.execute(task)
+            }
 
             // Checks the file
             def file = new File(project.projectDir, '.version')

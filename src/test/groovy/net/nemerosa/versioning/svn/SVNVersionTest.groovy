@@ -98,7 +98,9 @@ class SVNVersionTest {
         }
         // Checks the versionDisplay exists and runs it
         def task = project.tasks.getByName('versionDisplay') as VersionDisplayTask
-        task.execute()
+        task.actions.each { action ->
+            action.execute(task)
+        }
     }
 
     @Test
@@ -117,7 +119,9 @@ class SVNVersionTest {
         }
         // version file task
         def task = project.tasks.getByName('versionFile') as DefaultTask
-        task.execute()
+        task.actions.each { action ->
+            action.execute(task)
+        }
 
         // Checks the file
         def file = new File(project.buildDir, 'version.properties')
@@ -161,7 +165,9 @@ VERSION_QUALIFIER=
         }
         // version file task
         def task = project.tasks.getByName('versionFile') as DefaultTask
-        task.execute()
+        task.actions.each { action ->
+            action.execute(task)
+        }
 
         // Checks the file
         def file = new File(project.buildDir, 'version.properties')
@@ -207,7 +213,9 @@ VERSION_QUALIFIER=
         }
         // version file task
         def task = project.tasks.getByName('versionFile') as DefaultTask
-        task.execute()
+        task.actions.each { action ->
+            action.execute(task)
+        }
 
         // Checks the file
         def file = new File(project.buildDir, 'version.properties')
@@ -253,7 +261,9 @@ CUSTOM_QUALIFIER=
         }
         // version file task
         def task = project.tasks.getByName('versionFile') as DefaultTask
-        task.execute()
+        task.actions.each { action ->
+            action.execute(task)
+        }
 
         // Checks the file
         def file = new File(project.projectDir, '.version')
