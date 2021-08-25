@@ -1,4 +1,4 @@
-@Library("ontrack-jenkins-cli-pipeline@main") _
+@Library("ontrack-jenkins-cli-pipeline@1.0.2") _
 
 pipeline {
 
