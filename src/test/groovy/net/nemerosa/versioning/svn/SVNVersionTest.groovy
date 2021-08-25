@@ -108,7 +108,7 @@ class SVNVersionTest {
         repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
         repo.mkdir 'project/trunk/2', 'Commit for TEST-2'
         def dir = repo.checkout('project/trunk')
-        ignore dir, '.gradle'
+        ignore dir, '.gradle', 'build'
         // Project
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
@@ -151,7 +151,7 @@ VERSION_QUALIFIER=
         repo.mkdir 'project/trunk/1', 'Commit for TEST-1'
         repo.mkdir 'project/trunk/2', 'Commit for TEST-2'
         def dir = repo.checkout('project/trunk')
-        ignore dir, '.gradle'
+        ignore dir, '.gradle', 'build'
         // Project
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         project.version = '0.0.1'
@@ -196,7 +196,7 @@ VERSION_QUALIFIER=
         repo.mkdir 'project/trunk/2', 'Commit for TEST-2'
         // Project
         def dir = repo.checkout('project/trunk')
-        ignore dir, '.gradle'
+        ignore dir, '.gradle', 'build'
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
         project.versioning {

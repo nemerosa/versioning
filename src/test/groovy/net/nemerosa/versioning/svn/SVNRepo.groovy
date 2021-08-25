@@ -65,11 +65,11 @@ class SVNRepo {
         )
     }
 
-    static def ignore(File dir, String ignore) {
+    static def ignore(File dir, String... ignore) {
         clientManager.getWCClient().doSetProperty(
                 dir,
                 'svn:ignore',
-                SVNPropertyValue.create(ignore),
+                SVNPropertyValue.create(ignore.join('\n')),
                 false,
                 SVNDepth.EMPTY,
                 null,
