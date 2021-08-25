@@ -709,11 +709,14 @@ VERSION_QUALIFIER=
         repo.mkdir 'project/branches/release-2.0/2', 'Commit for TEST-1'
         def dir = repo.checkout('project/branches/release-2.0')
         new File(dir, 'test.txt').text = 'test'
+        new File(dir, 'other.txt').text = 'other'
+        repo.add dir, 'other.txt'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
+            dirtyStatusLog = true
         }
 
         VersionInfo info = project.versioning.info as VersionInfo
