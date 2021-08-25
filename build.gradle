@@ -17,6 +17,10 @@ plugins {
      */
     id 'net.nemerosa.versioning' version '2.7.1'
     /**
+     * Release in GitHub
+     */
+    id 'com.github.breadmoirai.github-release' version '2.2.12'
+    /**
      * Written in Groovy
      */
     id 'groovy'
@@ -82,4 +86,18 @@ gradlePlugin {
 test {
   environment "GIT_TEST_BRANCH", "feature/456-cute"
   environment "SVN_TEST_BRANCH", "feature-456-cute"
+}
+
+/**
+ * GitHub release parameters
+ */
+
+githubRelease {
+    token(gitHubToken)
+    owner(gitHubOwner)
+    repo(gitHubRepo)
+    tagName(version.toString())
+    releaseName(version.toString())
+    targetCommitish(gitHubCommit)
+    overwrite(true)
 }

@@ -89,21 +89,17 @@ set -e
             }
             environment {
                 GIT_COMMIT = "${gitCommit}"
-                VERSION = "${version}"
                 GITHUB = credentials('GITHUB_NEMEROSA_JENKINS2')
             }
             steps {
-                sh '''\
-#!/bin/bash
-set -e
-
-echo "Creating tag ${VERSION} for ${GIT_COMMIT}"
-
-curl -X POST "https://api.github.com/repos/nemerosa/versioning/releases" \\
-    --fail \\
-    --data "{\\"target_commitish\\":\\"${GIT_COMMIT}\\",\\"tag_name\\":\\"${VERSION}\\",\\"name\\":\\"${VERSION}\\"}" \\
-    --user "${GITHUB}"
-'''
+                sh '''
+                ./gradlew \\
+                  githubRelease \\
+                  -PgitHubToken=${GITHUB_PSW} \\
+                  -PgitHubCommit=${GIT_COMMIT} \\
+                  --stacktrace \\
+                  --console plain
+                '''
             }
         }
 
