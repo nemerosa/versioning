@@ -54,12 +54,12 @@ pipeline {
                 branch 'release/*'
             }
             environment {
-                GITHUB = credentials('GITHUB_NEMEROSA_JENKINS2')
+                GITHUB = credentials('JENKINS_GITHUB_TOKEN')
             }
             steps {
                 sh '''
                 ./gradlew githubRelease --stacktrace --console plain \\
-                  -PgitHubToken=${GITHUB_PSW} \\
+                  -PgitHubToken=${GITHUB} \\
                   -PgitHubCommit=${GIT_COMMIT}
                 '''
             }
