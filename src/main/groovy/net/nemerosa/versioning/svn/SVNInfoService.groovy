@@ -85,12 +85,7 @@ class SVNInfoService implements SCMInfoService {
     static List<SVNStatus> getDirtyStatuses(File dir, SVNClientManager clientManager) {
         List<SVNStatus> statuses = getStatus(dir, clientManager)
         return statuses.findAll { entry ->
-            def path = (entry.file.absolutePath - dir.absolutePath)
-            if (path && !path.startsWith('/userHome')) {
-                return (entry.nodeStatus != SVNStatusType.UNCHANGED && entry.nodeStatus != SVNStatusType.STATUS_EXTERNAL) || (entry.propertiesStatus != SVNStatusType.UNCHANGED)
-            } else {
-                return false
-            }
+            return !(entry.nodeStatus == SVNStatusType.UNCHANGED && entry.propertiesStatus == SVNStatusType.UNCHANGED) && entry.nodeStatus != SVNStatusType.STATUS_EXTERNAL
         }
     }
 
