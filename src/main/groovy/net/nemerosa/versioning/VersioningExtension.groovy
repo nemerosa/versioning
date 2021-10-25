@@ -385,8 +385,6 @@ class VersioningExtension {
         } else {
             String lastTag
             String nextTag
-            //FIXME remove this log after debugging
-            println "Base tags : $baseTags"
             if (baseTags.empty) {
                 lastTag = ''
                 nextTag = "${releaseInfo.base}.0"
