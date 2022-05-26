@@ -22,6 +22,9 @@ pipeline {
         stage("Setup") {
             steps {
                 ontrackCliSetup(autoValidationStamps: true)
+                sh '''
+                    git config --global init.defaultBranch main
+                '''
             }
         }
 
