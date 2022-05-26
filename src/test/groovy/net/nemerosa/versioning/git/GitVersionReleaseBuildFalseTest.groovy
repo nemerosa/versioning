@@ -58,13 +58,13 @@ class GitVersionReleaseBuildFalseTest {
             VersionInfo info = project.versioning.info as VersionInfo
             assert info != null
             assert info.build == headAbbreviated
-            assert info.branch == 'master'
+            assert info.branch == 'main'
             assert info.base == ''
-            assert info.branchId == 'master'
-            assert info.branchType == 'master'
+            assert info.branchId == 'main'
+            assert info.branchType == 'main'
             assert info.commit == head
-            assert info.display == "master-${headAbbreviated}" as String
-            assert info.full == "master-${headAbbreviated}" as String
+            assert info.display == "main-${headAbbreviated}" as String
+            assert info.full == "main-${headAbbreviated}" as String
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
@@ -157,13 +157,13 @@ class GitVersionReleaseBuildFalseTest {
             VersionInfo info = subproject.versioning.info as VersionInfo
             assert info != null
             assert info.build == headAbbreviated
-            assert info.branch == 'master'
+            assert info.branch == 'main'
             assert info.base == ''
-            assert info.branchId == 'master'
-            assert info.branchType == 'master'
+            assert info.branchId == 'main'
+            assert info.branchType == 'main'
             assert info.commit == head
-            assert info.display == "master-${headAbbreviated}" as String
-            assert info.full == "master-${headAbbreviated}" as String
+            assert info.display == "main-${headAbbreviated}" as String
+            assert info.full == "main-${headAbbreviated}" as String
             assert info.scm == 'git'
             assert info.tag == null
             assert !info.dirty
@@ -202,13 +202,13 @@ class GitVersionReleaseBuildFalseTest {
                 VersionInfo info = project.versioning.info as VersionInfo
                 assert info != null
                 assert info.build == headAbbreviated
-                assert info.branch == 'master'
+                assert info.branch == 'main'
                 assert info.base == ''
-                assert info.branchId == 'master'
-                assert info.branchType == 'master'
+                assert info.branchId == 'main'
+                assert info.branchType == 'main'
                 assert info.commit == head
-                assert info.display == "master-${headAbbreviated}" as String
-                assert info.full == "master-${headAbbreviated}" as String
+                assert info.display == "main-${headAbbreviated}" as String
+                assert info.full == "main-${headAbbreviated}" as String
                 assert info.scm == 'git'
                 assert info.tag == null
                 assert !info.dirty
@@ -273,14 +273,14 @@ class GitVersionReleaseBuildFalseTest {
             assert file.exists(): "File ${file} must exist."
             assert file.text == """\
 VERSION_BUILD=${headAbbreviated}
-VERSION_BRANCH=master
+VERSION_BRANCH=main
 VERSION_BASE=\n\
-VERSION_BRANCHID=master
-VERSION_BRANCHTYPE=master
+VERSION_BRANCHID=main
+VERSION_BRANCHTYPE=main
 VERSION_COMMIT=${head}
 VERSION_GRADLE=
-VERSION_DISPLAY=master-${headAbbreviated}
-VERSION_FULL=master-${headAbbreviated}
+VERSION_DISPLAY=main-${headAbbreviated}
+VERSION_FULL=main-${headAbbreviated}
 VERSION_SCM=git
 VERSION_TAG=
 VERSION_LAST_TAG=
@@ -325,14 +325,14 @@ VERSION_QUALIFIER=
             assert file.exists(): "File ${file} must exist."
             assert file.text == """\
 CUSTOM_BUILD=${headAbbreviated}
-CUSTOM_BRANCH=master
+CUSTOM_BRANCH=main
 CUSTOM_BASE=\n\
-CUSTOM_BRANCHID=master
-CUSTOM_BRANCHTYPE=master
+CUSTOM_BRANCHID=main
+CUSTOM_BRANCHTYPE=main
 CUSTOM_COMMIT=${head}
 CUSTOM_GRADLE=
-CUSTOM_DISPLAY=master-${headAbbreviated}
-CUSTOM_FULL=master-${headAbbreviated}
+CUSTOM_DISPLAY=main-${headAbbreviated}
+CUSTOM_FULL=main-${headAbbreviated}
 CUSTOM_SCM=git
 CUSTOM_TAG=
 CUSTOM_LAST_TAG=
@@ -377,14 +377,14 @@ CUSTOM_QUALIFIER=
             assert file.exists(): "File ${file} must exist."
             assert file.text == """\
 VERSION_BUILD=${headAbbreviated}
-VERSION_BRANCH=master
+VERSION_BRANCH=main
 VERSION_BASE=\n\
-VERSION_BRANCHID=master
-VERSION_BRANCHTYPE=master
+VERSION_BRANCHID=main
+VERSION_BRANCHTYPE=main
 VERSION_COMMIT=${head}
 VERSION_GRADLE=
-VERSION_DISPLAY=master-${headAbbreviated}
-VERSION_FULL=master-${headAbbreviated}
+VERSION_DISPLAY=main-${headAbbreviated}
+VERSION_FULL=main-${headAbbreviated}
 VERSION_SCM=git
 VERSION_TAG=
 VERSION_LAST_TAG=
@@ -1806,9 +1806,9 @@ VERSION_QUALIFIER=
             VersionInfo info = project.versioning.info as VersionInfo
             assert info != null
             assert info.build == headAbbreviated
-            assert info.branch == 'master'
+            assert info.branch == 'main'
             assert info.base == 'v2.0'
-            assert info.branchId == 'master'
+            assert info.branchId == 'main'
             assert info.branchType == 'release'
             assert info.commit == head
             assert info.display == 'v2.0.0'

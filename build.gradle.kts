@@ -42,7 +42,7 @@ repositories {
 dependencies {
     implementation(gradleApi())
     implementation(localGroovy())
-    implementation("org.ajoberstar.grgit:grgit-core:4.0.1")
+    implementation("org.ajoberstar.grgit:grgit-core:4.1.1")
     implementation("org.eclipse.jgit:org.eclipse.jgit.ui:${jgitVersion}")
     implementation("org.eclipse.jgit:org.eclipse.jgit:${jgitVersion}")
     implementation("org.tmatesoft.svnkit:svnkit:1.10.6")
