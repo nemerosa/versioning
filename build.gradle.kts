@@ -45,11 +45,11 @@ dependencies {
     implementation("org.ajoberstar.grgit:grgit-core:4.0.1")
     implementation("org.eclipse.jgit:org.eclipse.jgit.ui:${jgitVersion}")
     implementation("org.eclipse.jgit:org.eclipse.jgit:${jgitVersion}")
-    implementation("org.tmatesoft.svnkit:svnkit:1.8.12")
+    implementation("org.tmatesoft.svnkit:svnkit:1.10.6")
 
-    testImplementation("junit:junit:4.12")
+    testImplementation("junit:junit:4.13.2")
     testImplementation("commons-lang:commons-lang:2.6")
-    testImplementation("commons-io:commons-io:2.5")
+    testImplementation("commons-io:commons-io:2.11.0")
 }
 
 /**
