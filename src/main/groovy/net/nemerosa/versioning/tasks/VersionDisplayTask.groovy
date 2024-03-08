@@ -40,6 +40,7 @@ class VersionDisplayTask extends DefaultTask {
             println "[version] minor       = ${info.versionNumber.minor}"
             println "[version] patch       = ${info.versionNumber.patch}"
             println "[version] qualifier   = ${info.versionNumber.qualifier}"
+            println "[version] time        = ${info.time ?: ''}"
         }
     }
 

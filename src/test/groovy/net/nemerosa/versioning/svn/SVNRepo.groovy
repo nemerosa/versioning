@@ -8,7 +8,12 @@ import org.tmatesoft.svn.core.SVNURL
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory
 import org.tmatesoft.svn.core.wc.SVNClientManager
 import org.tmatesoft.svn.core.wc.SVNCopySource
+import org.tmatesoft.svn.core.wc.SVNInfo
 import org.tmatesoft.svn.core.wc.SVNRevision
+
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 
 class SVNRepo {
 
@@ -145,5 +150,14 @@ class SVNRepo {
                 1000,
                 { logEntry -> println "${logEntry.revision} ${logEntry.message}" }
         )
+    }
+
+    ZonedDateTime dateTimeLookup(File path) {
+        SVNInfo info = clientManager.getWCClient().doInfo(
+                path,
+                SVNRevision.HEAD
+        )
+        def date = info.committedDate
+        date == null ? null : ZonedDateTime.ofInstant(date.toInstant().truncatedTo(ChronoUnit.SECONDS), ZoneOffset.UTC)
     }
 }

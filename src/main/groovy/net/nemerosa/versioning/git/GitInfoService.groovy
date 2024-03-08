@@ -13,6 +13,8 @@ import org.eclipse.jgit.lib.Ref
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
+import java.time.ZonedDateTime
+
 import static org.eclipse.jgit.lib.Constants.R_TAGS
 
 class GitInfoService implements SCMInfoService {
@@ -60,6 +62,10 @@ class GitInfoService implements SCMInfoService {
             String commit = lastCommit.id
             // Gets the current commit (short hash)
             String abbreviated = lastCommit.abbreviatedId
+            // Gets the time the commit was created
+            def dateTime = lastCommit.dateTime
+            // Git always provides a time so no null-handling required
+
             // Is the repository shallow?
             boolean shallow = lastCommit.parentIds.empty
 
@@ -120,6 +126,7 @@ class GitInfoService implements SCMInfoService {
                     branch: branch,
                     commit: commit,
                     abbreviated: abbreviated,
+                    dateTime: dateTime,
                     dirty: isGitTreeDirty(status),
                     status: status,
                     tag: tag,

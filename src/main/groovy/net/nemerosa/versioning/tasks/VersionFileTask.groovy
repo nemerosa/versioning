@@ -57,6 +57,7 @@ ${prefix}MAJOR=${info.versionNumber.major}
 ${prefix}MINOR=${info.versionNumber.minor}
 ${prefix}PATCH=${info.versionNumber.patch}
 ${prefix}QUALIFIER=${info.versionNumber.qualifier}
+${prefix}TIME=${info.time ?: ''}
 """
     }
 

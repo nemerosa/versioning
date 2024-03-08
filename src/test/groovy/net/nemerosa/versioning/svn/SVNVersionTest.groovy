@@ -5,12 +5,14 @@ import net.nemerosa.versioning.VersioningPlugin
 import net.nemerosa.versioning.support.DirtyException
 import net.nemerosa.versioning.tasks.VersionDisplayTask
 import org.gradle.api.DefaultTask
+import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.After
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.atomic.AtomicInteger
 
 import static net.nemerosa.versioning.svn.SVNRepo.ignore
@@ -54,6 +56,7 @@ class SVNVersionTest {
         assert info.scm == 'n/a'
         assert info.tag == null
         assert !info.dirty
+        assert info.time == null
     }
 
     @Test
@@ -64,6 +67,7 @@ class SVNVersionTest {
         repo.mkdir 'project/trunk/2', 'Commit for TEST-2'
         // Project
         def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/trunk')).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -82,6 +86,7 @@ class SVNVersionTest {
         assert info.scm == 'svn'
         assert info.tag == null
         assert !info.dirty
+        assert info.time == time
     }
 
     @Test
@@ -113,6 +118,7 @@ class SVNVersionTest {
         ignore dir, '.gradle', 'build'
         // Project
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -145,6 +151,7 @@ VERSION_MAJOR=0
 VERSION_MINOR=0
 VERSION_PATCH=0
 VERSION_QUALIFIER=
+VERSION_TIME=${time}
 """
     }
 
@@ -159,6 +166,7 @@ VERSION_QUALIFIER=
         // Project
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
         project.version = '0.0.1'
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -191,6 +199,7 @@ VERSION_MAJOR=0
 VERSION_MINOR=0
 VERSION_PATCH=0
 VERSION_QUALIFIER=
+VERSION_TIME=${time}
 """
     }
 
@@ -204,6 +213,7 @@ VERSION_QUALIFIER=
         def dir = repo.checkout('project/trunk')
         ignore dir, '.gradle', 'build'
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -239,6 +249,7 @@ CUSTOM_MAJOR=0
 CUSTOM_MINOR=0
 CUSTOM_PATCH=0
 CUSTOM_QUALIFIER=
+CUSTOM_TIME=${time}
 """
     }
 
@@ -252,6 +263,7 @@ CUSTOM_QUALIFIER=
         def dir = repo.checkout('project/trunk')
         ignore dir, '.gradle'
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -287,6 +299,7 @@ VERSION_MAJOR=0
 VERSION_MINOR=0
 VERSION_PATCH=0
 VERSION_QUALIFIER=
+VERSION_TIME=${time}
 """
     }
 
@@ -300,6 +313,7 @@ VERSION_QUALIFIER=
 
         // Project
         def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/feature-test-1-my-feature')).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -319,6 +333,7 @@ VERSION_QUALIFIER=
         assert info.scm == 'svn'
         assert info.tag == null
         assert !info.dirty
+        assert info.time == time
     }
 
     @Test
@@ -331,6 +346,7 @@ VERSION_QUALIFIER=
 
         // Project
         def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/feature-test-1-my-feature')).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -351,6 +367,7 @@ VERSION_QUALIFIER=
         assert info.scm == 'svn'
         assert info.tag == null
         assert !info.dirty
+        assert info.time == time
     }
 
     @Test
@@ -363,6 +380,7 @@ VERSION_QUALIFIER=
 
         // Project
         def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/feature-test-1-my-feature')).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -383,6 +401,7 @@ VERSION_QUALIFIER=
         assert info.scm == 'svn'
         assert info.tag == null
         assert !info.dirty
+        assert info.time == time
     }
 
     @Test
@@ -395,6 +414,7 @@ VERSION_QUALIFIER=
 
         // Project
         def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/feature-test-1-my-feature')).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -416,6 +436,7 @@ VERSION_QUALIFIER=
         assert info.scm == 'svn'
         assert info.tag == null
         assert !info.dirty
+        assert info.time == time
     }
 
     @Test
@@ -428,6 +449,7 @@ VERSION_QUALIFIER=
 
         // Project
         def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/feature-test-1-my-feature')).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -448,6 +470,7 @@ VERSION_QUALIFIER=
         assert info.scm == 'svn'
         assert info.tag == null
         assert !info.dirty
+        assert info.time == time
     }
 
     @Test
@@ -460,6 +483,7 @@ VERSION_QUALIFIER=
 
         // Project
         def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/feature-test-1-my-feature')).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -482,6 +506,7 @@ VERSION_QUALIFIER=
         assert info.scm == 'svn'
         assert info.tag == null
         assert !info.dirty
+        assert info.time == time
     }
 
     @Test
@@ -494,6 +519,7 @@ VERSION_QUALIFIER=
 
         // Project
         def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/release-2.0')).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -513,7 +539,7 @@ VERSION_QUALIFIER=
         assert info.scm == 'svn'
         assert info.tag == null
         assert !info.dirty
-
+        assert info.time == time
     }
 
     @Test
@@ -530,6 +556,7 @@ VERSION_QUALIFIER=
 
         // Project
         def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/release-2.0')).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -549,7 +576,7 @@ VERSION_QUALIFIER=
         assert info.scm == 'svn'
         assert info.tag == null
         assert !info.dirty
-
+        assert info.time == time
     }
 
     @Test
@@ -565,6 +592,7 @@ VERSION_QUALIFIER=
 
         // Project
         def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/release-2.0')).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -584,7 +612,7 @@ VERSION_QUALIFIER=
         assert info.scm == 'svn'
         assert info.tag == null
         assert !info.dirty
-
+        assert info.time == time
     }
 
     @Test
@@ -602,6 +630,7 @@ VERSION_QUALIFIER=
 
         // Project
         def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/release-2.0')).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -621,7 +650,7 @@ VERSION_QUALIFIER=
         assert info.scm == 'svn'
         assert info.tag == null
         assert !info.dirty
-
+        assert info.time == time
     }
 
     @Test
@@ -632,6 +661,7 @@ VERSION_QUALIFIER=
         new File(dir, 'test.txt').text = 'Test'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -650,6 +680,7 @@ VERSION_QUALIFIER=
         assert info.scm == 'svn'
         assert info.tag == null
         assert info.dirty
+        assert info.time == time
     }
 
     @Test
@@ -662,6 +693,7 @@ VERSION_QUALIFIER=
         SVNRepo.add dir, 'test.txt'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -680,6 +712,7 @@ VERSION_QUALIFIER=
         assert info.scm == 'svn'
         assert info.tag == null
         assert info.dirty
+        assert info.time == time
     }
 
     @Test
@@ -690,6 +723,7 @@ VERSION_QUALIFIER=
         new File(dir, 'test.txt').text = 'test'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -709,6 +743,7 @@ VERSION_QUALIFIER=
         assert info.scm == 'svn'
         assert info.tag == null
         assert info.dirty
+        assert info.time == time
     }
 
     @Test
@@ -723,6 +758,7 @@ VERSION_QUALIFIER=
         repo.add dir, 'other.txt'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -742,6 +778,7 @@ VERSION_QUALIFIER=
         assert info.scm == 'svn'
         assert info.tag == null
         assert info.dirty
+        assert info.time == time
     }
 
     @Test
@@ -754,6 +791,7 @@ VERSION_QUALIFIER=
         new File(dir, 'test.txt').text = 'test'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -773,6 +811,7 @@ VERSION_QUALIFIER=
         assert info.scm == 'svn'
         assert info.tag == null
         assert info.dirty
+        assert info.time == time
     }
 
     @Test
@@ -785,6 +824,7 @@ VERSION_QUALIFIER=
         new File(dir, 'test.txt').text = 'test'
 
         def project = ProjectBuilder.builder().withProjectDir(dir).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -804,6 +844,7 @@ VERSION_QUALIFIER=
         assert info.scm == 'svn'
         assert info.tag == null
         assert info.dirty
+        assert info.time == time
     }
 
     @Test(expected = DirtyException)
@@ -835,6 +876,7 @@ VERSION_QUALIFIER=
 
         // Project
         def project = ProjectBuilder.builder().withProjectDir(repo.checkout('project/branches/feature-test-1-my-feature')).build()
+        def time = getCommitTime(project)
         new VersioningPlugin().apply(project)
         project.versioning {
             scm = 'svn'
@@ -855,5 +897,10 @@ VERSION_QUALIFIER=
         assert info.scm == 'svn'
         assert info.tag == null
         assert !info.dirty
+        assert info.time == time
+    }
+
+    private String getCommitTime(Project project) {
+        DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(repo.dateTimeLookup(project.getProjectDir()))
     }
 }

@@ -11,6 +11,8 @@ import org.gradle.api.DefaultTask
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
 
+import java.time.format.DateTimeFormatter
+
 class GitVersionReleaseBuildTrueTest {
 
     @Test
@@ -37,6 +39,7 @@ class GitVersionReleaseBuildTrueTest {
         assert info.tag == null
         assert !info.dirty
         assert info.versionNumber == null
+        assert info.time == null
     }
 
     @Test
@@ -49,6 +52,7 @@ class GitVersionReleaseBuildTrueTest {
             }
             def head = repo.commitLookup('Commit 4')
             def headAbbreviated = repo.commitLookup('Commit 4', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -69,7 +73,7 @@ class GitVersionReleaseBuildTrueTest {
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 0
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -89,6 +93,7 @@ class GitVersionReleaseBuildTrueTest {
             }
             def commit3 = repo.commitLookup('Commit 3')
             def commit3Abbreviated = repo.commitLookup('Commit 3', true)
+            def time = getCommitTime(repo, commit3)
 
             // Creates a temporary directory where to perform a detached clone operation
             File detached = File.createTempDir('git', '')
@@ -121,7 +126,7 @@ class GitVersionReleaseBuildTrueTest {
                 assert info.tag == null
                 assert !info.dirty
                 assert info.versionNumber.versionCode == 0
-
+                assert info.time == time
             } finally {
                 detached.deleteDir()
             }
@@ -145,6 +150,7 @@ class GitVersionReleaseBuildTrueTest {
             }
             def head = repo.commitLookup('Commit 4')
             def headAbbreviated = repo.commitLookup('Commit 4', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             def subdir = new File(repo.dir, 'sub')
@@ -168,7 +174,7 @@ class GitVersionReleaseBuildTrueTest {
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 0
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -184,6 +190,7 @@ class GitVersionReleaseBuildTrueTest {
             }
             def head = repo.commitLookup('Commit 4')
             def headAbbreviated = repo.commitLookup('Commit 4', true)
+            def time = getCommitTime(repo, head)
 
             // Creates a temporary directory where to perform a shallow clone operation
             File detached = File.createTempDir('git', '')
@@ -214,7 +221,7 @@ class GitVersionReleaseBuildTrueTest {
                 assert !info.dirty
                 assert info.shallow
                 assert info.versionNumber.versionCode == 0
-
+                assert info.time == time
             } finally {
                 detached.deleteDir()
             }
@@ -257,6 +264,7 @@ class GitVersionReleaseBuildTrueTest {
             }
             def head = repo.commitLookup('Commit 4')
             def headAbbreviated = repo.commitLookup('Commit 4', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -290,6 +298,7 @@ VERSION_MAJOR=0
 VERSION_MINOR=0
 VERSION_PATCH=0
 VERSION_QUALIFIER=
+VERSION_TIME=${time}
 """ as String
         } finally {
             repo.close()
@@ -306,6 +315,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 4')
             def headAbbreviated = repo.commitLookup('Commit 4', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -342,6 +352,7 @@ CUSTOM_MAJOR=0
 CUSTOM_MINOR=0
 CUSTOM_PATCH=0
 CUSTOM_QUALIFIER=
+CUSTOM_TIME=${time}
 """ as String
         } finally {
             repo.close()
@@ -358,6 +369,7 @@ CUSTOM_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 4')
             def headAbbreviated = repo.commitLookup('Commit 4', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -394,6 +406,7 @@ VERSION_MAJOR=0
 VERSION_MINOR=0
 VERSION_PATCH=0
 VERSION_QUALIFIER=
+VERSION_TIME=${time}
 """ as String
         } finally {
             repo.close()
@@ -412,6 +425,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -432,7 +446,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 0
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -450,6 +464,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -471,7 +486,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 0
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -489,6 +504,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -510,7 +526,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 0
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -528,6 +544,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -550,7 +567,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 0
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -568,6 +585,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -589,7 +607,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 0
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -607,6 +625,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -630,7 +649,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 0
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -648,6 +667,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -668,6 +688,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 20000
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -687,6 +708,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -707,7 +729,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 20003
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -727,6 +749,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -747,7 +770,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 20003
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -770,6 +793,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 7')
             def headAbbreviated = repo.commitLookup('Commit 7', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -791,7 +815,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 30002
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -814,6 +838,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 7')
             def headAbbreviated = repo.commitLookup('Commit 7', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -835,7 +860,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 30011
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -858,6 +883,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 7')
             def headAbbreviated = repo.commitLookup('Commit 7', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -879,7 +905,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 30021
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -903,6 +929,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 7')
             def headAbbreviated = repo.commitLookup('Commit 7', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -923,7 +950,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 20003
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -943,6 +970,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -963,7 +991,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 20011
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -981,6 +1009,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1003,6 +1032,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 20000
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1020,6 +1050,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1042,6 +1073,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 20000
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1059,6 +1091,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1080,6 +1113,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 20000
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1099,6 +1133,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1120,7 +1155,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 20003
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1140,6 +1175,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1162,7 +1198,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 20003
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1182,6 +1218,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1203,7 +1240,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 20003
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1223,6 +1260,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1244,7 +1282,7 @@ VERSION_QUALIFIER=
             assert info.tag == '2.0.2'
             assert !info.dirty
             assert info.versionNumber.versionCode == 20002
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1264,6 +1302,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1286,7 +1325,7 @@ VERSION_QUALIFIER=
             assert info.tag == '2.0.2'
             assert !info.dirty
             assert info.versionNumber.versionCode == 20002
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1306,6 +1345,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1327,7 +1367,7 @@ VERSION_QUALIFIER=
             assert info.tag == '2.0.2'
             assert !info.dirty
             assert info.versionNumber.versionCode == 20003
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1348,6 +1388,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1368,7 +1409,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert info.dirty
             assert info.versionNumber.versionCode == 0
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1389,6 +1430,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1409,7 +1451,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert info.dirty
             assert info.versionNumber.versionCode == 0
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1433,6 +1475,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1453,7 +1496,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 0
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1474,6 +1517,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1496,7 +1540,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert info.dirty
             assert info.versionNumber.versionCode == 0
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1518,6 +1562,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1538,7 +1583,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert info.dirty
             assert info.versionNumber.versionCode == 20003
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1561,6 +1606,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1582,7 +1628,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert info.dirty
             assert info.versionNumber.versionCode == 20003
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1602,6 +1648,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
+            def time = getCommitTime(repo, head)
 
             // Creates a temporary directory where to perform a shallow clone operation
             File detached = File.createTempDir('git', '')
@@ -1632,7 +1679,7 @@ VERSION_QUALIFIER=
                 assert !info.dirty
                 assert info.shallow
                 assert info.versionNumber.versionCode == 0
-
+                assert info.time == time
             } finally {
                 detached.deleteDir()
             }
@@ -1656,6 +1703,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1677,7 +1725,7 @@ VERSION_QUALIFIER=
             assert !info.dirty
             assert !info.shallow
             assert info.versionNumber.versionCode == 20004
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1696,6 +1744,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
+            def time = getCommitTime(repo, head)
 
             // Creates a temporary directory where to perform a shallow clone operation
             File detached = File.createTempDir('git', '')
@@ -1726,7 +1775,7 @@ VERSION_QUALIFIER=
                 assert !info.dirty
                 assert info.shallow
                 assert info.versionNumber.versionCode == 20002
-
+                assert info.time == time
             } finally {
                 detached.deleteDir()
             }
@@ -1753,6 +1802,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 6')
             def headAbbreviated = repo.commitLookup('Commit 6', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1774,7 +1824,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert info.dirty
             assert info.versionNumber.versionCode == 20003
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1791,6 +1841,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1818,6 +1869,7 @@ VERSION_QUALIFIER=
             assert info.tag == 'release/v2.0'
             assert !info.dirty
             assert info.versionNumber.versionCode == 20000
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1867,6 +1919,7 @@ VERSION_QUALIFIER=
             // System.setenv('TEST_BRANCH', 'feature/456-cute')
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
+            def time = getCommitTime(repo, head)
 
             def project = ProjectBuilder.builder().withProjectDir(repo.dir).build()
             new VersioningPlugin().apply(project)
@@ -1888,7 +1941,7 @@ VERSION_QUALIFIER=
             assert info.tag == null
             assert !info.dirty
             assert info.versionNumber.versionCode == 0
-
+            assert info.time == time
         } finally {
             repo.close()
         }
@@ -1907,6 +1960,7 @@ VERSION_QUALIFIER=
             }
             def head = repo.commitLookup('Commit 5')
             def headAbbreviated = repo.commitLookup('Commit 5', true)
+            def time = getCommitTime(repo, head)
 
             // Creates a temporary directory for the project
             File projectDir = File.createTempDir('project', '')
@@ -1931,9 +1985,13 @@ VERSION_QUALIFIER=
             assert !info.dirty
             assert !info.shallow
             assert info.versionNumber.versionCode == 20003
-
+            assert info.time == time
         } finally {
             repo.close()
         }
+    }
+
+    private static String getCommitTime(GitRepo repo, String commitId) {
+        DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(repo.dateTimeLookup(commitId))
     }
 }

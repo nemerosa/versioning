@@ -3,6 +3,8 @@ package net.nemerosa.versioning.git
 import org.ajoberstar.grgit.Commit
 import org.ajoberstar.grgit.Grgit
 
+import java.time.ZonedDateTime
+
 class GitRepo {
 
     private final File dir
@@ -63,4 +65,13 @@ class GitRepo {
         }
     }
 
+    ZonedDateTime dateTimeLookup(String commitId) {
+        List<Commit> history = grgit.log()
+        Commit commit = history.find { it.id == commitId }
+        if (commit) {
+            return commit.dateTime
+        } else {
+            throw new RuntimeException("Cannot find commit for ID $commitId")
+        }
+    }
 }
