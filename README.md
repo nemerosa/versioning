@@ -104,6 +104,7 @@ Property | Description | Git: `master` | Git: `feature/great` | Git: `release/2.
 `versionNumber.patch` | Patch version | 0 | 0 |  0, 1, 2, ...
 `versionNumber.qualifier` | Version qualifier (alpha, beta, engineer, ...)| '' | '' | '' 
 `versionNumber.versionCode` | Version code | 0 | 0 |  20000, 20001, 20002, ...
+`time` | Timestamp of the current commit | (5) | (5) | (5)
 
 (1) not supported for Subversion
 (2) will be the name of the current tag if any, or `null` if no tag is associated to the current `HEAD`.
@@ -114,6 +115,7 @@ necessarily - it will be `null` if no previous tag can be found. The last tags a
 matched against the `lastTagPattern` regular expression defined in the configuration. It
 defaults to `(\d+)$`, meaning that we just expect a sequence a digits at the end
 of the tag name.
+(5) will be the timestamp of the current commit, or `null` if no timestamp is associated with it
 
 ### Display version
 
@@ -167,6 +169,7 @@ Displays the version information in the standard output. For example:
 [version] minor       = 0
 [version] patch       = 0
 [version] qualifier   = 
+[version] time        = 2024-03-08T17:48:07+01:00
 ```
 
 ### `versionFile`
@@ -194,6 +197,7 @@ VERSION_MAJOR=0
 VERSION_MINOR=0
 VERSION_PATCH=0
 VERSION_QUALIFIER=
+VERSION_TIME=2024-03-08T17:48:07+01:00
 ```
 
 This makes this file easy to integrate in a Bash script:
@@ -497,6 +501,37 @@ versioning {
         }
     }
 
+}
+```
+
+### Timestamp
+
+The timestamp computation can be customised in the `versioning` extension.
+
+By default, an [ISO-8601-compatible](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_OFFSET_DATE_TIME) timestamp is computed.
+
+[SOURCE_DATE_EPOCH](https://reproducible-builds.org/docs/source-date-epoch/)-compatible:
+```groovy
+import java.time.ZonedDateTime
+
+versioning {
+
+    Closure<String> computeTimestamp = { ZonedDateTime t ->
+        t == null ? null : Long.toString(t.toEpochSecond())
+    }
+}
+```
+RFC-1123-compatible using [DateTimeFormatter](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html):
+
+```groovy
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
+versioning {
+
+    Closure<String> computeTimestamp = { ZonedDateTime t ->
+        t == null ? null : DateTimeFormatter.RFC_1123_DATE_TIME.format(t)
+    }
 }
 ```
 

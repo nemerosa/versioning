@@ -15,6 +15,10 @@ import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager
 import org.tmatesoft.svn.core.auth.SVNAuthentication
 import org.tmatesoft.svn.core.wc.*
 
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
+
 class SVNInfoService implements SCMInfoService {
 
     private static final Logger LOGGER = Logging.getLogger(this.getClass())
@@ -51,6 +55,16 @@ class SVNInfoService implements SCMInfoService {
 
             // Revision
             String revision = info.committedRevision.number as String
+            // The time the commit was created
+            def date = info.committedDate
+            // svn:date property might not have been set
+            ZonedDateTime dateTime = null
+            if (date != null) {
+                // svn:date is in UTC
+                // https://svnbook.red-bean.com/en/1.7/svn-book.html#svn.ref.properties.unversioned-props
+                // Truncate to SECONDS to be consistent with Git
+                dateTime = ZonedDateTime.ofInstant(date.toInstant().truncatedTo(ChronoUnit.SECONDS), ZoneOffset.UTC)
+            }
             // Dirty status
             def status = getDirtyStatuses(project.projectDir, clientManager)
             // OK
@@ -58,6 +72,7 @@ class SVNInfoService implements SCMInfoService {
                     branch,
                     revision,
                     revision,
+                    dateTime,
                     null,
                     null,
                     status,

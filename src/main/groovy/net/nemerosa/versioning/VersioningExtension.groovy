@@ -8,6 +8,8 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.tmatesoft.svn.core.wc.SVNStatus
 
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.regex.Matcher
 
 class VersioningExtension {
@@ -230,6 +232,15 @@ class VersioningExtension {
     }
 
     /**
+     * Closure that computes a timestamp from a given ZonedDateTime.
+     *
+     * By default, an ISO-8601-compatible timestamp is computed.
+     */
+    Closure<String> computeTimestamp = { ZonedDateTime t ->
+        t == null ? null : DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(t)
+    }
+
+    /**
      * Certificate - accept SSL server certificates from unknown certificate authorities (for SVN only)
      */
     @Deprecated
@@ -350,6 +361,9 @@ class VersioningExtension {
 
         VersionNumber versionNumber = parseVersionNumber(
                 scmInfo, versionReleaseType, versionBranchId, versionFull, versionBase, versionDisplay)
+
+        String time = computeTimestamp(scmInfo.dateTime)
+
         // OK
         new VersionInfo(
                 scm: scm,
@@ -359,6 +373,7 @@ class VersioningExtension {
                 full: versionFull,
                 base: versionBase,
                 display: versionDisplay,
+                time: time,
                 commit: scmInfo.commit,
                 build: scmInfo.abbreviated,
                 tag: scmInfo.tag,
