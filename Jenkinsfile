@@ -62,7 +62,7 @@ pipeline {
             steps {
                 sh '''
                 ./gradlew githubRelease --stacktrace --console plain \\
-                  -PgitHubToken=${GITHUB} \\
+                  -PgitHubToken=${github-token} \\
                   -PgitHubCommit=${GIT_COMMIT}
                 '''
             }
