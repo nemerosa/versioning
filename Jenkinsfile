@@ -78,7 +78,7 @@ pipeline {
                 branch 'release/*'
             }
             environment {
-                GRADLE_PLUGINS = credentials('GRADLE_PLUGINS')
+                GRADLE_PLUGINS = credentials('gradle-plugins')
             }
             steps {
                 sh '''
