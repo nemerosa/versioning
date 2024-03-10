@@ -5,8 +5,7 @@ pipeline {
     agent {
         docker {
             label "do && c-8"
-            image "nemerosa/ontrack-build:4.0.2"
-            args "--volume /var/run/docker.sock:/var/run/docker.sock --network host"
+            image "openjdk:11"
         }
     }
 
