@@ -27,6 +27,11 @@ allprojects {
 // Using versioning.info.display for generating property files for example
 ```
 
+## Requirements
+
+* **Gradle 8.x** or higher
+* **JDK 17** or higher
+
 ## Applying the plug-in
 
 The `versioning` plug-in is hosted in [JCenter](https://bintray.com/bintray/jcenter) and is registered in the [Gradle Plug-in Portal](https://plugins.gradle.org/).
