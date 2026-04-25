@@ -1,4 +1,4 @@
-@Library("ontrack-jenkins-cli-pipeline@1.0.2") _
+@Library("ontrack-jenkins-cli-pipeline@v5") _
 
 pipeline {
 
@@ -22,8 +22,8 @@ pipeline {
 
         stage("Setup") {
             steps {
+                ontrackCliCIConfig()
                 sh 'apt-get update -q && apt-get install -y -q git'
-                ontrackCliSetup(autoValidationStamps: true)
                 sh '''
                     git config --global init.defaultBranch main
                 '''
@@ -41,7 +41,7 @@ pipeline {
                     env.VERSION = props.VERSION_DISPLAY
                     env.GIT_COMMIT = props.VERSION_COMMIT
                     // Creates a build
-                    ontrackCliBuild(name: env.BUILD_NUMBER, release: env.VERSION)
+                    ontrackCliBuildRelease()
                 }
                 sh '''
                     ./gradlew build --stacktrace --parallel --console plain
