@@ -65,7 +65,7 @@ gradlePlugin {
             displayName = "Versioning plugin for Gradle"
             description = "Gradle plug-in that computes version information from the SCM"
             implementationClass = "net.nemerosa.versioning.VersioningPlugin"
-            tags = listOf("gradle", "plugin", "scm", "git", "svn", "version")
+            tags = listOf("scm", "git", "svn", "version")
         }
     }
 }

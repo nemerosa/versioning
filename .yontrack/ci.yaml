@@ -1,2 +1,12 @@
 version: v1
-configuration: {}
+configuration:
+  defaults:
+    branch:
+      validations:
+        GRADLE.PLUGIN: {}
+        GITHUB.RELEASE: {}
+      promotions:
+        RELEASE:
+          validations:
+            - GRADLE.PLUGIN
+            - GITHUB.RELEASE

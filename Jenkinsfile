@@ -54,27 +54,6 @@ pipeline {
             }
         }
 
-        stage('Release') {
-            when {
-                branch 'release/*'
-            }
-            environment {
-                GITHUB = credentials('github-token')
-            }
-            steps {
-                sh '''
-                ./gradlew githubRelease --stacktrace --console plain \\
-                  -PgitHubToken=${GITHUB} \\
-                  -PgitHubCommit=${GIT_COMMIT}
-                '''
-            }
-            post {
-                always {
-                    ontrackCliValidate(stamp: 'GITHUB.RELEASE')
-                }
-            }
-        }
-
         stage('Publication') {
             when {
                 branch 'release/*'
@@ -92,6 +71,27 @@ pipeline {
             post {
                 always {
                     ontrackCliValidate(stamp: 'GRADLE.PLUGIN')
+                }
+            }
+        }
+
+        stage('Release') {
+            when {
+                branch 'release/*'
+            }
+            environment {
+                GITHUB = credentials('github-token')
+            }
+            steps {
+                sh '''
+                ./gradlew githubRelease --stacktrace --console plain \\
+                  -PgitHubToken=${GITHUB} \\
+                  -PgitHubCommit=${GIT_COMMIT}
+                '''
+            }
+            post {
+                always {
+                    ontrackCliValidate(stamp: 'GITHUB.RELEASE')
                 }
             }
         }
