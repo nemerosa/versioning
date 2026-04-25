@@ -2,6 +2,10 @@
 
 pipeline {
 
+    agent {
+        label "do && c-8"
+    }
+
     options {
         // General Jenkins job properties
         buildDiscarder(logRotator(numToKeepStr: '40'))
