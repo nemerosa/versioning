@@ -22,8 +22,8 @@ pipeline {
 
         stage("Setup") {
             steps {
-                ontrackCliCIConfig()
                 sh 'apt-get update -q && apt-get install -y -q git'
+                ontrackCliCIConfig()
                 sh '''
                     git config --global init.defaultBranch main
                 '''
