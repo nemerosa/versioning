@@ -8,7 +8,7 @@ plugins {
      */
     `java-gradle-plugin`
     groovy
-    id("com.gradle.plugin-publish") version "0.15.0"
+    id("com.gradle.plugin-publish") version "1.3.0"
     /**
      * Versioning applied to itself
      */
@@ -56,20 +56,16 @@ dependencies {
  * Plug-in definition
  */
 
-pluginBundle {
+gradlePlugin {
     website = "https://github.com/nemerosa/versioning/"
     vcsUrl = "https://github.com/nemerosa/versioning/"
-    description = "Gradle plug-in that computes version information from the SCM"
-    tags = listOf("gradle", "plugin", "scm", "git", "svn", "version")
-}
-
-gradlePlugin {
     plugins {
         create("versioningPlugin") {
             id = "net.nemerosa.versioning"
             displayName = "Versioning plugin for Gradle"
             description = "Gradle plug-in that computes version information from the SCM"
             implementationClass = "net.nemerosa.versioning.VersioningPlugin"
+            tags = listOf("gradle", "plugin", "scm", "git", "svn", "version")
         }
     }
 }
