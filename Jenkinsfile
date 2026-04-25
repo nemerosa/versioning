@@ -3,7 +3,10 @@
 pipeline {
 
     agent {
-        label "do && c-8"
+        docker {
+            label "do && c-8"
+            image "eclipse-temurin:17"
+        }
     }
 
     options {
