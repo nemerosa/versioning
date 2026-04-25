@@ -22,6 +22,7 @@ pipeline {
 
         stage("Setup") {
             steps {
+                sh 'apt-get update -q && apt-get install -y -q git'
                 ontrackCliSetup(autoValidationStamps: true)
                 sh '''
                     git config --global init.defaultBranch main
