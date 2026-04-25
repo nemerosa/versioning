@@ -5,7 +5,7 @@ pipeline {
     agent {
         docker {
             label "do && c-8"
-            image "openjdk:11"
+            image "azul/zulu-openjdk:17"
         }
     }
 
