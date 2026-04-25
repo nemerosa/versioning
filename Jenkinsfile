@@ -2,13 +2,6 @@
 
 pipeline {
 
-    agent {
-        docker {
-            label "do && c-8"
-            image "azul/zulu-openjdk:17"
-        }
-    }
-
     options {
         // General Jenkins job properties
         buildDiscarder(logRotator(numToKeepStr: '40'))
